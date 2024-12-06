@@ -14,7 +14,7 @@ const Landing = () => {
             observes a promise.
           </p>
           <div
-            className="flex items-center bg-gray-600/20 backdrop-blur-sm pl-4 p-2 rounded-full w-[400px] mx-auto border border-gray-400
+            className="flex items-center bg-gray-600/20 backdrop-blur-sm pl-4 p-2 rounded-full w-[400px] mx-auto border hover:scale-105 duration-200 border-gray-400
            mt-6"
           >
             <input
