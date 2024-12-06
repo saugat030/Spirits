@@ -1,6 +1,6 @@
 const Years = () => {
   return (
-    <section className="flex gap-20 container mx-auto mt-40 mb-40">
+    <section className="flex gap-20 container mx-auto mt-40">
       <figure className="w-1/2 rounded-lg shadow-md shadow-amber-900 hover:">
         <img
           src="https://images.pexels.com/photos/2796105/pexels-photo-2796105.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
