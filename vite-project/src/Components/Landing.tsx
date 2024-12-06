@@ -4,7 +4,7 @@ const Landing = () => {
   return (
     <>
       <div className="bg-[url('src/static/landingBg.jpg')] h-screen bg-no-repeat bg-center bg-cover text-white relative z-10 brightness-50"></div>
-      <div className="absolute h-full w-full flex justify-center items-center top-0 z-50">
+      <div className="absolute h-full w-full flex justify-center items-center top-0 z-20">
         <div className="text-white flex flex-col gap-4 mb-52">
           <h1 className="line-clamp-2 w-1/2 text-center mx-auto font-bold text-5xl py-2">
             Drink because you are happy, but never because you are miserable.
