@@ -1,21 +1,34 @@
-interface WhyUsProps {
-  details: string;
-  description: string;
-}
-
-import { MdOutlineArrowRightAlt } from "react-icons/md";
-
-const WhyUS = ({ details, description }: WhyUsProps) => {
+import Whyuscard from "./Whyuscard";
+const WhyUs = () => {
+  let list = [
+    {
+      details: "Euphoric",
+      description:
+        "After taking a sip of the rich, amber whiskey, a warm wave of euphoria spreads through the body, slowly dissolving the stress of the day.",
+    },
+    {
+      details: "Sedative",
+      description:
+        "After taking a sip of the rich, amber whiskey, a warm wave of euphoria spreads through the body, slowly dissolving the stress of the day.",
+    },
+    {
+      details: "Crafted",
+      description:
+        "After taking a sip of the rich, amber whiskey, a warm wave of euphoria spreads through the body, slowly dissolving the stress of the day.",
+    },
+  ];
   return (
-    <section className="flex flex-col h-2/3 gap-5 w-80 justify-center">
-      <h2 className="text-2xl font-semibold">{details}</h2>
-      <p>{description}</p>
-      <a href="#" className="text-amber-600 flex gap-2 items-center">
-        Load more
-        <MdOutlineArrowRightAlt />
-      </a>
-    </section>
+    <div className="flex flex-col md:flex-row justify-evenly items-center py-10 mt-14 md:mt-0 md:py-16">
+      <h1 className="font-bold text-3xl md:text-4xl md:line-clamp-2 md:w-52  pb-3 md:pb-6">
+        Why Chosing Us
+      </h1>
+      <div className="flex md:flex-row flex-col justify-center items-center gap-12 pt-10">
+        {list.map((item) => (
+          <Whyuscard details={item.details} description={item.description} />
+        ))}
+      </div>
+    </div>
   );
 };
 
-export default WhyUS;
+export default WhyUs;
