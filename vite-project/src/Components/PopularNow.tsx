@@ -18,11 +18,11 @@ const PopularNow = () => {
     },
   ];
   return (
-    <div className="h-[400px] flex justify-evenly items-center">
-      <h1 className="font-bold text-4xl line-clamp-2 w-52 pb-6">
+    <div className="flex flex-col md:flex-row justify-evenly items-center py-10 md:py-16">
+      <h1 className="font-bold text-3xl md:text-4xl md:line-clamp-2 md:w-52  pb-3 md:pb-6">
         Why Chosing Us
       </h1>
-      <div className="flex gap-12 pt-10">
+      <div className="flex md:flex-row flex-col justify-center items-center gap-12 pt-10">
         {list.map((item) => (
           <WhyUS details={item.details} description={item.description} />
         ))}
