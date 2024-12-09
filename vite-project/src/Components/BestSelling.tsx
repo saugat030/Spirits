@@ -1,10 +1,10 @@
 import Products from "./Products";
 const BestSelling = () => {
   return (
-    <div className="flex flex-col items-center gap-6 h-[600px] mt-20">
+    <div className="flex flex-col items-center gap-6 h-[600px]  mt-20">
       <h1 className="text-4xl font-bold text-center w-full">Best Selling</h1>
       <div>Buttons:</div>
-      <div className="flex gap-20 h-full">
+      <div className="flex md:flex-row flex-col gap-20 md:h-full h-auto overflow-y-scroll p-1">
         <Products
           imgsrc="https://pngimg.com/d/whisky_PNG132.png"
           name="Jack Daniels"

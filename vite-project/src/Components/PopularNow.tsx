@@ -18,7 +18,7 @@ const PopularNow = () => {
     },
   ];
   return (
-    <div className="flex flex-col md:flex-row justify-evenly items-center py-10 md:py-16">
+    <div className="flex flex-col md:flex-row justify-evenly items-center py-10 mt-14 md:mt-0 md:py-16">
       <h1 className="font-bold text-3xl md:text-4xl md:line-clamp-2 md:w-52  pb-3 md:pb-6">
         Why Chosing Us
       </h1>
