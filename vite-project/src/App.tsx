@@ -4,7 +4,7 @@ import Landing from "./Components/Landing";
 import BestSelling from "./Components/BestSelling";
 import Years from "./Components/Years";
 import Footer from "./Components/Footer";
-import WhyUs from "./Components/WhyUs";
+import WhyUs from "./Components/WhyUS";
 function App() {
   return (
     <div className="font-Poppins">
