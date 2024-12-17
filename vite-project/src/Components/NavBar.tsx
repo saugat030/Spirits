@@ -12,7 +12,7 @@ const NavBar = (props: NavType) => {
     <nav
       className={`${
         props.page == "home" ? "absolute text-white" : "static text-black"
-      } flex overflow-hidden justify-between md:px-12 px-6  items-center text-white z-30 w-full`}
+      } flex overflow-hidden justify-between md:px-12 px-6  items-center z-30 w-full`}
     >
       <div className="font-bold md:text-4xl text-2xl flex items-center h-24">
         Spirits

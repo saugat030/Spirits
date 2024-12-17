@@ -8,7 +8,7 @@ import WhyUs from "../Components/WhyUS";
 
 const HomePage = () => {
   return (
-    <div className="font-Poppins">
+    <div className="font-Poppins scroll-smooth">
       <NavBar page="home" />
       <Landing></Landing>
       <WhyUs />
