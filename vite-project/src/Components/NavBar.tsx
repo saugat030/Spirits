@@ -1,5 +1,3 @@
-// import React from 'react';
-
 type NavType = {
   page: string;
 };
@@ -9,9 +7,12 @@ import { IoMenuSharp } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 
 const NavBar = (props: NavType) => {
-  const navbarClass = props.page ? "home" : "bg-white";
   return (
-    <nav className="flex overflow-hidden justify-between md:px-12 px-6  items-center text-white absolute z-30 w-full">
+    <nav
+      className={`${
+        props.page == "home" ? "absolute text-white" : "static text-black"
+      } flex overflow-hidden justify-between md:px-12 px-6  items-center text-white z-30 w-full`}
+    >
       <div className="font-bold md:text-3xl text-xl flex items-center h-24">
         Spirits
       </div>
@@ -31,7 +32,7 @@ const NavBar = (props: NavType) => {
         </li>
       </ul>
       <IoMenuSharp className="md:hidden text-3xl" />
-      <HiShoppingCart className="text-white text-3xl hidden md:block" />
+      <HiShoppingCart className="text-3xl hidden md:block" />
     </nav>
   );
 };
