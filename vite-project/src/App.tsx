@@ -1,22 +1,15 @@
 import "./App.css";
-import NavBar from "./Components/NavBar";
-import Landing from "./Components/Landing";
-import BestSelling from "./Components/BestSelling";
-import Years from "./Components/Years";
-import Footer from "./Components/Footer";
-import WhyUs from "./Components/WhyUs";
-import OurClients from "./Components/OurClients";
+import ProductsPage from "./pages/ProductsPage";
+import HomePage from "./pages/HomePage";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 function App() {
   return (
-    <div className="font-Poppins">
-      <NavBar />
-      <Landing></Landing>
-      <WhyUs />
-      <BestSelling />
-      <Years />
-      <OurClients />
-      <Footer />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/products" element={<ProductsPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
