@@ -5,6 +5,7 @@ type NavType = {
 import { HiShoppingCart } from "react-icons/hi";
 import { IoMenuSharp } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const NavBar = (props: NavType) => {
   return (
@@ -13,22 +14,22 @@ const NavBar = (props: NavType) => {
         props.page == "home" ? "absolute text-white" : "static text-black"
       } flex overflow-hidden justify-between md:px-12 px-6  items-center text-white z-30 w-full`}
     >
-      <div className="font-bold md:text-3xl text-xl flex items-center h-24">
+      <div className="font-bold md:text-4xl text-2xl flex items-center h-24">
         Spirits
       </div>
-      <ul className="md:flex hidden font-semibold gap-10">
+      <ul className="md:flex hidden font-semibold text-xl gap-10">
         <li className="flex items-end gap-1 hover:text-gray-300 hover:scale-110 transition duration-200 cursor-pointer">
-          Spirits
-          <FaAngleDown className="text-white" />
+          <Link to="/">Spirits</Link>
+          <FaAngleDown />
         </li>
         <li className="hover:text-gray-300 hover:scale-110 transition duration-200 cursor-pointer">
-          Shop
+          <Link to="/products">Shop</Link>
         </li>
         <li className="hover:text-gray-300 hover:scale-110 transition duration-200 cursor-pointer">
           About us
         </li>
         <li className="hover:text-gray-300 hover:scale-110 transition duration-200 cursor-pointer">
-          Contact
+          <a href="#footer">Contact</a>
         </li>
       </ul>
       <IoMenuSharp className="md:hidden text-3xl" />

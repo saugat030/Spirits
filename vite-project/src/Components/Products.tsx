@@ -6,7 +6,7 @@ type propType = {
 };
 const Products = ({ imgsrc, name }: propType) => {
   return (
-    <section className="h-[82%] w-64 rounded-lg p-2 shadow-md shadow-slate-300 flex flex-col gap-5">
+    <section className="h-[82%] transform duration-200 w-64 rounded-lg p-2 shadow-md shadow-slate-300 bg-gray-100 flex flex-col gap-5 hover:scale-105">
       <figure>
         <img src={imgsrc} alt="JD" className="h-[255px] object-cover" />
       </figure>

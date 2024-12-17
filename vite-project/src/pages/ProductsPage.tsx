@@ -1,22 +1,14 @@
-import CategoriesCard from "../Components/CategoriesCard";
 import NavBar from "../Components/NavBar";
+import ShopByCategs from "../Components/ShopByCategs";
+import MostPopular from "../Components/MostPopular";
+import Footer from "../Components/Footer";
 const ProductsPage = () => {
   return (
     <div className="font-Poppins">
       <NavBar page="products" />
-      <section className="flex flex-col items-center gap-[48px] py-[48px] bg-slate-600  h-[450px]">
-        <h1 className="text-center text-4xl font-semibold w-full">
-          Shop by Categories
-        </h1>
-        <div className="h-[300px] bg-white py-5 w-full flex justify-center gap-[24px]">
-          <CategoriesCard />
-          <CategoriesCard />
-          <CategoriesCard />
-          <CategoriesCard />
-          <CategoriesCard />
-          <CategoriesCard />
-        </div>
-      </section>
+      <ShopByCategs />
+      <MostPopular />
+      <Footer></Footer>
     </div>
   );
 };

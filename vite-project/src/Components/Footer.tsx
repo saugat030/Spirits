@@ -6,7 +6,10 @@ import { RiCustomerService2Fill } from "react-icons/ri";
 import { MdMiscellaneousServices } from "react-icons/md";
 const Footer = () => {
   return (
-    <section className="container mx-auto flex flex-col gap-24 p-2 mt-64">
+    <section
+      id="footer"
+      className="container mx-auto flex flex-col gap-24 p-2 mt-64"
+    >
       <div className="flex justify-between items-center w-full">
         <div className="flex flex-col gap-10 w-[25%]">
           <h2 className="text-3xl font-semibold">Spirits</h2>

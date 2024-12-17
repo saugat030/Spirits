@@ -1,14 +1,19 @@
-const CategoriesCard = () => {
+type CategoriesProp = {
+  imgsrc: string;
+  name: string;
+};
+
+const CategoriesCard = (props: CategoriesProp) => {
   return (
-    <div className="h-[210px] w-[180px] flex flex-col justify-between items-center">
+    <div className="h-[210px] w-[180px] flex flex-col justify-between items-center hover:scale-110 duration-300 transform">
       <figure className="h-[167px] w-[167px]">
         <img
-          src="https://www.oaks.delivery/wp-content/uploads/Jack-Daniels-Honey-Whiskey-1-1600x900-1-1200x900-cropped.webp"
+          src={props.imgsrc}
           alt="vodka"
           className="w-full h-full object-fit rounded-full"
         />
       </figure>
-      <h1 className="text-lg text-center w-full">Vodka</h1>
+      <h1 className="text-xl text-center w-full">{props.name}</h1>
     </div>
   );
 };
