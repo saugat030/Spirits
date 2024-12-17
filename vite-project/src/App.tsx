@@ -5,6 +5,7 @@ import BestSelling from "./Components/BestSelling";
 import Years from "./Components/Years";
 import Footer from "./Components/Footer";
 import WhyUs from "./Components/WhyUs";
+import OurClients from "./Components/OurClients";
 function App() {
   return (
     <div className="font-Poppins">
@@ -13,6 +14,7 @@ function App() {
       <WhyUs />
       <BestSelling />
       <Years />
+      <OurClients />
       <Footer />
     </div>
   );
