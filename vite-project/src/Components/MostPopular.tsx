@@ -24,11 +24,12 @@ const MostPopular = () => {
     <section className="container mx-auto">
       <h1 className="text-4xl font-bold mt-12 px-8">Most Popular</h1>
       <div className="flex flex-wrap gap-[48px] py-12 px-8 items-center">
-        {products.slice(0, 15).map((item: productType) => {
+        {products.slice(0, 40).map((item: productType) => {
           return (
             <Products
               imgsrc={item.image_link}
               name={item.name ? item.name : error}
+              price={item.price}
             />
           );
         })}

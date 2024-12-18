@@ -35,7 +35,7 @@ app.get("/api/products", async (req, res) => {
   if (type) {
     try {
       const result = await db.query(
-        "select id, name , image_link , description , quantity , categories.type_id , type_name from liquors join categories on liquors.type_id = categories.type_id where type_name = ($1) order by id asc",
+        "select id, name , image_link , description , quantity , categories.type_id , type_name , price from liquors join categories on liquors.type_id = categories.type_id where type_name = ($1) order by id asc",
         [type]
       );
       if (result.rows.length > 0) {
@@ -55,7 +55,7 @@ app.get("/api/products", async (req, res) => {
   } else {
     try {
       const result = await db.query(
-        "select id, name , image_link , description , quantity , categories.type_id , type_name from liquors join categories on liquors.type_id = categories.type_id order by id asc"
+        "select id, name , image_link , description , quantity , categories.type_id , type_name , price from liquors join categories on liquors.type_id = categories.type_id order by id asc"
       );
       if (result.rows.length > 0) {
         const data = result.rows;

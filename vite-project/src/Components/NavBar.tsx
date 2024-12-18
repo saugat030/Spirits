@@ -26,7 +26,7 @@ const NavBar = (props: NavType) => {
           <Link to="/products">Shop</Link>
         </li>
         <li className="hover:text-gray-300 hover:scale-110 transition duration-200 cursor-pointer">
-          About us
+          <a href="#About">About</a>
         </li>
         <li className="hover:text-gray-300 hover:scale-110 transition duration-200 cursor-pointer">
           <a href="#footer">Contact</a>

@@ -10,6 +10,7 @@ export type productType = {
   quantity: number;
   type_id: number;
   type_name: string;
+  price: number;
 };
 
 const BestSelling = () => {
@@ -28,7 +29,7 @@ const BestSelling = () => {
       );
       setProducts(response.data);
     } catch (err) {
-      setError("Failed to fetch products"); // Handle errors
+      setError("Failed to fetch products");
       console.error(err);
     }
   };
@@ -40,7 +41,7 @@ const BestSelling = () => {
   return (
     <div className="flex flex-col items-center gap-10 mt-20">
       <h1 className="text-4xl font-bold text-center w-full">Best Selling</h1>
-      <div className="flex">
+      <div className="flex gap-0">
         <button
           onClick={changeValue}
           className="bg-amber-600 rounded-s-2xl px-2 py-1 border border-black text-white"
@@ -49,19 +50,19 @@ const BestSelling = () => {
         </button>
         <button
           onClick={changeValue}
-          className="bg-amber-600  px-2 py-1 border border-black text-white"
+          className="bg-amber-600  px-2 py-1 border border-t-black border-b-black text-white"
         >
           Whiskey
         </button>
         <button
           onClick={changeValue}
-          className="bg-amber-600   px-2 py-1 border border-black text-white"
+          className="bg-amber-600   px-2 py-1 border border-t-black border-b-black text-white"
         >
           Beer
         </button>
         <button
           onClick={changeValue}
-          className="bg-amber-600 px-2 py-1 border border-black text-white"
+          className="bg-amber-600 px-2 py-1 border border-t-black border-b-black text-white"
         >
           Rum
         </button>
@@ -73,11 +74,13 @@ const BestSelling = () => {
         </button>
       </div>
       <div className="flex md:flex-row flex-col gap-20 md:h-full h-auto p-1">
+        {error && <Products imgsrc="" name="Product Not Found" price={0} />}
         {products.slice(0, 4).map((item: productType) => {
           return (
             <Products
               imgsrc={item.image_link}
-              name={item.name ? item.name : error}
+              name={item.name}
+              price={item.price}
             />
           );
         })}
