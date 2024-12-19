@@ -6,7 +6,7 @@ const app = express();
 const port = 3000;
 
 app.use(express.urlencoded({ extended: true }));
-
+app.use(express.json());
 //VVI for runnung projs in different port react ko arkai port ra express ko arkai port huda kam lagne.
 
 app.use(
@@ -71,6 +71,18 @@ app.get("/api/products", async (req, res) => {
       console.error(err);
       res.status(500).json({ error: "Internal server error" });
     }
+  }
+});
+
+app.post("/signup", (req, res) => {
+  console.log("HAHAHAHAH");
+  const username = req.body.username;
+  const password = req.body.password;
+  console.log(req.body);
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ message: "Username and password are required" });
   }
 });
 
