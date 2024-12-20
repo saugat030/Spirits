@@ -74,15 +74,19 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-app.post("/signup", (req, res) => {
-  console.log("HAHAHAHAH");
-  const username = req.body.username;
-  const password = req.body.password;
-  console.log(req.body);
-  if (!username || !password) {
-    return res
-      .status(400)
-      .json({ message: "Username and password are required" });
+app.post("/signup", async (req, res) => {
+  //destructuring the key-value pair username and password that comes from req.body object
+  const { username } = req.body.username;
+  const { password } = req.body.password;
+  //console.log(req.body);
+  try {
+    result = await db.query(
+      "insert into users(username , email) values ($1,$2)",
+      [username, password]
+    );
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
   }
 });
 

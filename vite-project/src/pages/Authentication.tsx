@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 type authProp = {
   pageType: string;
@@ -7,6 +7,15 @@ type authProp = {
 const Authentication = (prop: authProp) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  // const { setUser } = useUser();
+  // useEffect(() => {
+  //   setUser({
+  //     id: 2,
+  //     name: "WOWWO",
+  //     email: "wwwww@gmail.com",
+  //   });
+  // }, []);
 
   const func = async () => {
     try {

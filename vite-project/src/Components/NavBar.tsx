@@ -6,6 +6,7 @@ import { HiShoppingCart } from "react-icons/hi";
 import { IoMenuSharp } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 const NavBar = (props: NavType) => {
   return (
@@ -32,7 +33,9 @@ const NavBar = (props: NavType) => {
           <a href="#footer">Contact</a>
         </li>
       </ul>
+
       <IoMenuSharp className="md:hidden text-3xl" />
+
       <HiShoppingCart className="text-3xl hidden md:block" />
     </nav>
   );
