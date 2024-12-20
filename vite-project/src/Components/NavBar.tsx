@@ -6,7 +6,6 @@ import { HiShoppingCart } from "react-icons/hi";
 import { IoMenuSharp } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
 
 const NavBar = (props: NavType) => {
   return (
