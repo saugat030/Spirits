@@ -25,6 +25,7 @@ app.use(
 //allows to send cookie as the response from the server.
 app.use(cookieParser());
 app.use(express.json());
+
 const db = new pg.Client({
   user: "postgres",
   host: "localhost",
@@ -116,15 +117,16 @@ app.get("/api/products", async (req, res) => {
 
 //example:filter/price?min=200&max=400
 app.get("/api/filter/price", async (req, res) => {
-  let minPrice = req.query.min;
-  let maxPrice = req.query.max;
+  let { min } = req.query;
+  let { max } = req.query;
+
   // console.log(minPrice, maxPrice);
   try {
     const result = await db.query(
-      "select * from liquors join categories on liquors.type_id = categories.type_id where price > ($1) and price < ($2) order by id asc",
-      [minPrice, maxPrice]
+      "select * from liquors join categories on liquors.type_id = categories.type_id where price > ($1) and price < ($2) order by price asc",
+      [min, max]
     );
-    // console.log(result.rows);
+    console.log(result.rows);
     if (result.rows.length > 0) {
       return res.json(result.rows);
     } else {
@@ -175,7 +177,7 @@ app.post("/signup", async (req, res) => {
             "insert into users (name ,email, password) values ($1, $2 , $3) returning id",
             [name, email, hash]
           );
-          console.log("user successfullt registered.");
+          console.log("user successfully registered.");
           //After user registered generate a token for them. And put them in the cookie. the "token" is the cookie name with value as token.
           const token = jwt.sign({ id: insertionQuery.rows[0].id }, jwtSecret, {
             expiresIn: "7d",
@@ -262,7 +264,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// logout
+// logout:
 
 app.post("/logout", async (req, res) => {
   try {
@@ -316,6 +318,8 @@ app.get("/user/data", userAuth, async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 });
+
+app.get("/data/all");
 
 app.listen(port, () => {
   console.log(`API is running at http://localhost:${port}`);

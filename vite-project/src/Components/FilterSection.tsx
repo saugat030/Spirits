@@ -1,6 +1,6 @@
 const FilterSection = () => {
   return (
-    <section className="min-w-64 flex flex-col gap-2">
+    <section className="min-w-64 flex flex-col gap-2 ms-5">
       <h1 className="text-3xl font-medium ml-2">Filter</h1>
       <hr className="bg-black" />
       <div
@@ -12,17 +12,17 @@ const FilterSection = () => {
           <input
             type="number"
             placeholder="Min"
-            className="w-[40%] border border-black rounded-lg p-1 "
+            className="w-[40%] border border-gray-400 rounded-lg p-1 "
           />
           <input
             type="number"
             placeholder="Max"
-            className="w-[40%] border border-black rounded-lg p-1"
+            className="w-[40%] border border-gray-400 rounded-lg p-1"
           />
         </div>
         <button
           type="submit"
-          className="bg-amber-600 text-white border border-black rounded-lg px-4 py-1 self-start"
+          className="bg-amber-600 text-white border border-gray-600 rounded-lg px-4 py-1 self-start"
         >
           Filter
         </button>
