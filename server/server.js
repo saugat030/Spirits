@@ -100,7 +100,7 @@ app.get("/api/products", async (req, res) => {
       if (result.rows.length > 0) {
         const data = result.rows;
 
-        //res.json le automatically js object lai jsonify handuinxa so no need :JSON.stringify(data);
+        //res.json le automatically js object lai jsonify handinxa so no need :JSON.stringify(data);
 
         res.json(data);
       } else {
@@ -111,6 +111,30 @@ app.get("/api/products", async (req, res) => {
       console.error(err);
       res.status(500).json({ error: "Internal server error" });
     }
+  }
+});
+
+//example:filter/price?min=200&max=400
+app.get("/api/filter/price", async (req, res) => {
+  let minPrice = req.query.min;
+  let maxPrice = req.query.max;
+  // console.log(minPrice, maxPrice);
+  try {
+    const result = await db.query(
+      "select * from liquors join categories on liquors.type_id = categories.type_id where price > ($1) and price < ($2) order by id asc",
+      [minPrice, maxPrice]
+    );
+    // console.log(result.rows);
+    if (result.rows.length > 0) {
+      return res.json(result.rows);
+    } else {
+      res.json({
+        success: false,
+        message: "No products with such price filter found",
+      });
+    }
+  } catch (error) {
+    res.json({ success: false, message: error.message });
   }
 });
 
@@ -254,6 +278,7 @@ app.post("/logout", async (req, res) => {
 });
 
 //Check if user loggedIn:
+//also add the userAuth middleware that checks if the user is loggedin.
 app.get("/isAuth", userAuth, async (req, res) => {
   try {
     //this function will only be reached if the userAuth middleware calls it. Thats why we can say code ya samma pugyo vaney pani userlogged in nai hunxa.
