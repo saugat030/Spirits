@@ -6,6 +6,7 @@ import { FaLongArrowAltRight } from "react-icons/fa";
 import { FaBookmark } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
 import { FaShare } from "react-icons/fa";
+import { PiStarFill } from "react-icons/pi";
 
 const ProductFullView = () => {
   //Allows to get parameters from the URL
@@ -14,6 +15,7 @@ const ProductFullView = () => {
   const [price, setPrice] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [imgLink, setImglink] = useState<string>("");
   async function getProducts() {
     const { data } = await axios.get(
       `http://localhost:3000/api/products/${params.id}`
@@ -23,6 +25,7 @@ const ProductFullView = () => {
     setPrice(data[0].price);
     setCategory(data[0].type_name);
     setDescription(data[0].description);
+    setImglink(data[0].image_link);
   }
   useEffect(() => {
     getProducts();
@@ -33,9 +36,9 @@ const ProductFullView = () => {
       <NavBar page="ProductsFullView" />
       <section className="h-screen flex mt-20">
         <div className="flex-1 flex flex-col h-full items-center p-2">
-          <figure className="w-[60%] h-[80%] rounded-xl bg-pink-600">
+          <figure className="w-[60%] h-[80%] rounded-xl">
             <img
-              src="https://www.1800giftportal.com/media/catalog/product/cache/1/image/0dc2d03fe217f8c83829496872af24a0/d/e/dewn0041.jpg"
+              src={imgLink}
               alt=""
               className="h-full w-full rounded-xl object-cover"
             />
@@ -65,7 +68,13 @@ const ProductFullView = () => {
           <hr />
           <div className=" py-8 grid grid-cols-2 w-full place-content-evenly">
             <h1 className="text-6xl font-bold text-yellow-400 ">${price}</h1>
-            <h2 className="text-5xl">RATING</h2>
+            <h2 className="text-3xl text-yellow-300 flex gap-1">
+              <PiStarFill />
+              <PiStarFill />
+              <PiStarFill />
+              <PiStarFill />
+              <PiStarFill className="text-white border-2 border-black" />
+            </h2>
             <h3 className="text-gray-500 text-4xl line-through">
               ${parseInt(price) - 2}
             </h3>
@@ -96,7 +105,7 @@ const ProductFullView = () => {
           <hr />
           <div className="py-8 flex gap-4">
             <button>5</button>
-            <button className="bg-yellow-500 px-6 py-2 rounded-2xl text-white font-semibold  text-2xl">
+            <button className="bg-yellow-500 px-8 py-4 rounded-2xl text-white font-semibold  text-2xl">
               Add to Cart
             </button>
           </div>

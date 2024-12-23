@@ -279,7 +279,7 @@ app.post("/logout", async (req, res) => {
 });
 
 //Get all Liquor:
-
+///product?type = vodka
 app.get("/api/products", async (req, res) => {
   const type = req.query.type;
   console.log(type);
