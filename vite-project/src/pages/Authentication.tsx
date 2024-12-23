@@ -7,15 +7,7 @@ type authProp = {
 const Authentication = (prop: authProp) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-
-  // const { setUser } = useUser();
-  // useEffect(() => {
-  //   setUser({
-  //     id: 2,
-  //     name: "WOWWO",
-  //     email: "wwwww@gmail.com",
-  //   });
-  // }, []);
+  const [email, setEmail] = useState<string>("");
 
   const func = async () => {
     try {
@@ -30,13 +22,6 @@ const Authentication = (prop: authProp) => {
     }
   };
 
-  function handleUser(e: React.ChangeEvent<HTMLInputElement>) {
-    setUsername(e.target.value);
-  }
-  function handlePass(e: React.ChangeEvent<HTMLInputElement>) {
-    setPassword(e.target.value);
-  }
-
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     func();
@@ -47,16 +32,34 @@ const Authentication = (prop: authProp) => {
       <div>
         <h1 className="text-5xl font-semibold text-red-800">Login</h1>
         <form method="post">
-          <label htmlFor="username">
-            <input type="text" value={username} id="name" name="username" />
+          <label htmlFor="email">
+            <input
+              type="text"
+              value={email}
+              id="name"
+              name="email"
+              placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-gray-200 rounded-xl p-2 text-black"
+            />
           </label>
           <label htmlFor="password">
-            <input type="text" value={password} id="name" name="password" />
+            <input
+              type="text"
+              value={password}
+              className="border"
+              onChange={(e) => setPassword(e.target.value)}
+              id="name"
+              name="password"
+            />
           </label>
           <button type="submit" className="border">
             Log In
           </button>
         </form>
+        <div>
+          {username} {email} {password}
+        </div>
       </div>
     );
   } else {
@@ -69,25 +72,38 @@ const Authentication = (prop: authProp) => {
               type="text"
               className="bg-red-500"
               id="name"
-              onChange={handleUser}
+              onChange={(e) => setUsername(e.target.value)}
               value={username}
               name="username"
+            />
+          </label>
+          <label htmlFor="email">
+            <input
+              type="text"
+              className="bg-blue-200"
+              id="name"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              name="email"
             />
           </label>
           <label htmlFor="password">
             <input
               type="text"
-              className="bg-blue-200"
+              className="bg-blue-200 border"
               id="name"
-              onChange={handlePass}
+              onChange={(e) => setPassword(e.target.value)}
               value={password}
               name="password"
             />
           </label>
-          <button type="submit" className="border">
+          <button type="submit" className="border p-2">
             Sign Up
           </button>
         </form>
+        <div>
+          {username} {email} {password}
+        </div>
       </div>
     );
   }

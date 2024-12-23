@@ -68,6 +68,216 @@ app.get("/", (req, res) => {
   res.send("Server Running");
 });
 
+//Get particular Product:
+app.get("/api/products/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  console.log(id);
+  if (id) {
+    try {
+      const result = await db.query(
+        "select id, name , image_link , description , quantity , categories.type_id , type_name , price from liquors join categories on liquors.type_id = categories.type_id where id = ($1) order by id asc",
+        [id]
+      );
+      if (result.rows.length > 0) {
+        const data = result.rows;
+
+        //res.json le automatically js object lai jsonify handuinxa so no need :JSON.stringify(data);
+
+        res.json(data);
+      } else {
+        console.log("No data in the table.");
+        res.status(404).json({ message: "No products found" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  } else {
+    try {
+      const result = await db.query(
+        "select id, name , image_link , description , quantity , categories.type_id , type_name , price from liquors join categories on liquors.type_id = categories.type_id order by id asc"
+      );
+      if (result.rows.length > 0) {
+        const data = result.rows;
+
+        //res.json le automatically js object lai jsonify handinxa so no need :JSON.stringify(data);
+
+        res.json(data);
+      } else {
+        console.log("No data in the table.");
+        res.status(404).json({ message: "No products found" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+});
+
+//example:filter/price?min=200&max=400
+app.get("/api/filter/price", async (req, res) => {
+  let { min } = req.query;
+  let { max } = req.query;
+
+  // console.log(minPrice, maxPrice);
+  try {
+    const result = await db.query(
+      "select * from liquors join categories on liquors.type_id = categories.type_id where price > ($1) and price < ($2) order by price asc",
+      [min, max]
+    );
+    console.log(result.rows);
+    if (result.rows.length > 0) {
+      return res.json(result.rows);
+    } else {
+      res.json({
+        success: false,
+        message: "No products with such price filter found",
+      });
+    }
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+});
+
+//Registration:
+
+app.post("/signup", async (req, res) => {
+  //Form bata submited xa vaney it works normally tara if Postman bata xa ani you have selected the body-> raw-> JSON then you need to use a middleware for it. express.json
+  const { name, email, password } = req.body;
+  console.log(name, email, password);
+  //check if name, email, and password exists :
+  if (!name || !email || !password) {
+    return res.json({
+      success: false,
+      message: "Missing some registration details",
+    });
+  }
+
+  //This try catch catches the database errors:
+  try {
+    //Check if the user already exists:
+    const checkExisting = await db.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
+    if (checkExisting.rows.length > 0) {
+      console.log("User already exixts");
+      res.json({ success: false, message: "User already exists..." });
+    } else {
+      //User is new and needs to be added:
+      //hashing the password and saving it in the database:
+      bcrypt.hash(password, saltRounds, async (err, hash) => {
+        if (err) {
+          //Error during hasing ko lagi:
+          console.error("Error hashing password:", err);
+        } else {
+          console.log("Hashed Password:", hash);
+          let insertionQuery = await db.query(
+            "insert into users (name ,email, password) values ($1, $2 , $3) returning id",
+            [name, email, hash]
+          );
+          console.log("user successfully registered.");
+          //After user registered generate a token for them. And put them in the cookie. the "token" is the cookie name with value as token.
+          const token = jwt.sign({ id: insertionQuery.rows[0].id }, jwtSecret, {
+            expiresIn: "7d",
+          });
+          res.cookie("token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 1000,
+          });
+          return res.json({
+            success: true,
+            message: "User successfully registered",
+          });
+        }
+      });
+    }
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+});
+
+//Login
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  //check if the email or pass exists.
+  console.log(email, password);
+  if (!email || !password) {
+    return res.json({
+      success: false,
+      message: "Missing details wither email or password",
+    });
+  }
+  //Check for db errors:
+  try {
+    //check is the user exists in the databse:
+    const result = await db.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
+    if (result.rows.length > 0) {
+      //this if else block checks if user exists in the databse.
+      //if user exists then :
+      const user = result.rows[0];
+      const storedHashedPassword = user.password;
+      bcrypt.compare(password, storedHashedPassword, (err, result) => {
+        if (err) {
+          //this if block checks if comparing was successfull:
+          console.error("Error comparing passwords:", err);
+        } else {
+          //If no error in comparing password then the result is obtained which is either 0 or 1. 0 if false 1 if true.
+          if (result) {
+            //If result is true and password and email matches , generate a token.
+            const token = jwt.sign({ id: user.id }, jwtSecret, {
+              expiresIn: "7d",
+            });
+            //send the token in the cookie
+            res.cookie("token", token, {
+              httpOnly: true,
+              secure: false,
+              sameSite: "lax",
+              maxAge: 7 * 24 * 60 * 1000,
+            });
+            return res.json({
+              success: true,
+              message: "User successfully logged in",
+            });
+          } else {
+            res.json({ success: false, message: "Invalid Password." });
+          }
+        }
+      });
+    } else {
+      //If email not found in the database
+      console.log("User not found. Try signing in..");
+      return res.json({
+        success: false,
+        message:
+          "Invalid email. Check your email or password or try signing in.",
+      });
+    }
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+});
+
+// logout:
+
+app.post("/logout", async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+    return res.json({ success: true, message: "Logged Out." });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+});
+
 //Get all Liquor:
 
 app.get("/api/products", async (req, res) => {
@@ -318,8 +528,6 @@ app.get("/user/data", userAuth, async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 });
-
-app.get("/data/all");
 
 app.listen(port, () => {
   console.log(`API is running at http://localhost:${port}`);
