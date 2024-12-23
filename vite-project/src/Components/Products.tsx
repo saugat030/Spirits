@@ -1,15 +1,24 @@
 import { PiStarFill } from "react-icons/pi";
 import { FaCirclePlus } from "react-icons/fa6";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 type propType = {
   imgsrc: string;
   name: string;
   price: number;
+  id: number;
 };
-const Products = ({ imgsrc, name, price }: propType) => {
+const Products = ({ imgsrc, name, price, id }: propType) => {
+  const navigate = useNavigate();
+  function handleClick() {
+    navigate(`/products/${id}`);
+  }
   const [imageLoaded, setImageLoaded] = useState(false);
   return (
-    <section className="h-[430px] transform duration-200 w-64 rounded-lg p-2 shadow-md shadow-slate-300 bg-gray-100 flex flex-col gap-5 hover:scale-105">
+    <section
+      onClick={handleClick}
+      className="h-[430px] transform duration-200 w-64 rounded-lg p-2 shadow-md shadow-slate-300 bg-gray-100 flex flex-col gap-5 hover:scale-105 cursor-pointer"
+    >
       <figure className="text-center relative flex justify-center items-center">
         {!imageLoaded && (
           <div role="status" className="absolute">

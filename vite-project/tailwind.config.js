@@ -6,6 +6,10 @@ export default {
       fontFamily: {
         Poppins: ["Poppins", "sans-serif"],
       },
+      backgroundImage: {
+        landingBg: "url('./static/landingBg.jpg')",
+        reviewBg: "url('./static/landingBg.jpg')",
+      },
     },
   },
   plugins: [],

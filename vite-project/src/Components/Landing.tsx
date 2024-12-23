@@ -3,7 +3,7 @@ import { IoSearch } from "react-icons/io5";
 const Landing = () => {
   return (
     <>
-      <div className="overflow-hidden bg-[url('src/static/landingBg.jpg')] h-screen bg-no-repeat bg-center bg-cover text-white relative z-10 brightness-50"></div>
+      <div className="overflow-hidden bg-landingBg h-screen bg-no-repeat bg-center bg-cover text-white relative z-10 brightness-50"></div>
       <div className="absolute h-full w-full flex justify-center items-center top-0 z-20">
         <div className="text-white flex flex-col gap-4 mb-52">
           <h1 className="line-clamp-2 w-full md:w-1/2 text-center mx-auto font-bold md:text-5xl text-lg md:py-2 p-0">

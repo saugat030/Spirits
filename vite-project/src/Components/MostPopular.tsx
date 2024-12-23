@@ -34,6 +34,7 @@ const MostPopular = () => {
                   imgsrc={item.image_link}
                   name={item.name ? item.name : error}
                   price={item.price}
+                  id={item.id}
                 />
               );
             })}

@@ -74,13 +74,16 @@ const BestSelling = () => {
         </button>
       </div>
       <div className="flex md:flex-row flex-col gap-20 md:h-full h-auto p-1">
-        {error && <Products imgsrc="" name="Product Not Found" price={0} />}
+        {error && (
+          <Products imgsrc="" name="Product Not Found" price={0} id={NaN} />
+        )}
         {products.slice(0, 4).map((item: productType) => {
           return (
             <Products
               imgsrc={item.image_link}
               name={item.name}
               price={item.price}
+              id={item.id}
             />
           );
         })}
