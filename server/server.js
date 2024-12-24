@@ -325,31 +325,6 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-//example:filter/price?min=200&max=400
-app.get("/api/filter/price", async (req, res) => {
-  let { min } = req.query;
-  let { max } = req.query;
-
-  // console.log(minPrice, maxPrice);
-  try {
-    const result = await db.query(
-      "select * from liquors join categories on liquors.type_id = categories.type_id where price > ($1) and price < ($2) order by price asc",
-      [min, max]
-    );
-    console.log(result.rows);
-    if (result.rows.length > 0) {
-      return res.json(result.rows);
-    } else {
-      res.json({
-        success: false,
-        message: "No products with such price filter found",
-      });
-    }
-  } catch (error) {
-    res.json({ success: false, message: error.message });
-  }
-});
-
 //Registration:
 
 app.post("/signup", async (req, res) => {
