@@ -3,11 +3,16 @@ type NavType = {
 };
 
 import { HiShoppingCart } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
 import { IoMenuSharp } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Logo from "../static/Logo.png";
 const NavBar = (props: NavType) => {
+  const navigate = useNavigate();
+  function handleClick() {
+    navigate("/login");
+  }
   return (
     <nav
       className={`${
@@ -34,9 +39,16 @@ const NavBar = (props: NavType) => {
         </li>
       </ul>
 
-      <IoMenuSharp className="md:hidden text-3xl" />
-
-      <HiShoppingCart className="text-3xl hidden md:block" />
+      <div className="flex items-center gap-8">
+        <button
+          onClick={handleClick}
+          className="text-xl text-white font-semibold hover:underline hover:scale-105 duration-200"
+        >
+          Login
+        </button>
+        <IoMenuSharp className="md:hidden text-3xl" />
+        <HiShoppingCart className="text-4xl hidden md:block" />
+      </div>
     </nav>
   );
 };
