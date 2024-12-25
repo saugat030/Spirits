@@ -28,7 +28,7 @@ const Footer = (props: FooterProp) => {
           )}
         </div>
         <div id="Services" className="flex flex-col gap-4">
-          <h3 className="text-[#F6973F] text-medium text-lg">
+          <h3 className="text-[#F6973F] text-medium text-sm">
             Services <MdMiscellaneousServices className="inline ms-1" />
           </h3>
           {props.size != "sm" && (
@@ -40,7 +40,7 @@ const Footer = (props: FooterProp) => {
           )}
         </div>
         <div id="Furniture" className="flex flex-col gap-4">
-          <h3 className="text-[#F6973F] text-medium text-lg">
+          <h3 className="text-[#F6973F] text-medium text-sm">
             Spirits <MdLiquor className="inline ms-1"></MdLiquor>
           </h3>
           {props.size != "sm" && (
@@ -52,7 +52,7 @@ const Footer = (props: FooterProp) => {
           )}
         </div>
         <div id="Followus" className="flex flex-col gap-4">
-          <h3 className="text-[#F6973F] text-medium text-lg">
+          <h3 className="text-[#F6973F] text-medium text-sm">
             Follow us <RiCustomerService2Fill className="inline ms-1" />
           </h3>
           {props.size != "sm" && (
@@ -74,10 +74,12 @@ const Footer = (props: FooterProp) => {
       </div>
       <div
         id="Copyright_section"
-        className="flex justify-between text-gray-400"
+        className={`flex justify-between  ${
+          props.size != "sm" ? "text-md text-gray-400" : "text-sm text-gray-700"
+        }`}
       >
         <h6>Copyright &#169; 2021</h6>
-        <div className="flex gap-5">
+        <div className="flex gap-5 ">
           <h6 className={`${props.size != "sm" ? "me-16" : ""}`}>
             Terms & Conditions
           </h6>
