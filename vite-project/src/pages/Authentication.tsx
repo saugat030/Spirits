@@ -25,14 +25,14 @@ const Authentication = (props: authProp) => {
     axios.defaults.withCredentials = true;
     if (props.pageType == "login") {
       try {
-        console.log(username);
-        const response = await axios.post(`http://localhost:3000/signup`, {
+        const response = await axios.post("http://localhost:3000/login", {
           email: email,
           password: password,
         });
         if (response.data.success) {
           setIsLoggedin(true);
           getUserData();
+          navigate("/");
         }
       } catch (error: any) {
         console.log(error.message);
@@ -55,7 +55,11 @@ const Authentication = (props: authProp) => {
               Jhyape
             </nav>
             <h1 className="text-3xl font-semibold text-red-800">Login</h1>
-            <form method="post" className="flex flex-col w-[80%] gap-6 ">
+            <form
+              method="post"
+              onSubmit={handleSubmit}
+              className="flex flex-col w-[80%] gap-6 "
+            >
               <label htmlFor="email">
                 <input
                   type="text"

@@ -16,7 +16,7 @@ app.use(express.json());
 //VVI for runnung projs in different port react ko arkai port ra express ko arkai port huda kam lagne.
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "http://localhost:5174",
     methods: "GET,POST,PUT,DELETE",
     allowedHeaders: "Content-Type,Authorization",
     credentials: true,
@@ -388,7 +388,9 @@ app.post("/signup", async (req, res) => {
 //Login
 
 app.post("/login", async (req, res) => {
+  console.log("Login Route Hit");
   const { email, password } = req.body;
+  console.log(email);
   //check if the email or pass exists.
   console.log(email, password);
   if (!email || !password) {

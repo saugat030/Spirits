@@ -35,7 +35,7 @@ const ProductsPage = () => {
       <NavBar page="products" />
       <ShopByCategs category={category} setCateg={setCategory} />
       <MostPopular productsValue={products} error={error} />
-      <Footer />
+      <Footer size="lg" />
     </div>
   );
 };
