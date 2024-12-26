@@ -26,7 +26,7 @@ const MostPopular = (props: MostPopularProps) => {
     <section className="mt-16">
       <div className="flex gap-10">
         <FilterSection />
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-12 flex-1">
           <h1 className="text-4xl font-bold px-5">Most Popular</h1>
           <div className="flex flex-wrap gap-[48px] items-center px-5">
             {props.productsValue.slice(0, 15).map((item: productType) => {

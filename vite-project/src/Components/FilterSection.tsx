@@ -1,6 +1,6 @@
 const FilterSection = () => {
   return (
-    <section className="w-[650px] flex flex-col gap-2 ms-5">
+    <section className="w-[20%] flex flex-col gap-2 ms-5">
       <h1 className="text-3xl font-medium ml-2">Filter</h1>
       <hr className="bg-black" />
       <div
