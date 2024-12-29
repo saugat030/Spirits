@@ -4,24 +4,6 @@ import FilterSection from "./FilterSection";
 import { MostPopularProps } from "../pages/ProductsPage";
 
 const MostPopular = (props: MostPopularProps) => {
-  // const [products, setProducts] = useState<productType[]>([]);
-  // const [error, setError] = useState<string>("");
-  // const [category, setCategory] = useState<string>("");
-  // const fetchProducts = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `http://localhost:3000/api/products?type=${category}`
-  //     );
-  //     setProducts(response.data);
-  //   } catch (err) {
-  //     setError("Failed to fetch products"); // Handle errors
-  //     console.error(err);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, []);
   return (
     <section className="mt-16">
       <div className="flex gap-10">

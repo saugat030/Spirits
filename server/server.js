@@ -279,10 +279,15 @@ app.post("/logout", async (req, res) => {
 });
 
 //Get all Liquor:
-///product?type = vodka
+///products?type = vodka
 app.get("/api/products", async (req, res) => {
-  const type = req.query.type;
+  console.log(req.url);
+  let type = req.query.type;
+  let name = req.query.name;
+  type = type === "null" || type === "" ? null : type;
+  name = name === "null" || name === "" ? null : name;
   console.log(type);
+  console.log(name);
   if (type) {
     try {
       const result = await db.query(
@@ -294,10 +299,29 @@ app.get("/api/products", async (req, res) => {
 
         //res.json le automatically js object lai jsonify handuinxa so no need :JSON.stringify(data);
 
-        res.json(data);
+        return res.json(data);
       } else {
-        console.log("No data in the table.");
-        res.status(404).json({ message: "No products found" });
+        console.log("No data in the table with that type.");
+        res.status(404).json({ message: "No products found with that type" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  } else if (name) {
+    const searchKey = `%${name}%`;
+    try {
+      const result = await db.query(
+        "select id, name , image_link , description , quantity , categories.type_id , type_name , price from liquors join categories on liquors.type_id = categories.type_id where name like ($1) order by id asc",
+        [searchKey]
+      );
+      if (result.rows.length > 0) {
+        const data = result.rows;
+
+        return res.json(data);
+      } else {
+        console.log("No products found with that name");
+        res.status(404).json({ message: "No products found with that name" });
       }
     } catch (err) {
       console.error(err);

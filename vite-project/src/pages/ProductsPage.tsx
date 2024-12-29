@@ -5,19 +5,22 @@ import Footer from "../Components/Footer";
 import { useEffect, useState } from "react";
 import { productType } from "../Components/BestSelling";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
+
 export type MostPopularProps = {
   productsValue: productType[];
   error: string;
 };
 const ProductsPage = () => {
+  const [searchParams] = useSearchParams();
+  const alcName = searchParams.get("name");
   const [products, setProducts] = useState<productType[]>([]);
   const [error, setError] = useState<string>("");
   const [category, setCategory] = useState<string>("");
-  console.log(category);
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/products?type=${category}`
+        `http://localhost:3000/api/products?type=${category}&name=${alcName}`
       );
       setProducts(response.data);
     } catch (err) {
@@ -28,7 +31,7 @@ const ProductsPage = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [category]);
+  }, [category, alcName]);
 
   return (
     <div className="font-Poppins">

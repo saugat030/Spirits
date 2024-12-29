@@ -1,6 +1,14 @@
 // import img from "../static/landingBg.jpg";
+import { useState } from "react";
 import { IoSearch } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+
 const Landing = () => {
+  const [searchKey, setSearchkey] = useState<string>("");
+  const navigate = useNavigate();
+  function handleClick() {
+    navigate(`/products?name=${searchKey}`);
+  }
   return (
     <>
       <div className="overflow-hidden bg-landingBg h-screen bg-no-repeat bg-center bg-cover text-white relative z-10 brightness-50"></div>
@@ -21,9 +29,16 @@ const Landing = () => {
               <input
                 type="text"
                 placeholder="Search Spirits"
+                value={searchKey}
+                onChange={(e) => {
+                  setSearchkey(e.target.value);
+                }}
                 className="flex-1 bg-transparent text-white placeholder-gray-300 outline-none"
               />
-              <button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full md:p-3 p-2 md:ml-2">
+              <button
+                className="bg-orange-500 hover:bg-orange-600 text-white rounded-full md:p-3 p-2 md:ml-2"
+                onClick={handleClick}
+              >
                 <IoSearch />
               </button>
             </div>
