@@ -4,7 +4,7 @@ const OurClients = () => {
   return (
     <section>
       <div className="relative h-[900px] mt-56">
-        <div className="absolute inset-0 bg-[url('src/static/Ourclients.jpg')] bg-center bg-cover bg-no-repeat bg-fixed brightness-50 z-0"></div>
+        <div className="absolute inset-0 bg-[url('src/static/Ourclients.jpg')] bg-center bg-cover bg-no-repeat bg-fixed brightness-[0.35] z-0"></div>
         <div className="relative z-10 flex flex-col justify-between py-20 items-center gap-8 h-full">
           <div id="headings">
             <h2 className="text-white italic text-xl text-center mb-2">
@@ -19,21 +19,21 @@ const OurClients = () => {
               name="Saurav Bista"
               imgid={0}
               review="The alcohol tastes like Saugat's cum. So nostalgic , reminds me of when I used to grab his cock and go deep down inside my throat and he would jizz directly in my stomach throught the food pipe."
-              role="Marketing Manager"
+              role="Man Whore"
             />
             <Clients
-              name="Samarpan Bhandari"
+              name="Chigga (奇加)"
               imgid={1}
-              review="I recently picked up a bottle of Jack Daniel's, and I couldn't be more pleased with my choice. The smoothness of this whiskey is immediately noticeable, offering a perfect balance of sweet vanilla and rich oak flavors."
-              role="Marketing Manager"
+              review={
+                "我真的很喜欢店主和他的黑色大鸡巴。让我如此饥渴。而且我是同性恋所以喜欢喝酒。葡萄酒是同性恋者最好的饮料. 我喜欢喝酒然后吃狗肉。世界上最好的组合。喝完酒后，我开车去学校附近兜风，然后撞上了一个小孩."
+              }
+              role="Professional Chigga"
             />
             <Clients
-              name="Yubraj Khatiwada"
+              name="Madu Vaxo"
               imgid={2}
-              review="The product quality is consistently outstanding, exceeding my
-              expectations every time.Efficiency and punctuality are hallmarks of
-              their service."
-              role="Marketing Manager"
+              review="I really love the alcohol specially the most expensive one since my dad pays for it all. I am so fat and alcohol makes me feell slimmer everyday. I even brush my teeth with a shot of vodka in the morning"
+              role="Bau ko sampati"
             />
           </div>
           <FaArrowAltCircleRight className="text-red-500 text-6xl font-bold hover:scale-110" />
