@@ -12,8 +12,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/:id" element={<ProductFullView />} />
-        <Route path="/login" element={<Authentication pageType="login" />} />
-        <Route path="/signup" element={<Authentication pageType="signup" />} />
+        <Route path="/login" element={<Authentication />} />
       </Routes>
     </BrowserRouter>
   );
