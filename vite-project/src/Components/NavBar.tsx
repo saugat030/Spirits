@@ -84,7 +84,15 @@ const NavBar = (props: NavType) => {
           </button>
         )}
         <IoMenuSharp className="md:hidden text-3xl" />
-        <HiShoppingCart className="text-4xl hidden md:block" />
+        <button
+          className="hover:bg-white  gap-2 hover:text-black rounded-full p-2 transition-all aspect-square text-4xl hidden md:flex items-center"
+          onClick={() => {
+            navigate("/cart");
+          }}
+        >
+          <HiShoppingCart />
+          <div>{1}</div>
+        </button>
       </div>
     </nav>
   );
