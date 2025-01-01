@@ -8,9 +8,11 @@ import { FaHeart } from "react-icons/fa";
 import { FaShare } from "react-icons/fa";
 import { PiStarFill } from "react-icons/pi";
 import { GiWineBottle } from "react-icons/gi";
+import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 
 const ProductFullView = () => {
   //Allows to get parameters from the URL
+  let quantity = 0;
   const params = useParams();
   const [productName, setProductName] = useState<string>("");
   const [price, setPrice] = useState<string>("");
@@ -33,9 +35,9 @@ const ProductFullView = () => {
   });
 
   return (
-    <div className="font-Poppins">
+    <div className="font-Poppins h-screen">
       <NavBar page="ProductsFullView" />
-      <section className="h-screen flex mt-20">
+      <section className="h-full flex mt-20">
         <div className="flex-1 flex flex-col h-full items-center p-2">
           <figure className="w-[60%] h-[80%] rounded-xl">
             <img
@@ -58,10 +60,10 @@ const ProductFullView = () => {
           <div className="py-6">
             <div className="flex justify-between py-2">
               <h1 className="text-5xl font-bold">{productName}</h1>
-              <div className="flex gap-4 text-3xl font-semibold">
-                <FaBookmark />
-                <FaHeart />
-                <FaShare />
+              <div className="flex gap-4 text-2xl p-1">
+                <FaBookmark className="text-green-600" />
+                <FaHeart className="text-red-500" />
+                <FaShare className="text-blue-300" />
               </div>
             </div>
             <p className="text-xl">{description}</p>
@@ -104,11 +106,26 @@ const ProductFullView = () => {
             </div>
           </div>
           <hr />
-          <div className="py-8 flex gap-4">
-            <button></button>
-            <button className="bg-yellow-500 px-8 py-4 rounded-2xl text-white font-semibold  text-2xl">
+          <div className="py-8 flex gap-4 items-center">
+            <button className="bg-green-600 border border-green-800 transform hover:-translate-y-1 hover:shadow-lg shadow-green-700 px-8 py-4 rounded-2xl text-white font-semibold  text-2xl">
+              Buy Now
+            </button>
+            <button className="bg-yellow-500 border border-yellow-700 px-8 py-4 transform hover:-translate-y-1 hover:shadow-lg shadow-yellow-700 rounded-2xl text-white font-semibold  text-2xl">
               Add to Cart
             </button>
+            {quantity > 0 && (
+              <div className="flex items-center gap-3">
+                <button className="hover:text-white hover:bg-black rounded-full">
+                  <CiCirclePlus className="text-4xl" strokeWidth={1} />
+                </button>
+                <span className="text-2xl font-semibold mx-2">
+                  {quantity != 0 && quantity}
+                </span>
+                <button className="hover:text-white hover:bg-black rounded-full">
+                  <CiCircleMinus className="text-4xl" strokeWidth={1} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>
