@@ -9,11 +9,14 @@ import { FaShare } from "react-icons/fa";
 import { PiStarFill } from "react-icons/pi";
 import { GiWineBottle } from "react-icons/gi";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import { useShoppingCart } from "../Context/ShoppingCartContext";
 
 const ProductFullView = () => {
   //Allows to get parameters from the URL
-  let quantity = 0;
+  const { getItemQuantity } = useShoppingCart();
   const params = useParams();
+  //check if params.id has a value if no parameters are recieved then it throws an error since by default params.id will be undefined.
+  const quantity = params.id ? getItemQuantity(parseInt(params.id)) : 0;
   const [productName, setProductName] = useState<string>("");
   const [price, setPrice] = useState<string>("");
   const [category, setCategory] = useState<string>("");
