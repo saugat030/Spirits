@@ -1,4 +1,6 @@
+//Allows to get parameters from the URL:
 import { useParams } from "react-router-dom";
+
 import NavBar from "../Components/NavBar";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -12,7 +14,6 @@ import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { useShoppingCart } from "../Context/ShoppingCartContext";
 
 const ProductFullView = () => {
-  //Allows to get parameters from the URL
   const { getItemQuantity } = useShoppingCart();
   const params = useParams();
   //check if params.id has a value if no parameters are recieved then it throws an error since by default params.id will be undefined.
