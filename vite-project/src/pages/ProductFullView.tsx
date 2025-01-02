@@ -14,8 +14,14 @@ import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { useShoppingCart } from "../Context/ShoppingCartContext";
 
 const ProductFullView = () => {
-  const { getItemQuantity } = useShoppingCart();
   const params = useParams();
+  const {
+    getItemQuantity,
+    increaseCartQuantity,
+    decreaseCartQuantity,
+    removeFromCart,
+  } = useShoppingCart();
+
   //check if params.id has a value if no parameters are recieved then it throws an error since by default params.id will be undefined.
   const quantity = params.id ? getItemQuantity(parseInt(params.id)) : 0;
   const [productName, setProductName] = useState<string>("");
@@ -41,9 +47,12 @@ const ProductFullView = () => {
   return (
     <div className="font-Poppins h-screen">
       <NavBar page="ProductsFullView" />
-      <section className="h-full flex mt-20">
-        <div className="flex-1 flex flex-col h-full items-center p-2">
-          <figure className="w-[60%] h-[80%] rounded-xl">
+      <section className="flex h-auto mt-20">
+        <div
+          id="LEFT_SIDE"
+          className="flex-1 flex flex-col h-full justify-center items-center p-2"
+        >
+          <figure className="h-[600px] rounded-xl">
             <img
               src={imgLink}
               alt=""
@@ -110,22 +119,37 @@ const ProductFullView = () => {
             </div>
           </div>
           <hr />
-          <div className="py-8 flex gap-4 items-center">
+          <div className="py-8 flex gap-8 items-center">
             <button className="bg-green-600 border border-green-800 transform hover:-translate-y-1 hover:shadow-lg shadow-green-700 px-8 py-4 rounded-2xl text-white font-semibold  text-2xl">
               Buy Now
             </button>
-            <button className="bg-yellow-500 border border-yellow-700 px-8 py-4 transform hover:-translate-y-1 hover:shadow-lg shadow-yellow-700 rounded-2xl text-white font-semibold  text-2xl">
+            <button
+              onClick={() => {
+                increaseCartQuantity(parseInt(params.id as string));
+              }}
+              className="bg-yellow-500 border border-yellow-700 px-8 py-4 transform hover:-translate-y-1 hover:shadow-lg shadow-yellow-700 rounded-2xl text-white font-semibold  text-2xl"
+            >
               Add to Cart
             </button>
             {quantity > 0 && (
               <div className="flex items-center gap-3">
-                <button className="hover:text-white hover:bg-black rounded-full">
+                <button
+                  onClick={() => {
+                    increaseCartQuantity(parseInt(params.id as string));
+                  }}
+                  className="hover:text-white hover:bg-green-900 rounded-full"
+                >
                   <CiCirclePlus className="text-4xl" strokeWidth={1} />
                 </button>
                 <span className="text-2xl font-semibold mx-2">
                   {quantity != 0 && quantity}
                 </span>
-                <button className="hover:text-white hover:bg-black rounded-full">
+                <button
+                  onClick={() => {
+                    decreaseCartQuantity(parseInt(params.id as string));
+                  }}
+                  className="hover:text-white hover:bg-red-800 rounded-full"
+                >
                   <CiCircleMinus className="text-4xl" strokeWidth={1} />
                 </button>
               </div>

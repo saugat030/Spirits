@@ -24,6 +24,8 @@ export function useShoppingCart() {
 }
 export function ShoppingCartProvider({ children }: ShoppingCartProviderProp) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  //Shopping Cart vitra ko cart ko quantity.
   function getItemQuantity(id: number) {
     //same as saying if the item with the said id is found , then get the item.quantity else return 0.
     return cartItems.find((item) => item.id === id)?.quantity || 0;
