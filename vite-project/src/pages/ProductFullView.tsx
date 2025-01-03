@@ -83,7 +83,9 @@ const ProductFullView = () => {
           </div>
           <hr />
           <div className=" py-8 grid grid-cols-2 w-full place-content-evenly">
-            <h1 className="text-5xl font-bold text-yellow-400 ">${price}</h1>
+            <h1 className="text-5xl font-bold text-yellow-400 ">
+              ${parseInt(price) - 2}
+            </h1>
             <h2 className="text-2xl text-yellow-400 flex gap-1">
               <PiStarFill />
               <PiStarFill />
@@ -91,9 +93,7 @@ const ProductFullView = () => {
               <PiStarFill />
               <PiStarFill className="text-gray-300" />
             </h2>
-            <h3 className="text-gray-500 text-4xl line-through">
-              ${parseInt(price) - 2}
-            </h3>
+            <h3 className="text-gray-500 text-4xl line-through">${price}</h3>
             <h2 className="text-green-600 text-lg text-justify">
               93% of buyers have recommended this.
             </h2>
