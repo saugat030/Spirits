@@ -10,6 +10,8 @@ type CartItem = {
 };
 
 type ShoppingCartContext = {
+  cartQuantity: number;
+  cartItems: CartItem[];
   getItemQuantity: (id: number) => number;
   increaseCartQuantity: (id: number) => void;
   //Adding an item to cart is the same increasing it by one so don't need it.
@@ -65,6 +67,10 @@ export function ShoppingCartProvider({ children }: ShoppingCartProviderProp) {
       return currItems.filter((item) => item.id !== id);
     });
   }
+  const cartQuantity = cartItems.reduce(
+    (quantity, item) => item.quantity + quantity,
+    0
+  );
   return (
     <ShoppingCartContext.Provider
       value={{
@@ -72,6 +78,8 @@ export function ShoppingCartProvider({ children }: ShoppingCartProviderProp) {
         increaseCartQuantity,
         decreaseCartQuantity,
         removeFromCart,
+        cartItems,
+        cartQuantity,
       }}
     >
       {children}

@@ -7,6 +7,7 @@ import Logo from "../static/Logo.png";
 import { useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import axios from "axios";
+import { useShoppingCart } from "../Context/ShoppingCartContext";
 type NavType = {
   page: string;
 };
@@ -16,7 +17,7 @@ const NavBar = (props: NavType) => {
   if (!authContext) {
     throw new Error("AuthContext must be used within AuthContextProvider");
   }
-
+  const { cartQuantity } = useShoppingCart();
   const { userData, setUserData, setIsLoggedin } = authContext;
 
   const navigate = useNavigate();
@@ -85,13 +86,17 @@ const NavBar = (props: NavType) => {
         )}
         <IoMenuSharp className="md:hidden text-3xl" />
         <button
-          className="hover:bg-white  gap-2 hover:text-black rounded-full p-2 transition-all aspect-square text-4xl hidden md:flex items-center"
+          className="hover:bg-white gap-0.5 hover:text-black rounded-full p-2 transition-all aspect-square text-4xl hidden md:flex items-center"
           onClick={() => {
             navigate("/cart");
           }}
         >
           <HiShoppingCart />
-          <div>{1}</div>
+          {cartQuantity > 0 && (
+            <div className="text-lg text-red-600 font-bold bg-red rounded-full aspect-square w-4">
+              {cartQuantity}
+            </div>
+          )}
         </button>
       </div>
     </nav>
