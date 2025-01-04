@@ -7,7 +7,7 @@ const CartPage = () => {
   return (
     <div className="font-Poppins w-screen">
       <NavBar page="cart" />
-      <div className="flex w-full gap-12">
+      <div className="flex w-full gap-12 p-6">
         <Cart />
         <OrderSummary />
       </div>

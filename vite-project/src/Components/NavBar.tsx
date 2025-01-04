@@ -45,7 +45,7 @@ const NavBar = (props: NavType) => {
     >
       <div className="font-bold md:text-3xl text-2xl flex items-center h-24">
         <img src={Logo} alt="Logo" className="h-[80%] ms-2" />
-        Jhyape
+        Spirits
       </div>
       <ul className="md:flex hidden font-semibold text-xl gap-10 flex-1 justify-center">
         <li className="flex items-end gap-1 hover:text-gray-300 hover:scale-110 transition duration-200 cursor-pointer">
