@@ -18,22 +18,22 @@ const OurClients = () => {
             <Clients
               name="Saurav Bista"
               imgid={0}
-              review="The alcohol tastes like Saugat's cum. So nostalgic , reminds me of when I used to grab his cock and go deep down inside my throat and he would jizz directly in my stomach throught the food pipe."
-              role="Man Whore"
+              review="This shop has an incredible variety of wines, beers, and spirits, ranging from popular brands to rare finds. The staff is always welcoming and extremely knowledgeable, offering great recommendations tailored to my taste and budget. Every visit feels like a personalized experience. Highly recommend this gem to anyone looking for quality and excellent service!"
+              role="Technical Writer and SEO"
             />
             <Clients
               name="Chigga (奇加)"
               imgid={1}
               review={
-                "我真的很喜欢店主和他的黑色大鸡巴。让我如此饥渴。而且我是同性恋所以喜欢喝酒。葡萄酒是同性恋者最好的饮料. 我喜欢喝酒然后吃狗肉。世界上最好的组合。喝完酒后，我开车去学校附近兜风，然后撞上了一个小孩."
+                "I’ve been shopping here for years, and it never disappoints. Whether I need a fine wine for a dinner party or craft beer for a casual night, they always have the perfect options. The store is clean, well-organized, and the staff is friendly and approachable. Plus, their seasonal specials are fantastic. Definitely the best liquor store in town!"
               }
-              role="Professional Chigga"
+              role="Professional Footballer"
             />
             <Clients
               name="Madu Vaxo"
               imgid={2}
-              review="I really love the alcohol specially the most expensive one since my dad pays for it all. I am so fat and alcohol makes me feell slimmer everyday. I even brush my teeth with a shot of vodka in the morning"
-              role="Bau ko sampati"
+              review="This is hands down my favorite alcohol shop. Not only do they offer an impressive selection of products, but their customer service is what truly sets them apart. The staff is always eager to help, whether it’s finding the perfect gift or suggesting a new spirit to try."
+              role="Land Lord"
             />
           </div>
           <FaArrowAltCircleRight className="text-red-500 text-6xl font-bold hover:scale-110" />

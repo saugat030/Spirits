@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import { useShoppingCart } from "../Context/ShoppingCartContext";
 type CartCardProps = {
   id: number;
   quantity: number;
 };
 const CartProductCard = ({ id, quantity }: CartCardProps) => {
+  const { removeFromCart } = useShoppingCart();
   const [name, setName] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
   const [category, setCategory] = useState<string>("");
@@ -30,7 +32,14 @@ const CartProductCard = ({ id, quantity }: CartCardProps) => {
         <div className="flex flex-col justify-around items-start">
           <h3 className="font-semibold text-xl">{name}</h3>
           <h2 className="text-gray-600 text-md">{category}</h2>
-          <button className="text-red-600">Remove</button>
+          <button
+            onClick={() => {
+              removeFromCart(id);
+            }}
+            className="text-red-600"
+          >
+            Remove
+          </button>
         </div>
       </figure>
       <div className="flex items-center gap-3">

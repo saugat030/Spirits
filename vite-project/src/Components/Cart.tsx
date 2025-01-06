@@ -3,6 +3,7 @@ import CartProductCard from "./CartProductCard";
 
 const Cart = () => {
   const { cartItems, cartQuantity } = useShoppingCart();
+
   return (
     <div className="flex-1 mt-12  px-14 mx-auto">
       <div className="flex justify-between w-full font-bold text-4xl">
@@ -16,9 +17,13 @@ const Cart = () => {
         <h3>Price</h3>
         <h3>Total Price</h3>
       </div>
-      {cartItems.map((item) => (
-        <CartProductCard key={item.id} {...item} />
-      ))}
+      {cartItems.length > 0 ? (
+        cartItems.map((item) => <CartProductCard key={item.id} {...item} />)
+      ) : (
+        <div className="text-4xl font-bold text-red-700 ms-14 mt-24">
+          No Items in cart
+        </div>
+      )}
     </div>
   );
 };
