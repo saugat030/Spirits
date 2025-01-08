@@ -28,7 +28,6 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
   const getAuthState = async () => {
     try {
       const { data } = await axios.get("http://localhost:3000/isAuth");
-      console.log(data.success);
       if (data.success) {
         setIsLoggedin(true);
         getUserData();

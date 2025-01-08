@@ -7,7 +7,8 @@ type CartCardProps = {
   quantity: number;
 };
 const CartProductCard = ({ id, quantity }: CartCardProps) => {
-  const { removeFromCart } = useShoppingCart();
+  const { removeFromCart, increaseCartQuantity, decreaseCartQuantity } =
+    useShoppingCart();
   const [name, setName] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
   const [category, setCategory] = useState<string>("");
@@ -16,7 +17,6 @@ const CartProductCard = ({ id, quantity }: CartCardProps) => {
     const { data } = await axios.get(
       `http://localhost:3000/api/products/${id}`
     );
-    console.log(data[0]);
     setName(data[0].name);
     setPrice(data[0].price);
     setCategory(data[0].type_name);
@@ -36,18 +36,28 @@ const CartProductCard = ({ id, quantity }: CartCardProps) => {
             onClick={() => {
               removeFromCart(id);
             }}
-            className="text-red-600"
+            className="text-red-600 hover:text-white hover:border border-black px-1 py-0.5 rounded-lg  hover:bg-red-600 font-medium"
           >
             Remove
           </button>
         </div>
       </figure>
       <div className="flex items-center gap-3">
-        <button className="hover:text-white hover:bg-green-900 rounded-full">
+        <button
+          onClick={() => {
+            increaseCartQuantity(id);
+          }}
+          className="hover:text-white hover:bg-green-900 rounded-full"
+        >
           <CiCirclePlus className="text-4xl" strokeWidth={1} />
         </button>
         <span className="text-2xl font-semibold mx-2">{quantity}</span>
-        <button className="hover:text-white hover:bg-red-800 rounded-full">
+        <button
+          onClick={() => {
+            decreaseCartQuantity(id);
+          }}
+          className="hover:text-white hover:bg-red-800 rounded-full"
+        >
           <CiCircleMinus className="text-4xl" strokeWidth={1} />
         </button>
       </div>
