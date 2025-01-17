@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import Products from "./Products";
 import axios from "axios";
+// Import Swiper React components
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 export type productType = {
   id: number;
@@ -79,12 +82,21 @@ const BestSelling = () => {
         )}
         {products.slice(0, 4).map((item: productType) => {
           return (
-            <Products
-              imgsrc={item.image_link}
-              name={item.name}
-              price={item.price}
-              id={item.id}
-            />
+            <Swiper
+              spaceBetween={50}
+              slidesPerView={3}
+              onSlideChange={() => console.log("slide change")}
+              onSwiper={(swiper) => console.log(swiper)}
+            >
+              <SwiperSlide>
+                <Products
+                  imgsrc={item.image_link}
+                  name={item.name}
+                  price={item.price}
+                  id={item.id}
+                />
+              </SwiperSlide>
+            </Swiper>
           );
         })}
       </div>
