@@ -3,7 +3,11 @@ import Products from "./Products";
 import axios from "axios";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/effect-coverflow";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 export type productType = {
   id: number;
@@ -42,7 +46,7 @@ const BestSelling = () => {
   }, [alc]);
 
   return (
-    <div className="flex flex-col items-center gap-10 mt-20">
+    <div className="flex flex-col items-center gap-10 mt-20 h-[700px] bg-slate-400">
       <h1 className="text-4xl font-bold text-center w-full">Best Selling</h1>
       <div className="flex gap-0">
         <button
@@ -76,30 +80,38 @@ const BestSelling = () => {
           Wine
         </button>
       </div>
-      <div className="flex md:flex-row flex-col gap-20 md:h-full h-auto p-1">
-        {error && (
-          <Products imgsrc="" name="Product Not Found" price={0} id={NaN} />
-        )}
+
+      {error && (
+        <Products imgsrc="" name="Product Not Found" price={0} id={NaN} />
+      )}
+
+      <Swiper
+        modules={[Navigation, Pagination, EffectCoverflow]}
+        effect={"coverflow"}
+        grabCursor={true}
+        centeredSlides={true}
+        slidesPerView={4}
+        loop={true}
+        coverflowEffect={{
+          rotate: 0,
+          stretch: 0,
+          depth: 100,
+          modifier: 2.5,
+        }}
+      >
         {products.slice(0, 4).map((item: productType) => {
           return (
-            <Swiper
-              spaceBetween={50}
-              slidesPerView={3}
-              onSlideChange={() => console.log("slide change")}
-              onSwiper={(swiper) => console.log(swiper)}
-            >
-              <SwiperSlide>
-                <Products
-                  imgsrc={item.image_link}
-                  name={item.name}
-                  price={item.price}
-                  id={item.id}
-                />
-              </SwiperSlide>
-            </Swiper>
+            <SwiperSlide>
+              <Products
+                imgsrc={item.image_link}
+                name={item.name}
+                price={item.price}
+                id={item.id}
+              />
+            </SwiperSlide>
           );
         })}
-      </div>
+      </Swiper>
     </div>
   );
 };
