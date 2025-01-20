@@ -46,9 +46,9 @@ const BestSelling = () => {
   }, [alc]);
 
   return (
-    <div className="flex flex-col items-center gap-10 mt-20 h-[700px] bg-slate-400">
-      <h1 className="text-4xl font-bold text-center w-full">Best Selling</h1>
-      <div className="flex gap-0">
+    <div className="flex flex-col w-full items-center gap-10 mt-20 h-[700px]">
+      <h1 className="text-4xl font-bold">Best Selling</h1>
+      <div className="flex gap-0 p-2">
         <button
           onClick={changeValue}
           className="bg-amber-600 rounded-s-2xl px-2 py-1 border border-black text-white"
@@ -90,16 +90,22 @@ const BestSelling = () => {
         effect={"coverflow"}
         grabCursor={true}
         centeredSlides={true}
-        slidesPerView={4}
-        loop={true}
+        slidesPerView={"auto"}
+        initialSlide={2}
+        loop={false}
         coverflowEffect={{
           rotate: 0,
-          stretch: 0,
-          depth: 100,
-          modifier: 2.5,
+          //rotates the sliders by 0 degress
+          stretch: -30,
+          //Controls the spacing between the slides. The more you put the more squished it gets for some reason.
+          depth: 200,
+          //As the name suggests control the 3d like effect. Basically kati deep push garne slides lai vanne control ho.
+          modifier: 1,
+          //Multiplies the effects by this number. Depth 200 xa vaney modifier 2 garda 200*2 hunxa (same thing with rotate)
+          slideShadows: true,
         }}
       >
-        {products.slice(0, 4).map((item: productType) => {
+        {products.slice(0, 5).map((item: productType) => {
           return (
             <SwiperSlide>
               <Products

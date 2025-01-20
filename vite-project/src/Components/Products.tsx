@@ -17,7 +17,7 @@ const Products = ({ imgsrc, name, price, id }: propType) => {
   return (
     <section
       onClick={handleClick}
-      className="h-[430px] transform duration-200 w-64 rounded-lg p-2 shadow-md shadow-slate-300 bg-gray-100 flex flex-col gap-5 hover:scale-105 cursor-pointer"
+      className="h-[430px] transform w-[256px] duration-200 rounded-lg p-2 shadow-md shadow-slate-300 bg-gray-100 flex flex-col gap-5 hover:scale-105 cursor-pointer"
     >
       <figure className="text-center relative flex justify-center items-center">
         {!imageLoaded && (

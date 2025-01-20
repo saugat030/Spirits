@@ -1,3 +1,17 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* By default .swiper ma chai jati ni styling hanna pauxa tara .swiper-slide ma chai pre-determined width hunxa according to the slides per view prop passed
+So width only works if we set slides perview to auto (which makes the slides take the width mentioned in CSS) andd then use !important to override the default value. */
+
+.swiper {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  height: 440px;
+  width: 100%;
+}
+.swiper-slide {
+  width: 256px !important;
+  height: 430px !important;
+}
