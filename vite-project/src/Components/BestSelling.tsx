@@ -88,7 +88,12 @@ const BestSelling = () => {
       </div>
 
       {error && (
-        <Products imgsrc="" name="Product Not Found" price={0} id={NaN} />
+        <Products
+          imgsrc=""
+          name="Cannot connect to the server"
+          price={0}
+          id={NaN}
+        />
       )}
 
       <Swiper
@@ -98,6 +103,7 @@ const BestSelling = () => {
         centeredSlides={true}
         slidesPerView={"auto"}
         initialSlide={2}
+        //set the initial slide at index-2
         loop={false}
         coverflowEffect={{
           rotate: 0,
