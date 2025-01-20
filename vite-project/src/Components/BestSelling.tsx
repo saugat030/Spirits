@@ -25,10 +25,6 @@ const BestSelling = () => {
   const [error, setError] = useState<string>("");
   const [alc, setAlc] = useState<string>("Whiskey");
 
-  function changeValue() {
-    setAlc("Vodka");
-  }
-
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
@@ -50,31 +46,41 @@ const BestSelling = () => {
       <h1 className="text-4xl font-bold">Best Selling</h1>
       <div className="flex gap-0 p-2">
         <button
-          onClick={changeValue}
-          className="bg-amber-600 rounded-s-2xl px-2 py-1 border border-black text-white"
+          onClick={() => {
+            setAlc("Vodka");
+          }}
+          className="bg-amber-600 rounded-s-2xl px-2 py-1 border border-black text-white shadow-inner shadow-amber-600 hover:shadow-xl"
         >
           Vodka
         </button>
         <button
-          onClick={changeValue}
+          onClick={() => {
+            setAlc("Whiskey");
+          }}
           className="bg-amber-600  px-2 py-1 border border-t-black border-b-black text-white"
         >
           Whiskey
         </button>
         <button
-          onClick={changeValue}
+          onClick={() => {
+            setAlc("Beer");
+          }}
           className="bg-amber-600   px-2 py-1 border border-t-black border-b-black text-white"
         >
           Beer
         </button>
         <button
-          onClick={changeValue}
+          onClick={() => {
+            setAlc("Rum");
+          }}
           className="bg-amber-600 px-2 py-1 border border-t-black border-b-black text-white"
         >
           Rum
         </button>
         <button
-          onClick={changeValue}
+          onClick={() => {
+            setAlc("Wine");
+          }}
           className="bg-amber-600 rounded-e-2xl px-2 py-1 border border-black text-white"
         >
           Wine
