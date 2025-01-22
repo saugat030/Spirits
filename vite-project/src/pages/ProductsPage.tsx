@@ -22,7 +22,8 @@ const ProductsPage = () => {
       const response = await axios.get(
         `http://localhost:3000/api/products?type=${category}&name=${alcName}`
       );
-      setProducts(response.data);
+      setProducts(response.data.statistics);
+      console.log(response.data.page);
     } catch (err) {
       setError("Failed to fetch products"); // Handle errors
       console.error(err);

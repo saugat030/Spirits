@@ -282,6 +282,9 @@ app.post("/logout", async (req, res) => {
 ///products?type = vodka
 app.get("/api/products", async (req, res) => {
   console.log(req.url);
+  let page = Number(req.query.page || 1);
+  let limit = Number(req.query.limit || 12);
+  console.log(page, limit);
   let type = req.query.type;
   let name = req.query.name;
   type = type === "null" || type === "" ? null : type;
@@ -330,14 +333,33 @@ app.get("/api/products", async (req, res) => {
   } else {
     try {
       const result = await db.query(
-        "select id, name , image_link , description , quantity , categories.type_id , type_name , price from liquors join categories on liquors.type_id = categories.type_id order by id asc"
+        `SELECT 
+            id, 
+            name, 
+            image_link, 
+            description, 
+            quantity, 
+            categories.type_id, 
+            type_name, 
+            price 
+         FROM 
+            liquors 
+         JOIN 
+            categories 
+         ON 
+            liquors.type_id = categories.type_id 
+         ORDER BY 
+            id ASC 
+         LIMIT $1 OFFSET $2`,
+        [limit, (page - 1) * limit]
       );
       if (result.rows.length > 0) {
         const data = result.rows;
-
         //res.json le automatically js object lai jsonify handinxa so no need :JSON.stringify(data);
-
-        res.json(data);
+        return res.json({
+          page,
+          statistics: data,
+        });
       } else {
         console.log("No data in the table.");
         res.status(404).json({ message: "No products found" });
