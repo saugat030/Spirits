@@ -19,9 +19,10 @@ const MostPopular = (props: MostPopularProps) => {
         <div className="flex flex-col gap-12 flex-1">
           <h1 className="text-4xl font-bold px-5">Most Popular</h1>
           <div className="flex flex-wrap gap-[48px] items-center px-5">
-            {props.error}
             {props.error ? (
-              <h1>No Products Found.</h1>
+              <h1 className="text-red-500 font-bold text-3xl">
+                No Products Found.
+              </h1>
             ) : (
               props.productsValue.map((item: productType) => {
                 return (
