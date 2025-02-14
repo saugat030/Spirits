@@ -68,7 +68,7 @@ app.get("/", (req, res) => {
   res.send("Server Running");
 });
 
-//Get particular Product:
+//Get particular Product bu id:
 app.get("/api/products/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   console.log(id);
@@ -140,7 +140,6 @@ app.get("/api/filter/price", async (req, res) => {
 });
 
 //Registration:
-
 app.post("/signup", async (req, res) => {
   //Form bata submited xa vaney it works normally tara if Postman bata xa ani you have selected the body-> raw-> JSON then you need to use a middleware for it. express.json
   const { name, email, password } = req.body;
@@ -279,7 +278,7 @@ app.post("/logout", async (req, res) => {
 });
 
 //Get all Liquor:
-///products?type = vodka
+//api/products?type=Vodka&name=Chivas&page=1&limit=8
 app.get("/api/products", async (req, res) => {
   console.log(req.url);
   let page = Number(req.query.page || 1);
@@ -291,6 +290,9 @@ app.get("/api/products", async (req, res) => {
   name = name === "null" || name === "" ? null : name;
   console.log(type);
   console.log(name);
+  console.log(page);
+  console.log(limit);
+
   if (type) {
     try {
       const result = await db.query(
@@ -362,7 +364,7 @@ app.get("/api/products", async (req, res) => {
         });
       } else {
         console.log("No data in the table.");
-        res.status(404).json({ message: "No products found" });
+        res.status(200).json({ message: "No products found" });
       }
     } catch (err) {
       console.error(err);

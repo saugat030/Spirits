@@ -16,7 +16,6 @@ const Products = ({ imgsrc, name, price, id }: propType) => {
   }
   useEffect(() => {
     setImageLoaded(false);
-    console.log("Setting the img loaded to false.");
   }, [id]);
 
   return (
