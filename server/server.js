@@ -304,7 +304,10 @@ app.get("/api/products", async (req, res) => {
 
         //res.json le automatically js object lai jsonify handuinxa so no need :JSON.stringify(data);
 
-        return res.json(data);
+        return res.json({
+          page,
+          statistics: data,
+        });
       } else {
         console.log("No data in the table with that type.");
         res.status(404).json({ message: "No products found with that type" });
@@ -323,7 +326,10 @@ app.get("/api/products", async (req, res) => {
       if (result.rows.length > 0) {
         const data = result.rows;
 
-        return res.json(data);
+        return res.json({
+          page,
+          statistics: data,
+        });
       } else {
         console.log("No products found with that name");
         res.status(404).json({ message: "No products found with that name" });

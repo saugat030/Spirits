@@ -30,7 +30,7 @@ const BestSelling = () => {
       const response = await axios.get(
         `http://localhost:3000/api/products?type=${alc}`
       );
-      setProducts(response.data);
+      setProducts(response.data.statistics);
     } catch (err) {
       setError("Failed to fetch products");
       console.error(err);
