@@ -4,15 +4,17 @@ import MostPopular from "../Components/MostPopular";
 import Footer from "../Components/Footer";
 import { useEffect, useState } from "react";
 import { productType } from "../Components/BestSelling";
-import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import { Dispatch, SetStateAction } from "react";
-import { GrCaretNext } from "react-icons/gr";
+import axios from "axios";
+
 export type MostPopularProps = {
   productsValue: productType[];
   error: string;
+  page: number;
   setPage: Dispatch<SetStateAction<number>>;
 };
+
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
   const alcName = searchParams.get("name");
@@ -20,6 +22,7 @@ const ProductsPage = () => {
   const [error, setError] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [page, setPage] = useState<number>(1);
+
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
@@ -28,6 +31,7 @@ const ProductsPage = () => {
       if (response.data.statistics) {
         setProducts(response.data.statistics);
         console.log(response.data.statistics);
+        setError("");
       } else {
         setError(response.data.message);
         console.log(response.data.message);
@@ -46,7 +50,12 @@ const ProductsPage = () => {
     <div className="font-Poppins">
       <NavBar page="products" />
       <ShopByCategs category={category} setCateg={setCategory} />
-      <MostPopular productsValue={products} error={error} setPage={setPage} />
+      <MostPopular
+        productsValue={products}
+        error={error}
+        setPage={setPage}
+        page={page}
+      />
       <Footer size="lg" />
     </div>
   );

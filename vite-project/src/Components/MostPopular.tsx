@@ -3,13 +3,20 @@ import { productType } from "./BestSelling";
 import FilterSection from "./FilterSection";
 import { MostPopularProps } from "../pages/ProductsPage";
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
+import { useState } from "react";
 
 const MostPopular = (props: MostPopularProps) => {
+  const [hasPrev, setHasPrev] = useState<boolean>(true);
   function handleNextClick() {
     props.setPage((prev) => prev + 1);
   }
   function handlePrevClick() {
-    props.setPage((prev) => Math.max(1, prev - 1));
+    if (props.page == 1) {
+      setHasPrev(false);
+    } else {
+      props.setPage((prev) => Math.max(1, prev - 1));
+      setHasPrev(true);
+    }
   }
 
   return (
@@ -20,9 +27,7 @@ const MostPopular = (props: MostPopularProps) => {
           <h1 className="text-4xl font-bold px-5">Most Popular</h1>
           <div className="flex flex-wrap gap-[48px] items-center px-5">
             {props.error ? (
-              <h1 className="text-red-500 font-bold text-3xl">
-                No Products Found.
-              </h1>
+              <h1 className="text-red-500 font-bold text-3xl">{props.error}</h1>
             ) : (
               props.productsValue.map((item: productType) => {
                 return (
@@ -36,12 +41,21 @@ const MostPopular = (props: MostPopularProps) => {
               })
             )}
           </div>
-          <div className="flex text-3xl justify-center mt-15 gap-10 text-slate-800 px-40">
-            <button className="" onClick={handlePrevClick}>
-              <GrCaretPrevious />
+          <div className="flex text-2xl justify-center mt-20 gap-10 me-36">
+            <button
+              className="flex gap-1 items-center"
+              onClick={handlePrevClick}
+            >
+              Previous <GrCaretPrevious />
             </button>
-            <button className="" onClick={handleNextClick}>
-              <GrCaretNext />
+            <button
+              className={`flex gap-1 items-center ${
+                props.error ? "text-slate-500" : "text-slate-800"
+              }`}
+              onClick={handleNextClick}
+              disabled={props.error != ""}
+            >
+              <GrCaretNext /> Next
             </button>
           </div>
         </div>
