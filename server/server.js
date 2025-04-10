@@ -49,8 +49,9 @@ const userAuth = async (req, res, next) => {
   try {
     const tokenDecode = jwt.verify(token, jwtSecret);
     if (tokenDecode.id) {
-      //if the id is valid then store it id in the userId of req.body. Add a new piece of data in the body of the req.body.
+      //if the id is valid then store it id in the userId and role into role of req.body. Add a new piece of data in the body of the req.body.
       req.body.userId = tokenDecode.id;
+      req.body.role = tokenDecode.role;
     } else {
       return res.json({
         success: false,
@@ -199,7 +200,7 @@ app.post("/signup", async (req, res) => {
 });
 
 //Login
-
+//login garda cookie ma user ko role ra id send garne.
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   //check if the email or pass exists.
@@ -207,12 +208,12 @@ app.post("/login", async (req, res) => {
   if (!email || !password) {
     return res.json({
       success: false,
-      message: "Missing details wither email or password",
+      message: "Missing details with either Email or Password",
     });
   }
   //Check for db errors:
   try {
-    //check is the user exists in the databse:
+    //check if the user exists in the databse:
     const result = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
@@ -229,9 +230,13 @@ app.post("/login", async (req, res) => {
           //If no error in comparing password then the result is obtained which is either 0 or 1. 0 if false 1 if true.
           if (result) {
             //If result is true and password and email matches , generate a token.
-            const token = jwt.sign({ id: user.id }, jwtSecret, {
-              expiresIn: "7d",
-            });
+            const token = jwt.sign(
+              { id: user.id, role: user.role },
+              jwtSecret,
+              {
+                expiresIn: "7d",
+              }
+            );
             //send the token in the cookie
             res.cookie("token", token, {
               httpOnly: true,
@@ -263,7 +268,6 @@ app.post("/login", async (req, res) => {
 });
 
 // logout:
-
 app.post("/logout", async (req, res) => {
   try {
     res.clearCookie("token", {
