@@ -71,10 +71,13 @@ app.get("/", (req, res) => {
 
 app.get("/admin/dashboard-data", userAuth, async (req, res) => {
   if (req.body.role != "admin") {
-    return res.status(403).json({ error: "Unauthorized user." });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized user.GTFO" });
   }
   res.json({
-    message: "Welcome to the Admin dashboard.",
+    success: true,
+    message: "Welcome to the Admin dashboard. You can now access admin Data",
   });
 });
 

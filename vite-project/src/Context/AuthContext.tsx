@@ -2,6 +2,7 @@ import axios from "axios";
 import { createContext, ReactNode, useEffect, useState } from "react";
 type userDataType = {
   name: string;
+  role: string;
   isAccountVerified: boolean;
   email: string;
 };

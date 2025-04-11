@@ -1,4 +1,3 @@
-import React from "react";
 import { useContext, useState } from "react";
 import axios from "axios";
 import Logo from "../static/Logo.png";
@@ -13,7 +12,7 @@ const Login = () => {
   if (!authContext) {
     throw new Error("AuthContext must be used within AuthContextProvider");
   }
-  const { setIsLoggedin, getUserData } = authContext;
+  const { setIsLoggedin, getUserData, userData } = authContext;
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -30,7 +29,11 @@ const Login = () => {
         if (response.data.success) {
           setIsLoggedin(true);
           getUserData();
-          navigate("/");
+          if (userData?.role == "admin") {
+            navigate("/admin/dashboard");
+          } else {
+            navigate("/");
+          }
         }
       } catch (error: any) {
         console.log(error.message);
