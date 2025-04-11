@@ -69,6 +69,15 @@ app.get("/", (req, res) => {
   res.send("Server Running");
 });
 
+app.get("/admin/dashboard-data", userAuth, async (req, res) => {
+  if (req.body.role != "admin") {
+    return res.status(403).json({ error: "Unauthorized user." });
+  }
+  res.json({
+    message: "Welcome to the Admin dashboard.",
+  });
+});
+
 //Get particular Product bu id:
 app.get("/api/products/:id", async (req, res) => {
   const id = parseInt(req.params.id);
@@ -541,6 +550,7 @@ app.get("/user/data", userAuth, async (req, res) => {
   try {
     //userId will come from the isAuthenticated middleware.
     const { userId } = req.body;
+    const { role } = req.body;
     const result = await db.query("select * from users where id = ($1)", [
       userId,
     ]);
@@ -549,6 +559,7 @@ app.get("/user/data", userAuth, async (req, res) => {
         success: true,
         userData: {
           name: result.rows[0].name,
+          role: role,
           isAccountVerified: result.rows[0].isverified,
           email: result.rows[0].email,
         },

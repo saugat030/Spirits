@@ -1,7 +1,7 @@
 const createAdmin = async () => {
   const name = "Admin";
   const email = "admin@admin.com";
-  const password = "admin123"; // 🔐 CHANGE THIS and keep it safe
+  const password = "admin123";
   const role = "admin";
 
   try {
