@@ -5,6 +5,7 @@ import {
   getSpiritsByPrice,
 } from "../controllers/productController.js";
 import { addProduct } from "../controllers/adminController.js";
+import retrieveTypeId from "../middlewares/retrieveTypeId.js";
 const router = express.Router();
 
 //Get all products taking params as /api/products?type=Vodka&name=Chivas&page=1&limit=8
@@ -14,7 +15,7 @@ router.get("/products/:id", getSpiritsById);
 //Get by price:
 //example:filter/price?min=200&max=400
 router.get("/filter/price", getSpiritsByPrice);
-//Only accessible to admin.
-router.post("/products", addProduct);
+//Only accessible to admin. Admin le form ma type ko name halxa ex:"Whiskey" ani tesko equivalent type_id table ma insrt arnu parxa this middleware function does that job.
+router.post("/products", retrieveTypeId, addProduct);
 
 export default router;
