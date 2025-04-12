@@ -161,3 +161,32 @@ export const isAuth = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+//Get all user data. To access this the user must be logged in.
+export const userData = async (req, res) => {
+  try {
+    //userId and role will come from the isAuthenticated middleware.
+    const { userId } = req.body;
+    const { role } = req.body;
+    const result = await db.query("select * from users where id = ($1)", [
+      userId,
+    ]);
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        userData: {
+          name: result.rows[0].name,
+          role: role,
+          isAccountVerified: result.rows[0].isverified,
+          email: result.rows[0].email,
+        },
+      });
+    } else {
+      return res.json({
+        succes: false,
+        message: "User with that id not found.",
+      });
+    }
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
