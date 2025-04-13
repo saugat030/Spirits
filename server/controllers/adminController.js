@@ -25,3 +25,62 @@ export const addProduct = async (req, res) => {
     });
   }
 };
+export const updateProduct = async (req, res) => {
+  const product_id = parseInt(req.params.id);
+  const { name, type_id, image_link, description, quantity, price } = req.body;
+  console.log("A POST request has hit the endpoint: " + req.url);
+  console.log("A requested product to update for the id : " + product_id);
+  try {
+    const db = await dbConnect();
+    const result = await db.query(
+      `UPDATE liquors
+       SET name = $1,
+           type_id = $2,
+           image_link = $3,
+           description = $4,
+           quantity = $5,
+           price = $6
+       WHERE id = $7
+       RETURNING *`,
+      [name, type_id, image_link, description, quantity, price, product_id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        error: `Unable to find such product with the ID:${product_id}`,
+      });
+    }
+    res.json({ success: true, statistics: result.rows[0] });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({
+      success: false,
+      error: "Server error while trying to update the product",
+    });
+  }
+};
+export const deleteProduct = async (req, res) => {
+  const product_id = parseInt(req.params.id);
+  try {
+    const db = await dbConnect();
+    const result = await db.query(
+      "DELETE FROM liquors WHERE id = $1 RETURNING *",
+      [product_id]
+    );
+    if (result.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Product with such id not found to Delete." });
+    }
+    res.json({
+      success: true,
+      message: "Product deleted",
+      statistics: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res
+      .status(500)
+      .json({ message: "Server error while trying to delete the product." });
+  }
+};
