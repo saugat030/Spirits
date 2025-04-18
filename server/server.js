@@ -4,7 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
-// import userRoutes from "./routes/userRoutes.js";
+import ordersRoutes from "./routes/ordersRoute.js";
 
 dotenv.config();
 const app = express();
@@ -26,6 +26,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api", productRoutes);
+app.use("/api/orders", ordersRoutes);
 // app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
