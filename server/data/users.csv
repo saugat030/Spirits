@@ -1,0 +1,5 @@
+id,name,email,password,role,verifyotp,verifyotpexpireat,isverified,resetotp,resetotpexpireat
+1,Admin,admin@admin.com,$2b$10$5.VbtvLobGm7p7uC6yV0b.Q.Qw6xZntebW1.bhExBk6QClVCR0s8a,admin,,,f,,
+2,lavizKoKera,pandeyji@gmail.com,$2b$10$WXlRgdW5aTUnMcCyPR9h.eiQTB1yhmDope24YxNM31ZvAoLzMeEiO,user,,,f,,
+3,saugat,saugat@saugat.com,$2b$10$NpV.y4iwdp.5d/i4g4cRpOTPhmuKfx6zDUp/hy80kMW/Rj2jqbCji,user,,,f,,
+4,saugat12,saugat12@saugat.com,$2b$10$.otAm5729OrZW0vvLsfDuOwG0UA04IlTY/8XDZdqiQX5NCXIy2gaS,user,,,f,,

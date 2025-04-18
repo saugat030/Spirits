@@ -1,6 +1,22 @@
 import { dbConnect } from "../config/dbConnect.js";
 
+export const greetAdmin = async (req, res) => {
+  if (req.body.role != "admin") {
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized user.GTFO" });
+  }
+  res.json({
+    success: true,
+    message: "Welcome to the Admin dashboard.",
+  });
+};
 export const addProduct = async (req, res) => {
+  if (req.body.role != "admin") {
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized user.GTFO" });
+  }
   const { name, type_id, image_link, description, quantity, price } = req.body;
 
   if (!name || !price || !type_id || !quantity) {
@@ -26,6 +42,11 @@ export const addProduct = async (req, res) => {
   }
 };
 export const updateProduct = async (req, res) => {
+  if (req.body.role != "admin") {
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized user.GTFO" });
+  }
   const product_id = parseInt(req.params.id);
   const { name, type_id, image_link, description, quantity, price } = req.body;
   console.log("A POST request has hit the endpoint: " + req.url);
@@ -60,7 +81,15 @@ export const updateProduct = async (req, res) => {
   }
 };
 export const deleteProduct = async (req, res) => {
+  if (req.body.role != "admin") {
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized user.GTFO" });
+  }
   const product_id = parseInt(req.params.id);
+
+  console.log("A POST request has hit the endpoint: " + req.url);
+  console.log("A requested product to delete for the id : " + product_id);
   try {
     const db = await dbConnect();
     const result = await db.query(

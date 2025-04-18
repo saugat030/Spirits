@@ -1,0 +1,42 @@
+id,name,type_id,image_link,description,quantity,price
+1,Jack Daniels,1,https://pngimg.com/d/whisky_PNG132.png,A classic Tennessee whiskey with caramel notes.,3,250
+2,Jameson,1,https://cheers.com.np/uploads/products/409712071449986258459717893915814258043.png,A smooth triple-distilled Irish whiskey.,2,190
+3,Chivas Regal,1,https://cheers.com.np/uploads/products/757532803726233354283030008257058100042.png,Premium blended Scotch whiskey.,5,270
+4,Budweiser,2,https://cheers.com.np/uploads/products/54580321572425494607036372435434295352561.png,A light and crisp American lager beer.,4,4
+5,Corona,2,https://cheers.com.np/uploads/products/27294841410728167443128272092949162169228.png,A refreshing Mexican pale lager.,3,3
+6,Heineken,2,https://skinnybrands.com/wp-content/uploads/2024/04/soliman-cifuentes-mhad_4H6S14-unsplash-min-1-1-scaled.jpg,Dutch pale lager with a mildly bitter taste.,2,3
+8,Captain Morgan,3,https://cheers.com.np/uploads/products/942060977153097291404066128328058066957865.png,Spiced rum with hints of caramel and vanilla.,4,20
+9,Old Monk,3,https://www.jamoona.com/cdn/shop/files/Old-Monk-1l-Rum-991014.png?v=1715074239,Dark rum with strong molasses flavor.,5,45
+10,Patron Silver,4,https://bodegaslacatedral.com/cdn/shop/files/Tequila_patron_silver_bodegas_la_catedral..jpg?v=1704478028&width=1214,"Ultra-premium silver tequila, smooth and crisp.",3,150
+11,Don Julio Reposado,4,https://sealedspirits.com/cdn/shop/files/14_28712f8d-bc21-4b20-b2ac-ac9cf2d666a9.png?v=1723349454,Aged tequila with notes of honey and agave.,2,200
+12,Jose Cuervo,4,https://i5.walmartimages.com/seo/Jose-Cuervo-Especial-Silver-Tequila-40-ABV-80-Proof-1-Count-750-ml-Glass-Bottle_422821ba-017c-48f1-8efc-39b9989c5922.3d1698f0362847afd430da0bb9a73de1.jpeg,"A bold, smooth tequila with classic agave notes.",1,130
+13,Grey Goose,5,https://bodegaslacatedral.com/cdn/shop/files/GreyGooseVodka1L_bodegas_la_catedral.jpg?v=1705758918&width=1600,"Premium French vodka, smooth and pure.",4,110
+14,Absolut,5,https://www.1855thebottleshop.com/cdn/shop/products/Absolut-Vodka_2048x.jpg?v=1706151701,"Swedish vodka with a clean, natural flavor.",2,25
+19,Blue Label,1,https://www.canadianliquorstore.ca/cdn/shop/files/3_1b5984a5-1697-45bf-8e0c-eb7220c53e3c.png?v=1699651096,Single malt Scotch whiskey with pear notes.,1,450
+42,Barahsinghe,2,https://cheers.com.np/uploads/products/46360219391010389785536218887123747528423.png,"Barahsinghe Beer is a Nepalese craft beer brand known for its diverse selection of brews, including Pilsners, Dunkelweizen, and fruit beers. The brewery, Yak Brewing Company, is based in Kurintar, Chitwan, and focuses on quality ingredients and innovative brewing techniques",12,3
+7,Bacardi Gold,3,https://mansionz.in/cdn/shop/files/BACARDIGOLDRUM.jpg?v=1709027215,Smooth gold rum with notes of vanilla.,1,100
+15,Smirnoff,5,https://tipsyoysterandco.nz/wp-content/uploads/2024/07/SMIRNOFF-1L.jpg,Triple-distilled vodka for smoothness.,5,22
+16,Barefoot Merlot,6,https://thelittlewhiskyshop.co.uk/cdn/shop/files/3FBB35F2-BB18-49FD-B822-A0D9E8BCAABC.jpg?v=1720607656,Smooth red wine with notes of blackberry.,3,105
+17,Jacob's Creek,6,https://cheers.com.np/uploads/products/6831435107924312356325651124337522529133289.png,Full-bodied Australian red wine.,2,108
+18,Yellow Tail,6,https://www.oakandbarrelnyc.com/wp-content/uploads/2016/05/Yellow-Tail-Chardonnay.jpg,"Light, fruity white wine with citrus flavors.",4,120
+20,Maker's Mark,1,https://bigtreebottles.com/cdn/shop/files/85246139424.png?v=1714669057&width=1445,Kentucky bourbon whiskey with sweet caramel.,3,13
+21,Bud Light,2,https://s-sdistributing.com/wp-content/uploads/Bud-Light-2.png,Light beer with a clean and crisp finish.,2,12
+22,Miller Lite,2,https://cdn.shoplightspeed.com/shops/635211/files/23125542/miller-lite-12oz-bottle-6pk.jpg,Crisp American light beer with a smooth taste.,4,121
+23,Havana Club,3,https://www.pernod-ricard.com/sites/default/files/styles/brand_tile_3_in_row_desktop_958x1048_/public/2024-05/havana_7_years.jpg.jpg?itok=h2tJe_R3,Cuban rum with rich and bold flavors.,5,300
+24,El Jimador,4,https://bodegaslacatedral.com/cdn/shop/files/El_jimador_tequila_Blanco_bodegas_la_catedral.jpg?crop=center&height=1200&v=1704479065&width=1200,"Smooth, agave-forward tequila.",3,45
+25,Ketel One,5,https://bodegaslacatedral.com/cdn/shop/files/KetelOneVodka70cl_bodegas_la_catedral.jpg?v=1705754399&width=1600,"Dutch vodka, smooth and crafted for purity.",1,45
+26,Svedka,5,https://3brothersliquor.com/cdn/shop/products/image_bca7ffbe-08d4-48f8-99cd-64540dfe33b9.heic?v=1647751170&width=3024,"Swedish vodka with clean, subtle sweetness.",2,25
+27,Buffalo Trace,1,https://silverlakewine.com/cdn/shop/products/d199167f06a839719f2162b494285ee3.jpg?v=1644962170,A rich bourbon with vanilla and caramel notes.,5,190
+28,Wild Turkey,1,https://caskcartel.com/cdn/shop/products/WildTurkey101_2.jpg?v=1680706068&width=1214,Bold bourbon whiskey with a spicy finish.,3,180
+29,Amstel Light,2,https://photos-us.bazaarvoice.com/photo/2/cGhvdG86dG90YWx3aW5l/10d7720a-01b0-51ab-9c82-226f1df78b8f,Crisp and light lager with a smooth taste.,4,690
+30,Asahi Super Dry,2,https://images.squarespace-cdn.com/content/v1/62cefc1fcbf3fb7170a6abc4/4fad0c9c-28b5-4ff5-a098-8336a7b1362e/Asahi+2.jpg,"A Japanese lager with a clean, crisp taste.",2,108
+31,Mount Gay Eclipse,3,https://www.folsomwinespirits.com/cdn/shop/files/MountGayEclipseRum_1200x1200.jpg?v=1696018667,A smooth rum with hints of caramel and spices.,3,1
+32,Sailor Jerry,3,https://cdn11.bigcommerce.com/s-a04d0/images/stencil/1280x1280/products/1507/1902/sailor-jerry-spiced-rum__86603.1726139887.jpg?c=2,Spiced rum with flavors of vanilla and cinnamon.,4,12
+33,Ciroc,5,https://citywidedrinks.com/cdn/shop/files/ciroc-summer-citrus-vodka-70cl-citywide-drinks-2.jpg?v=1723736077&width=1000,"Premium vodka made from French grapes, smooth and refined.",2,21
+34,Pinnacle,5,https://crownwineandspirits.com/cdn/shop/products/pinnacle-vodka-vodka-pinnacle-tropical-punch-flavored-vodka-750ml-31515711340637.jpg?v=1664303227&width=900,A wide variety of flavored vodka with a clean finish.,5,34
+35,Penfolds,6,https://9elmswines.co.uk/cdn/shop/files/PenfoldsBin389_1600x.jpg?v=1699890020,A full-bodied Australian wine with rich fruit flavors.,3,43
+36,La Crema,6,https://halleckvineyard.com/wp-content/uploads/2022/03/2c99ef22-5141-f077-ab22-91ad04ede5fd.jpg,A smooth and balanced Pinot Noir with berry notes.,4,78
+37,Talisker,1,https://images.squarespace-cdn.com/content/v1/61affa9c931dc960c27460a1/1670319855076-4K143P5GZ36VIHEGC8HR/2022_1203_09391200.jpg,A smoky single malt Scotch with maritime flavors.,1,230
+38,Lagavulin,1,https://bodegaslacatedral.com/cdn/shop/files/Lagavulin16anos70cl_bodegas_la_catedral.jpg?v=1705495142&width=1214,A heavily peated Scotch with intense smoky flavors.,5,220
+39,Dos Equis,2,https://images.ctfassets.net/ksfqyasz4e6u/a2lsCEDlt3dpE98G9N4Fo/ff6874f995ae752fb4f0481b6359137c/dos-equis-ambar-especial-bottle-001.png,A crisp and refreshing Mexican lager.,3,99
+40,Sapporo,2,https://cdn.shoplightspeed.com/shops/635211/files/23421669/sapporo-premium-beer-12oz-bottle-6pk.jpg,Japanese lager with a slightly bitter taste.,4,98

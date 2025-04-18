@@ -4,7 +4,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
-import userAuth from "./middlewares/userAuth.js";
 // import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
@@ -31,17 +30,6 @@ app.use("/api", productRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server Running succesfully at PORT: " + port);
-});
-app.get("/admin/dashboard-data", userAuth, async (req, res) => {
-  if (req.body.role != "admin") {
-    return res
-      .status(403)
-      .json({ success: false, message: "Unauthorized user.GTFO" });
-  }
-  res.json({
-    success: true,
-    message: "Welcome to the Admin dashboard. You can now access admin Data",
-  });
 });
 
 app.listen(port, () => {
