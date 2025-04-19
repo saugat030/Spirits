@@ -73,13 +73,12 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   console.log("Login Route Hit");
   const { email, password } = req.body;
-  console.log(email);
   //check if the email or pass exists.
-  console.log(email, password);
+  console.log("Email and password :" + email, password);
   if (!email || !password) {
     return res.json({
       success: false,
-      message: "Missing details wither email or password",
+      message: "Missing details with either email or password",
     });
   }
   //Check for db errors:
@@ -130,8 +129,7 @@ export const login = async (req, res) => {
       console.log("User not found. Try signing in..");
       return res.json({
         success: false,
-        message:
-          "Invalid email. Check your email or password or try signing in.",
+        message: "User account with the requested email not found.",
       });
     }
   } catch (error) {

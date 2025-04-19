@@ -6,6 +6,7 @@ import Authentication from "./pages/Authentication";
 import ProductFullView from "./pages/ProductFullView";
 import CartPage from "./pages/CartPage";
 import { ShoppingCartProvider } from "./Context/ShoppingCartContext";
+import AdminDashBoard from "./pages/AdminDashBoard";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/products/:id" element={<ProductFullView />} />
           <Route path="/login" element={<Authentication />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/admin/dashboard" element={<AdminDashBoard />} />
         </Routes>
       </BrowserRouter>
     </ShoppingCartProvider>

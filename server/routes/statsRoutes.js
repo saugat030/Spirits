@@ -1,16 +1,19 @@
 import express from "express";
 import {
   getNetSales,
-  getProductSales,
+  totalProducts,
+  getProductSalesDetails,
 } from "../controllers/statsController.js";
-
+import userAuth from "../middlewares/userAuth.js";
+import isAdmin from "../middlewares/isAdmin.js";
 const router = express.Router();
 
 // every product ko sale details in a list. Bar gra[h ko lagi
 // sales?product_id=1.
 // router.get("/sales");
-//total kati paisa earn vo
-router.get("/sales/net", getNetSales);
-//total kati ota products bikyo
-router.get("/sales/products", getProductSales);
+//How much total capital earned:
+router.get("/sales/net", userAuth, isAdmin, getNetSales);
+//How many total products sold. Quantity ko sum.
+router.get("/sales/total", userAuth, isAdmin, totalProducts);
+router.get("/sales/products", getProductSalesDetails);
 export default router;

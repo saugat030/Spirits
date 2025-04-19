@@ -34,7 +34,7 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
         getUserData();
       }
     } catch (err: any) {
-      alert(err.message);
+      console.log(err.message);
     }
   };
   const getUserData = async () => {

@@ -48,7 +48,6 @@ export const getOrderDetails = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 /* /api/orders/create example use case :{
     "user_id": 4,
     "status": "pending",

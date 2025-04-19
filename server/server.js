@@ -6,7 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import ordersRoutes from "./routes/ordersRoute.js";
 import statsRoutes from "./routes/statsRoutes.js";
-
+import adminRoutes from "./routes/adminRoutes.js";
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
@@ -29,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", productRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api/admin", adminRoutes);
 // app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {

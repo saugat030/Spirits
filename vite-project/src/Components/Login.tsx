@@ -17,15 +17,18 @@ const Login = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-
+  const [validationError, setValidationError] = useState<string>("");
   const func = async () => {
     axios.defaults.withCredentials = true;
     if (state == "Login") {
       try {
-        const response = await axios.post("http://localhost:3000/login", {
-          email: email,
-          password: password,
-        });
+        const response = await axios.post(
+          "http://localhost:3000/api/auth/login",
+          {
+            email: email,
+            password: password,
+          }
+        );
         if (response.data.success) {
           setIsLoggedin(true);
           getUserData();
@@ -34,6 +37,8 @@ const Login = () => {
           } else {
             navigate("/");
           }
+        } else {
+          setValidationError(response.data.message);
         }
       } catch (error: any) {
         console.log(error.message);
@@ -58,8 +63,22 @@ const Login = () => {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (state == "Login") {
+      if (!email || !password) {
+        setValidationError("Please fill all the credntials before submitting.");
+        return;
+      }
+    }
+    if (state == "Sign Up") {
+      if (!email || !password || !username) {
+        setValidationError("Please fill all the credntials before submitting.");
+        return;
+      }
+    }
+
     func();
   }
+
   function handleState() {
     if (state == "Login") {
       setState("Sign Up");
@@ -70,7 +89,7 @@ const Login = () => {
   return (
     <div className="bg-loginBg h-screen bg-cover flex justify-end font-Poppins">
       <div className="bg-white/50 h-full w-[25%] flex-col flex justify-between items-center">
-        <div className="flex gap-8 flex-col  p-10">
+        <div className="flex gap-8 flex-col w-3/4  py-10">
           <nav className="h-16 items-center text-2xl flex">
             <img src={Logo} alt="Logo" className="h-full object-contain" />
             Jhyape
@@ -79,7 +98,7 @@ const Login = () => {
           <form
             method="post"
             onSubmit={handleSubmit}
-            className="flex flex-col w-full gap-6 "
+            className="flex flex-col gap-6 "
           >
             {state == "Sign Up" && (
               <label htmlFor="usename">
@@ -89,7 +108,10 @@ const Login = () => {
                   id="username"
                   name="username"
                   placeholder="Username"
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    setValidationError("");
+                  }}
                   className="bg-gray-100 rounded-xl p-2 text-black w-full"
                 />
               </label>
@@ -101,7 +123,10 @@ const Login = () => {
                 id="name"
                 name="email"
                 placeholder="Email"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setValidationError("");
+                }}
                 className="bg-gray-100 rounded-xl p-2 text-black w-full"
               />
             </label>
@@ -109,13 +134,21 @@ const Login = () => {
               <input
                 type="text"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setValidationError("");
+                }}
                 id="name"
                 name="password"
                 placeholder="Password"
                 className="bg-gray-100 rounded-xl p-2 text-black w-full"
               />
             </label>
+            {validationError && (
+              <div className="text-red-500 text-sm max-w-80">
+                {validationError}
+              </div>
+            )}
             <div className="w-full flex justify-between p-2">
               <label htmlFor="remember" className="flex gap-2 items-center">
                 <input

@@ -1,11 +1,6 @@
 import { dbConnect } from "../config/dbConnect.js";
 
 export const greetAdmin = async (req, res) => {
-  if (req.body.role != "admin") {
-    return res
-      .status(403)
-      .json({ success: false, message: "Unauthorized user.GTFO" });
-  }
   res.json({
     success: true,
     message: "Welcome to the Admin dashboard.",
@@ -111,5 +106,23 @@ export const deleteProduct = async (req, res) => {
     res
       .status(500)
       .json({ message: "Server error while trying to delete the product." });
+  }
+};
+export const getUsers = async (req, res) => {
+  try {
+    const db = await dbConnect();
+    const result = await db.query(
+      "select id , name , email , role , isverified from users"
+    );
+    if (result.rowCount <= 0) {
+      return res.json({
+        succes: false,
+        message: "Unable to fetch any records.",
+      });
+    }
+    res.status(200).json({ success: true, statistics: result.rows });
+  } catch (err) {
+    console.error(err.message);
+    res.json({ success: false, message: "Server error while fetching users." });
   }
 };

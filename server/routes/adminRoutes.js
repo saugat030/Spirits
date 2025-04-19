@@ -1,9 +1,11 @@
 import express from "express";
 import userAuth from "../middlewares/userAuth.js";
-import { greetAdmin } from "../controllers/adminController.js";
+import isAdmin from "../middlewares/isAdmin.js";
+import { greetAdmin, getUsers } from "../controllers/adminController.js";
 
 const router = express.Router();
-
-router.get("/admin/dashboard", userAuth, greetAdmin);
+// /api/admin/dashboard
+router.get("/dashboard", userAuth, isAdmin, greetAdmin);
+router.get("/get-users", userAuth, isAdmin, getUsers);
 
 export default router;

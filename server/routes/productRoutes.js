@@ -11,6 +11,7 @@ import {
 } from "../controllers/adminController.js";
 //middleware imports:
 import userAuth from "../middlewares/userAuth.js";
+import isAdmin from "../middlewares/isAdmin.js";
 import retrieveTypeId from "../middlewares/retrieveTypeId.js";
 const router = express.Router();
 
@@ -22,8 +23,8 @@ router.get("/products/:id", getSpiritsById);
 //example:filter/price?min=200&max=400
 router.get("/filter/price", getSpiritsByPrice);
 //Only accessible to admin. Admin le form ma type ko name halxa ex:"Whiskey" ani tesko equivalent type_id table ma insert garnu parxa this middleware function does that job.
-router.post("/products", userAuth, retrieveTypeId, addProduct);
+router.post("/products", userAuth, isAdmin, retrieveTypeId, addProduct);
 //Post use garda ni hunxa tara standard is using a put req while sending params in the endpoint.
-router.put("/products/:id", userAuth, retrieveTypeId, updateProduct);
-router.delete("/products/:id", userAuth, deleteProduct);
+router.put("/products/:id", userAuth, isAdmin, retrieveTypeId, updateProduct);
+router.delete("/products/:id", userAuth, isAdmin, deleteProduct);
 export default router;

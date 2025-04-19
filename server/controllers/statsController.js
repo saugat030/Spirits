@@ -22,5 +22,49 @@ export const getNetSales = async (req, res) => {
     return res.status(400).json({ success: false, message: err.message });
   }
 };
-export const getProductSales = async (req, res) => {};
-export const getSalesDetails = async (req, res) => {};
+export const totalProducts = async (req, res) => {
+  try {
+    const db = await dbConnect();
+    const result = await db.query(`select quantity from order_items`);
+    if (result.rows.length <= 0) {
+      return res.json({
+        success: false,
+        message: "No data fetched from the database.",
+      });
+    }
+    const totalQuantity = result.rows.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+    console.log(totalQuantity);
+    return res.status(200).json({
+      success: true,
+      totalProducts: totalQuantity,
+    });
+  } catch (err) {
+    console.error(err.message);
+  }
+};
+export const getProductSalesDetails = async (req, res) => {
+  try {
+    const db = await dbConnect();
+    const result = await db.query(`select quantity from order_items`);
+    if (result.rows.length <= 0) {
+      return res.json({
+        success: false,
+        message: "No data fetched from the database.",
+      });
+    }
+    const totalQuantity = result.rows.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+    console.log(totalQuantity);
+    return res.status(200).json({
+      success: true,
+      totalProducts: totalQuantity,
+    });
+  } catch (err) {
+    console.error(err.message);
+  }
+};
