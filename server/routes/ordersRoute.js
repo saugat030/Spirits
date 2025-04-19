@@ -6,7 +6,7 @@ import {
 
 const router = express.Router();
 // /api/orders/getOrder
-router.get("/getOrder", getOrderDetails);
+router.get("/:order_id", getOrderDetails);
 // /api/orders/create
 router.post("/create", createOrder);
 

@@ -1,7 +1,7 @@
 import pg from "pg";
 
 const { Pool } = pg;
-
+console.log("Connectig to db...");
 export const dbConnect = async () => {
   const pool = new Pool({
     user: "postgres",
