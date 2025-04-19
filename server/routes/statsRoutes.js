@@ -1,15 +1,16 @@
 import express from "express";
 import {
-  getOrderDetails,
-  createOrder,
-} from "../controllers/ordersController.js";
+  getNetSales,
+  getProductSales,
+} from "../controllers/statsController.js";
 
 const router = express.Router();
 
 // every product ko sale details in a list. Bar gra[h ko lagi
 // sales?product_id=1.
-router.get("/sales");
+// router.get("/sales");
 //total kati paisa earn vo
-router.get("/sales/net");
+router.get("/sales/net", getNetSales);
 //total kati ota products bikyo
-router.get("/sales/products");
+router.get("/sales/products", getProductSales);
+export default router;
