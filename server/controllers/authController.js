@@ -103,7 +103,7 @@ export const login = async (req, res) => {
             //If result is true and password and email matches , generate a token.
             const token = jwt.sign(
               { id: user.id, role: user.role },
-              jwtSecret,
+              process.env.JWT_SECRET,
               {
                 expiresIn: "7d",
               }
@@ -156,6 +156,7 @@ export const isAuth = async (req, res) => {
     //this function will only be reached if the userAuth middleware calls it. Thats why we can say code ya samma pugyo vaney pani userlogged in nai hunxa.
     return res.json({ success: true, message: "User is authenticated." });
   } catch (error) {
+    console.error(error.message);
     res.json({ success: false, message: error.message });
   }
 };
@@ -165,6 +166,7 @@ export const userData = async (req, res) => {
     //userId and role will come from the isAuthenticated middleware.
     const { userId } = req.body;
     const { role } = req.body;
+    const db = await dbConnect();
     const result = await db.query("select * from users where id = ($1)", [
       userId,
     ]);
@@ -185,6 +187,7 @@ export const userData = async (req, res) => {
       });
     }
   } catch (error) {
+    console.error(error.message);
     res.json({ success: false, message: error.message });
   }
 };

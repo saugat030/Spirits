@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Logo from "../static/Logo.png";
 import Footer from "../Components/Footer";
@@ -31,16 +31,12 @@ const Login = () => {
         );
         if (response.data.success) {
           setIsLoggedin(true);
-          getUserData();
-          if (userData?.role == "admin") {
-            navigate("/admin/dashboard");
-          } else {
-            navigate("/");
-          }
+          await getUserData();
         } else {
           setValidationError(response.data.message);
         }
       } catch (error: any) {
+        setValidationError(error.message);
         console.log(error.message);
       }
     } else {
@@ -60,7 +56,14 @@ const Login = () => {
       }
     }
   };
-
+  useEffect(() => {
+    if (!userData) return;
+    if (userData.role === "admin") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/");
+    }
+  }, [userData]);
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (state == "Login") {

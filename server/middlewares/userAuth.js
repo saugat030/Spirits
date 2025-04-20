@@ -25,6 +25,7 @@ const userAuth = async (req, res, next) => {
     //This next(); function can only be reaced if the token is valid. So only after the token is valid we go to the next middleware/methd. Natra it will return an error and terminate.
     next();
   } catch (error) {
+    console.error(error.message);
     res.json({ sucess: false, message: error.message });
   }
 };

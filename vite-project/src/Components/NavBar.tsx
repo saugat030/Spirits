@@ -19,13 +19,15 @@ const NavBar = (props: NavType) => {
   }
   const { cartQuantity } = useShoppingCart();
   const { userData, setUserData, setIsLoggedin } = authContext;
-
+  console.log(userData?.role);
   const navigate = useNavigate();
 
   const logout = async () => {
     try {
       axios.defaults.withCredentials = true;
-      const { data } = await axios.post("http://localhost:3000/logout");
+      const { data } = await axios.post(
+        "http://localhost:3000/api/auth/logout"
+      );
       data.success && setIsLoggedin(false);
       data.success && setUserData(null);
       navigate("/");
@@ -70,7 +72,7 @@ const NavBar = (props: NavType) => {
               {userData.name}
             </h1>
             <button
-              className="text-xl text-white font-semibold hover:underline hover:scale-105 duration-200"
+              className="text-xl font-semibold hover:underline hover:scale-105 duration-200"
               onClick={logout}
             >
               Logout

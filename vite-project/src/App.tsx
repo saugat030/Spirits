@@ -7,7 +7,11 @@ import ProductFullView from "./pages/ProductFullView";
 import CartPage from "./pages/CartPage";
 import { ShoppingCartProvider } from "./Context/ShoppingCartContext";
 import AdminDashBoard from "./pages/AdminDashBoard";
-
+import Users from "./Components/protected/Users";
+import AdminProducts from "./Components/protected/AdminProducts";
+import Settings from "./Components/protected/Settings";
+import Orders from "./Components/protected/Orders";
+import Dashboard from "./Components/protected/Dashboard";
 function App() {
   return (
     <ShoppingCartProvider>
@@ -18,7 +22,14 @@ function App() {
           <Route path="/products/:id" element={<ProductFullView />} />
           <Route path="/login" element={<Authentication />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/admin/dashboard" element={<AdminDashBoard />} />
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={<AdminDashBoard />}>
+            <Route index element={<Dashboard />} />
+            <Route path="users" element={<Users />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="orders" element={<Orders />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </ShoppingCartProvider>

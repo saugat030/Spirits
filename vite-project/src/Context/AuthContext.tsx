@@ -28,7 +28,7 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
 
   const getAuthState = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3000/isAuth");
+      const { data } = await axios.get("http://localhost:3000/api/auth/isAuth");
       if (data.success) {
         setIsLoggedin(true);
         getUserData();
@@ -39,10 +39,12 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
   };
   const getUserData = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3000/user/data");
-      //Yo userData afaile backend ma set gareko ho.
+      const { data } = await axios.get(
+        "http://localhost:3000/api/auth/user/data"
+      );
       data.success ? setUserData(data.userData) : alert(data.message);
     } catch (err: any) {
+      console.error(err.message);
       alert(err.message);
     }
   };

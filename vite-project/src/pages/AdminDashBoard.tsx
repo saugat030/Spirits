@@ -2,11 +2,11 @@
 import { AuthContext } from "../Context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
-
+import { Navigate, Outlet } from "react-router-dom";
+import SideBar from "../Components/protected/SideBar";
+import NavBar from "../Components/NavBar";
 const AdminDashBoard = () => {
   const [dashboardData, setDashboardData] = useState<string>();
-  //   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
   if (!authContext) {
     throw new Error("AuthContext must be used within AuthContextProvider");
@@ -14,7 +14,9 @@ const AdminDashBoard = () => {
   const { userData } = authContext;
 
   async function getDashDetails() {
-    const { data } = await axios.get(`http://localhost:3000/admin/dashboard`);
+    const { data } = await axios.get(
+      `http://localhost:3000/api/admin/dashboard`
+    );
     console.log(data);
     setDashboardData(data.message);
   }
@@ -26,10 +28,16 @@ const AdminDashBoard = () => {
     //check if the role is admin.
     return <Navigate to={"/login"}></Navigate>;
   } else {
-    //if the role has been tampered with in the frontend , verify it once from the backend using the api call.
     return (
-      <div>
-        <span>{dashboardData}</span>
+      <div className="flex">
+        <SideBar />
+        <div className="flex-1 flex flex-col justify-between">
+          <NavBar page="notHome"></NavBar>
+          <main>
+            <span>{dashboardData}</span>
+            <Outlet />
+          </main>
+        </div>
       </div>
     );
   }
