@@ -5,6 +5,7 @@ import axios from "axios";
 import { Navigate, Outlet } from "react-router-dom";
 import SideBar from "../Components/protected/SideBar";
 import NavBar from "../Components/NavBar";
+import Footer from "../Components/Footer";
 const AdminDashBoard = () => {
   const [dashboardData, setDashboardData] = useState<string>();
   const authContext = useContext(AuthContext);
@@ -23,20 +24,20 @@ const AdminDashBoard = () => {
   useEffect(() => {
     getDashDetails();
   });
-
+  console.log(dashboardData);
   if (userData?.role != "admin") {
     //check if the role is admin.
     return <Navigate to={"/login"}></Navigate>;
   } else {
     return (
-      <div className="flex">
+      <div className="flex font-Poppins">
         <SideBar />
         <div className="flex-1 flex flex-col justify-between">
           <NavBar page="notHome"></NavBar>
-          <main>
-            <span>{dashboardData}</span>
+          <main className="flex-1">
             <Outlet />
           </main>
+          <Footer size="sm" />
         </div>
       </div>
     );
