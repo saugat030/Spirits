@@ -34,7 +34,7 @@ const SideBar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-[#060606] h-screen border-r px-6 py-8 flex flex-col gap-8">
+    <aside className="w-64 bg-[#060606] border-r px-6 py-8 flex flex-col gap-8">
       <div className="text-2xl text-white font-bold">Spirits</div>
       <nav className="flex flex-col gap-6 text-[#F1F1F1]">
         {navItems.map((item) => (

@@ -5,7 +5,7 @@ import axios from "axios";
 import { Navigate, Outlet } from "react-router-dom";
 import SideBar from "../Components/protected/SideBar";
 import NavBar from "../Components/NavBar";
-import Footer from "../Components/Footer";
+
 const AdminDashBoard = () => {
   const [dashboardData, setDashboardData] = useState<string>();
   const authContext = useContext(AuthContext);
@@ -37,7 +37,6 @@ const AdminDashBoard = () => {
           <main className="flex-1">
             <Outlet />
           </main>
-          <Footer size="sm" />
         </div>
       </div>
     );
