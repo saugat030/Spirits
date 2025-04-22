@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { FaArrowUp } from "react-icons/fa";
 type DashboardCardType = {
   price: number;
   title: string;
@@ -8,7 +7,7 @@ type DashboardCardType = {
 };
 const DashboardCard = (props: DashboardCardType) => {
   return (
-    <div className="rounded-2xl border bg-[#f3eae5] p-6 w-[320px] shadow-sm">
+    <div className="rounded-2xl border-2 bg-[#f3eae5] p-6 w-[320px] shadow-sm hover:border-purple-400 transition-colors duration-500">
       <div className="flex items-center gap-4 mb-6">
         <div>{props.primaryicon}</div>
         <p className="text-gray-500 font-semibold">{props.title}</p>
