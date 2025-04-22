@@ -7,6 +7,7 @@ import productRoutes from "./routes/productRoutes.js";
 import ordersRoutes from "./routes/ordersRoute.js";
 import statsRoutes from "./routes/statsRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+// import createAdmin from "./createAdmin.js";
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
@@ -34,6 +35,7 @@ app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server Running succesfully at PORT: " + port);
+  // await createAdmin();
 });
 
 app.listen(port, () => {

@@ -1,3 +1,6 @@
+// import { dbConnect } from "./config/dbConnect.js";
+// import bcrypt from "bcrypt";
+// const saltRounds = 10;
 // const createAdmin = async () => {
 //   const name = "Admin";
 //   const email = "admin@admin.com";
@@ -6,6 +9,7 @@
 
 //   try {
 //     // Check if user already exists
+//     const db = await dbConnect();
 //     const existing = await db.query("SELECT * FROM users WHERE email = $1", [
 //       email,
 //     ]);
@@ -38,4 +42,4 @@
 //     );
 //   }
 // };
-// createAdmin();
+// export default createAdmin;
