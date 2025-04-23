@@ -117,9 +117,9 @@ const BestSelling = () => {
           slideShadows: true,
         }}
       >
-        {products.slice(0, 5).map((item: productType) => {
+        {products.slice(0, 5).map((item: productType, index) => {
           return (
-            <SwiperSlide>
+            <SwiperSlide key={index}>
               <Products
                 imgsrc={item.image_link}
                 name={item.name}

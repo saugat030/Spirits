@@ -18,13 +18,12 @@ const AdminDashBoard = () => {
     const { data } = await axios.get(
       `http://localhost:3000/api/admin/dashboard`
     );
-    console.log(data);
     setDashboardData(data.message);
   }
   useEffect(() => {
     getDashDetails();
   });
-  console.log(dashboardData);
+
   if (userData?.role != "admin") {
     //check if the role is admin.
     return <Navigate to={"/login"}></Navigate>;

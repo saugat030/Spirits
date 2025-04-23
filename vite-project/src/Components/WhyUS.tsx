@@ -23,8 +23,12 @@ const WhyUs = () => {
         Why Chosing Us
       </h1>
       <div className="flex md:flex-row flex-col justify-center items-center gap-12 pt-10">
-        {list.map((item) => (
-          <Whyuscard details={item.details} description={item.description} />
+        {list.map((item, index) => (
+          <Whyuscard
+            key={index}
+            details={item.details}
+            description={item.description}
+          />
         ))}
       </div>
     </div>

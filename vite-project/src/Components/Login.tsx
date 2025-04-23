@@ -64,6 +64,7 @@ const Login = () => {
       navigate("/");
     }
   }, [userData]);
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (state == "Login") {

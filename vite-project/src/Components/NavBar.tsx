@@ -19,7 +19,6 @@ const NavBar = (props: NavType) => {
   }
   const { cartQuantity } = useShoppingCart();
   const { userData, setUserData, setIsLoggedin } = authContext;
-  console.log(userData?.role);
   const navigate = useNavigate();
 
   const logout = async () => {

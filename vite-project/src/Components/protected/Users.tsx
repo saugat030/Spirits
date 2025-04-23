@@ -1,39 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoTrashOutline } from "react-icons/io5";
 import { MdEdit } from "react-icons/md";
 import Modal from "react-modal";
-
-const dummyUsers = [
-  {
-    user_id: "U001",
-    username: "rajeshdai",
-    email: "rajeshdai@secks.com",
-    role: "Admin",
-    isverified: true,
-    created_at: "2024-01-15",
-  },
-  {
-    user_id: "U002",
-    username: "lavizkokera",
-    email: "lavizkokera@yahoo.com",
-    role: "User",
-    isverified: false,
-    created_at: "2024-02-10",
-  },
-  {
-    user_id: "U003",
-    username: "admin",
-    email: "admin@admin.com",
-    role: "Admin",
-    isverified: true,
-    created_at: "2024-03-22",
-  },
-];
+import EditForm from "./EditForm";
+import axios from "axios";
+export type usersData = {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  isverified: boolean;
+};
 
 Modal.setAppElement("#root");
 const Users = () => {
+  const [usersData, setUsersData] = useState<usersData[]>();
+  const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<usersData | null>(null);
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/admin/get-users`
+      );
+      if (response.data.statistics) {
+        setUsersData(response.data.statistics);
+        console.log(response.data.statistics);
+        setLoading(false);
+      } else {
+        console.log(response.data.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    fetchUsers();
+  }, [selectedUser]);
 
   const openModal = (user: any) => {
     setSelectedUser(user);
@@ -44,115 +47,87 @@ const Users = () => {
     setIsModalOpen(false);
     setSelectedUser(null);
   };
-  const [users, setUsers] = useState(dummyUsers);
 
-  const handleDelete = (user_id: string) => {
-    console.log("Delete user:", user_id);
-    setUsers(users.filter((user) => user.user_id !== user_id));
+  const handleDelete = (id: number) => {
+    console.log("Delete user:", id);
+    // setUsers(users.filter((user) => user.id !== user_id));
   };
-
-  return (
-    <div className="p-10 h-screen">
-      <h2 className="text-2xl font-semibold text-slate-700 mb-6">Users</h2>
-      <div className="overflow-x-auto rounded-xl border border-slate-200">
-        <table className="min-w-full table-auto">
-          <thead className="bg-slate-100 text-slate-600 text-left text-sm uppercase font-medium">
-            <tr>
-              <th className="p-4">User ID</th>
-              <th className="p-4">Username</th>
-              <th className="p-4">Email</th>
-              <th className="p-4">Role</th>
-              <th className="p-4">Verified</th>
-              <th className="p-4">Created At</th>
-              <th className="p-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="text-slate-700 text-sm">
-            {users.map((user) => (
-              <tr
-                key={user.user_id}
-                className="even:bg-slate-50 hover:bg-slate-100 transition-colors"
-              >
-                <td className="p-4">{user.user_id}</td>
-                <td className="p-4">{user.username}</td>
-                <td className="p-4">{user.email}</td>
-                <td className="p-4">{user.role}</td>
-                <td className="p-4">
-                  {user.isverified ? (
-                    <span className="text-green-600 font-medium">Yes</span>
-                  ) : (
-                    <span className="text-red-500 font-medium">No</span>
-                  )}
-                </td>
-                <td className="p-4">{user.created_at}</td>
-                <td className="p-4 flex gap-3">
-                  <button
-                    onClick={() => openModal(user)}
-                    className="text-indigo-600 hover:text-indigo-800"
-                    title="Edit"
-                  >
-                    <MdEdit size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(user.user_id)}
-                    className="text-red-500 hover:text-red-700"
-                    title="Delete"
-                  >
-                    <IoTrashOutline size={18} />
-                  </button>
-                </td>
+  if (loading) {
+    return <h1>Loading</h1>;
+  } else {
+    return (
+      <div className="p-10 min-h-screen">
+        <h2 className="text-2xl font-semibold text-slate-700 mb-6">Users</h2>
+        <div className="overflow-x-auto rounded-xl border border-slate-200">
+          <table className="min-w-full table-auto">
+            <thead className="bg-slate-100 text-slate-600 text-left text-sm uppercase font-medium">
+              <tr>
+                {[
+                  "User ID",
+                  "Username",
+                  "Email",
+                  "Role",
+                  "Verified",
+                  "Created At",
+                  "Actions",
+                ].map((item) => (
+                  <th key={item} className="p-4">
+                    {item}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
-          contentLabel="Edit User"
-          className="bg-white p-6 max-w-md mx-auto mt-20 rounded shadow-md outline-none"
-          overlayClassName="fixed inset-0 bg-black bg-opacity-30"
-        >
-          <h2 className="text-xl font-semibold mb-4">Edit User</h2>
-          {selectedUser && (
-            <form className="flex flex-col gap-4">
-              <input
-                type="text"
-                defaultValue={selectedUser.username}
-                className="border px-3 py-2 rounded"
-              />
-              <input
-                type="email"
-                defaultValue={selectedUser.email}
-                className="border px-3 py-2 rounded"
-              />
-              <select
-                defaultValue={selectedUser.role}
-                className="border px-3 py-2 rounded"
-              >
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
-              </select>
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 bg-slate-300 rounded hover:bg-slate-400"
+            </thead>
+            <tbody className="text-slate-700 text-sm">
+              {usersData?.map((users) => (
+                <tr
+                  key={users.id}
+                  className="even:bg-slate-50 hover:bg-slate-100 transition-colors"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          )}
-        </Modal>
+                  <td className="p-4">{users.id}</td>
+                  <td className="p-4">{users.name}</td>
+                  <td className="p-4">{users.email}</td>
+                  <td className="p-4">{users.role}</td>
+                  <td className="p-4">
+                    {users.isverified ? (
+                      <span className="text-green-600 font-medium">Yes</span>
+                    ) : (
+                      <span className="text-red-500 font-medium">No</span>
+                    )}
+                  </td>
+                  <td className="p-4">1st April 2025</td>
+                  <td className="p-4 flex gap-3">
+                    <button
+                      onClick={() => openModal(users)}
+                      className="text-indigo-600 hover:text-indigo-800"
+                      title="Edit"
+                    >
+                      <MdEdit size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(users.id)}
+                      className="text-red-500 hover:text-red-700"
+                      title="Delete"
+                    >
+                      <IoTrashOutline size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Modal
+            isOpen={isModalOpen}
+            onRequestClose={closeModal}
+            contentLabel="Edit User"
+            className="bg-white p-6 max-w-md mx-auto mt-20 border-2 border-green-500 rounded shadow-md outline-none font-Poppins"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-30"
+          >
+            <EditForm closeModal={closeModal} selectedUser={selectedUser} />
+          </Modal>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 export default Users;
