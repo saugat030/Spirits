@@ -4,6 +4,8 @@ import { MdEdit } from "react-icons/md";
 import Modal from "react-modal";
 import EditForm from "./EditForm";
 import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
+
 export type usersData = {
   id: number;
   name: string;
@@ -53,7 +55,11 @@ const Users = () => {
     // setUsers(users.filter((user) => user.id !== user_id));
   };
   if (loading) {
-    return <h1>Loading</h1>;
+    return (
+      <div className="h-screen w-screen flex justify-center items-center">
+        <ClipLoader color="brown" size={100} />
+      </div>
+    );
   } else {
     return (
       <div className="p-10 min-h-screen">
@@ -78,17 +84,17 @@ const Users = () => {
               </tr>
             </thead>
             <tbody className="text-slate-700 text-sm">
-              {usersData?.map((users) => (
+              {usersData?.map((user) => (
                 <tr
-                  key={users.id}
+                  key={user.id}
                   className="even:bg-slate-50 hover:bg-slate-100 transition-colors"
                 >
-                  <td className="p-4">{users.id}</td>
-                  <td className="p-4">{users.name}</td>
-                  <td className="p-4">{users.email}</td>
-                  <td className="p-4">{users.role}</td>
+                  <td className="p-4">{user.id}</td>
+                  <td className="p-4">{user.name}</td>
+                  <td className="p-4">{user.email}</td>
+                  <td className="p-4">{user.role}</td>
                   <td className="p-4">
-                    {users.isverified ? (
+                    {user.isverified ? (
                       <span className="text-green-600 font-medium">Yes</span>
                     ) : (
                       <span className="text-red-500 font-medium">No</span>
@@ -97,14 +103,14 @@ const Users = () => {
                   <td className="p-4">1st April 2025</td>
                   <td className="p-4 flex gap-3">
                     <button
-                      onClick={() => openModal(users)}
+                      onClick={() => openModal(user)}
                       className="text-indigo-600 hover:text-indigo-800"
                       title="Edit"
                     >
                       <MdEdit size={18} />
                     </button>
                     <button
-                      onClick={() => handleDelete(users.id)}
+                      onClick={() => handleDelete(user.id)}
                       className="text-red-500 hover:text-red-700"
                       title="Delete"
                     >

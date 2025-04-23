@@ -6,8 +6,10 @@ import { Navigate, Outlet } from "react-router-dom";
 import SideBar from "../Components/protected/SideBar";
 import NavBar from "../Components/NavBar";
 
+import { ClipLoader } from "react-spinners";
 const AdminDashBoard = () => {
   const [dashboardData, setDashboardData] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(true);
   const authContext = useContext(AuthContext);
   if (!authContext) {
     throw new Error("AuthContext must be used within AuthContextProvider");
@@ -19,6 +21,7 @@ const AdminDashBoard = () => {
       `http://localhost:3000/api/admin/dashboard`
     );
     setDashboardData(data.message);
+    setLoading(false);
   }
   useEffect(() => {
     getDashDetails();
@@ -28,6 +31,13 @@ const AdminDashBoard = () => {
     //check if the role is admin.
     return <Navigate to={"/login"}></Navigate>;
   } else {
+    if (loading) {
+      return (
+        <div className="h-screen w-screen flex justify-center items-center">
+          <ClipLoader color="brown" size={100} />
+        </div>
+      );
+    }
     return (
       <div className="flex font-Poppins">
         <SideBar />

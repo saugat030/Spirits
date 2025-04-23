@@ -16,6 +16,7 @@ const EditForm = ({ selectedUser, closeModal }: EditFormType) => {
     selectedUser?.role
   );
   const [isVerified, setIsVerified] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
   const updateUser = async () => {
     axios.defaults.withCredentials = true;
@@ -38,6 +39,10 @@ const EditForm = ({ selectedUser, closeModal }: EditFormType) => {
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!username || !email || !userRole) {
+      setError("Fields cannot be empty");
+      return;
+    }
     console.log("Form submitting...");
     await updateUser();
     closeModal();
@@ -52,7 +57,10 @@ const EditForm = ({ selectedUser, closeModal }: EditFormType) => {
             <input
               type="text"
               defaultValue={selectedUser.name}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                setError("");
+              }}
               id="username"
               className="border w-full border-black focus:border-blue-500 px-3 py-2 rounded block mt-1"
             />
@@ -62,7 +70,10 @@ const EditForm = ({ selectedUser, closeModal }: EditFormType) => {
             <input
               type="email"
               defaultValue={selectedUser.email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
               id="email"
               className="border w-full  border-black focus:border-blue-500  px-3 py-2 rounded block mt-1"
             />
@@ -71,13 +82,17 @@ const EditForm = ({ selectedUser, closeModal }: EditFormType) => {
             Role
             <select
               defaultValue={selectedUser.role}
-              onChange={(e) => setUserRole(e.target.value)}
+              onChange={(e) => {
+                setUserRole(e.target.value);
+                setError("");
+              }}
               className="border w-full border-black focus:border-blue-500  bg-white px-3 py-2 rounded block mt-1"
             >
               <option value="admin">admin</option>
               <option value="user">user</option>
             </select>
           </label>
+          {error && <h1 className="text-sm text-red-500">{error}</h1>}
           <div className="flex justify-end gap-2">
             <button
               type="button"
