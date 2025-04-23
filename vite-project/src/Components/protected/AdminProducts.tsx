@@ -5,6 +5,7 @@ import Modal from "react-modal";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 import ProductEditForm from "./ProductEditForm";
+import { FaCirclePlus } from "react-icons/fa6";
 
 export type ProductsType = {
   id: number;
@@ -27,7 +28,7 @@ const AdminProducts = () => {
   );
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
-
+  const [refresh, setRefresh] = useState<boolean>(true);
   const fetchProducts = async () => {
     setLoading(true);
 
@@ -52,7 +53,7 @@ const AdminProducts = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [selectedProduct, page]);
+  }, [refresh, page]);
 
   const openModal = (product: ProductsType) => {
     setSelectedProduct(product);
@@ -62,6 +63,7 @@ const AdminProducts = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
+    setRefresh(!refresh);
   };
 
   const handleDelete = async (id: number) => {
@@ -83,7 +85,13 @@ const AdminProducts = () => {
   } else {
     return (
       <div className="p-10 min-h-screen">
-        <h2 className="text-2xl font-semibold text-slate-700 mb-6">Products</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-semibold text-slate-700">Products</h2>
+          <button className="flex gap-2 items-center bg-slate-100 text-slate-700 border px-4 py-2 rounded-2xl shadow-md hover:bg-slate-600 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out font-semibold tracking-wide">
+            <FaCirclePlus />
+            Add Product
+          </button>
+        </div>
         <div className="pb-2 overflow-x-auto rounded-xl border border-slate-200">
           <table className="min-w-full table-auto">
             <thead className="bg-slate-100 text-slate-600 text-left text-sm uppercase font-medium">
@@ -159,9 +167,9 @@ const AdminProducts = () => {
           <Modal
             isOpen={isModalOpen}
             onRequestClose={closeModal}
-            contentLabel="Edit User"
-            className="bg-white p-6 max-w-md mx-auto mt-20 border-2 border-green-500 rounded shadow-md outline-none font-Poppins"
-            overlayClassName="fixed inset-0 bg-black bg-opacity-30"
+            contentLabel="Edit Product"
+            className="bg-white p-4 max-w-md mx-auto 2xl:mt-20 border-2 border-green-500 rounded shadow-md outline-none font-Poppins"
+            overlayClassName="fixed z-50 inset-0 bg-black bg-opacity-30"
           >
             <ProductEditForm
               closeModal={closeModal}

@@ -36,6 +36,7 @@ export const addProduct = async (req, res) => {
     });
   }
 };
+//sample data :{}
 export const updateProduct = async (req, res) => {
   const product_id = parseInt(req.params.id);
   const { name, type_id, image_link, description, quantity, price } = req.body;
@@ -56,12 +57,16 @@ export const updateProduct = async (req, res) => {
       [name, type_id, image_link, description, quantity, price, product_id]
     );
     if (result.rowCount === 0) {
+      db.release();
+      console.log("Unable to find the product with the ID.");
       return res.status(404).json({
         success: false,
         error: `Unable to find such product with the ID:${product_id}`,
       });
     }
     res.json({ success: true, statistics: result.rows[0] });
+    console.log("Product updated successfully.");
+    db.release();
   } catch (err) {
     console.log(err.message);
     res.status(500).json({
