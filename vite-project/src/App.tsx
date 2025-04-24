@@ -12,6 +12,7 @@ import AdminProducts from "./Components/protected/AdminProducts";
 import Settings from "./Components/protected/Settings";
 import Orders from "./Components/protected/Orders";
 import Dashboard from "./Components/protected/Dashboard";
+import AddProducts from "./Components/protected/AddProducts";
 function App() {
   return (
     <ShoppingCartProvider>
@@ -26,6 +27,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashBoard />}>
             <Route index element={<Dashboard />} />
             <Route path="users" element={<Users />} />
+            <Route path="users/add" element={<AddProducts />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="settings" element={<Settings />} />
             <Route path="orders" element={<Orders />} />
