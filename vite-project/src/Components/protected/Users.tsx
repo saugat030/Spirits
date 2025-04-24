@@ -27,7 +27,6 @@ const Users = () => {
       );
       if (response.data.statistics) {
         setUsersData(response.data.statistics);
-        console.log(response.data.statistics);
         setLoading(false);
       } else {
         console.log(response.data.message);
@@ -36,6 +35,7 @@ const Users = () => {
       console.error(err);
     }
   };
+
   useEffect(() => {
     fetchUsers();
   }, [selectedUser]);

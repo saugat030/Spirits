@@ -23,12 +23,19 @@ const AdminDashBoard = () => {
     setDashboardData(data.message);
     setLoading(false);
   }
+
   useEffect(() => {
     getDashDetails();
-  });
+  }, []);
 
-  if (userData?.role != "admin") {
-    //check if the role is admin.
+  if (!userData) {
+    return (
+      <div className="h-screen w-screen flex justify-center items-center">
+        <ClipLoader color="brown" size={100} />
+      </div>
+    );
+  }
+  if (userData.role != "admin") {
     return <Navigate to={"/login"}></Navigate>;
   } else {
     if (loading) {

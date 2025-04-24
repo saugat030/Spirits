@@ -8,27 +8,27 @@ const SideBar = () => {
   const navItems = [
     {
       name: "Dashboard",
-      to: "/admin/dashboard",
+      to: "/admin",
       icon: <MdOutlineDashboard size={20} />,
     },
     {
       name: "Users",
-      to: "/admin/dashboard/users",
+      to: "/admin/users",
       icon: <LuUsersRound size={20} />,
     },
     {
       name: "Orders",
-      to: "/admin/dashboard/orders",
+      to: "/admin/orders",
       icon: <IoCalendarClearOutline size={20} />,
     },
     {
       name: "Products",
-      to: "/admin/dashboard/products",
+      to: "/admin/products",
       icon: <FaRegFolderOpen size={20} />,
     },
     {
       name: "Settings",
-      to: "/admin/dashboard/settings",
+      to: "/admin/settings",
       icon: <IoSettingsOutline size={20} />,
     },
   ];

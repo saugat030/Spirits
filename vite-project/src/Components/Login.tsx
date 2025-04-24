@@ -59,7 +59,7 @@ const Login = () => {
   useEffect(() => {
     if (!userData) return;
     if (userData.role === "admin") {
-      navigate("/admin/dashboard");
+      navigate("/admin");
     } else {
       navigate("/");
     }

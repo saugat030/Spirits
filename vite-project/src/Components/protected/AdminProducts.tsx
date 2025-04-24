@@ -6,6 +6,7 @@ import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 import ProductEditForm from "./ProductEditForm";
 import { FaCirclePlus } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 
 export type ProductsType = {
   id: number;
@@ -20,6 +21,7 @@ export type ProductsType = {
 
 Modal.setAppElement("#root");
 const AdminProducts = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<ProductsType[]>();
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,10 +69,10 @@ const AdminProducts = () => {
   };
 
   const handleDelete = async (id: number) => {
-    console.log("Delete product:", id);
+    console.log("Deleting product...", id);
     try {
       await axios.delete(`http://localhost:3000/api/products/${id}`);
-      setProducts((prev) => prev?.filter((p) => p.id !== id));
+      setRefresh(!refresh);
     } catch (error) {
       console.error("Failed to delete product:", error);
     }
@@ -87,7 +89,13 @@ const AdminProducts = () => {
       <div className="p-10 min-h-screen">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold text-slate-700">Products</h2>
-          <button className="flex gap-2 items-center bg-slate-100 text-slate-700 border px-4 py-2 rounded-2xl shadow-md hover:bg-slate-600 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out font-semibold tracking-wide">
+          <button
+            onClick={() => {
+              navigate("/admin/products/add");
+              console.log("Clicked");
+            }}
+            className="flex gap-2 items-center bg-slate-100 text-slate-700 border px-4 py-2 rounded-2xl shadow-md hover:bg-slate-600 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out font-semibold tracking-wide"
+          >
             <FaCirclePlus />
             Add Product
           </button>

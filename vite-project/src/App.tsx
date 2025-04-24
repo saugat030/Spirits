@@ -24,11 +24,11 @@ function App() {
           <Route path="/login" element={<Authentication />} />
           <Route path="/cart" element={<CartPage />} />
           {/* Admin Routes */}
-          <Route path="/admin/dashboard" element={<AdminDashBoard />}>
+          <Route path="/admin" element={<AdminDashBoard />}>
             <Route index element={<Dashboard />} />
             <Route path="users" element={<Users />} />
-            <Route path="users/add" element={<AddProducts />} />
             <Route path="products" element={<AdminProducts />} />
+            <Route path="products/add" element={<AddProducts />} />
             <Route path="settings" element={<Settings />} />
             <Route path="orders" element={<Orders />} />
           </Route>

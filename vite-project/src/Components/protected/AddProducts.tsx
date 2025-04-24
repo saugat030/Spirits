@@ -28,9 +28,11 @@ const AddProducts = () => {
       });
       if (response.data.statistics) {
         console.log(response.data.statistics);
+        navigate("/admin/products");
       }
     } catch (error: any) {
       console.log(error.message);
+      setError(error.message);
     }
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,12 +53,12 @@ const AddProducts = () => {
   };
 
   return (
-    <div className="flex justify-center gap-12">
-      <h2 className="2xl:text-2xl xl:text-xl font-bold mb-4">Edit User</h2>
+    <div className="flex justify-center gap-40 h-[calc(100vh-60px)] items-center">
       <form
         className="flex flex-col 2xl:gap-4 xl:gap-2"
         onSubmit={handleSubmit}
       >
+        <h2 className="2xl:text-2xl xl:text-xl font-bold mb-4">Add Product</h2>
         <label htmlFor="product_name" className="font-semibold">
           Product Name
           <input
@@ -142,7 +144,7 @@ const AddProducts = () => {
         <div className="flex justify-end gap-2">
           <button
             type="button"
-            onClick={() => navigate("/admin/dashboard/users")}
+            onClick={() => navigate("/admin/products")}
             className="px-4 py-2 bg-slate-300 rounded hover:bg-slate-400"
           >
             Cancel
@@ -155,7 +157,12 @@ const AddProducts = () => {
           </button>
         </div>
       </form>
-      <Products id={1} imgsrc={imageUrl} name={productName} price={0} />
+      <div className="flex flex-col 2xl:gap-4 xl:gap-2">
+        <h1 className="2xl:text-2xl xl:text-xl font-bold mb-4 text-center">
+          Card Preview
+        </h1>
+        <Products id={1} imgsrc={imageUrl} name={productName} price={price} />
+      </div>
     </div>
   );
 };
