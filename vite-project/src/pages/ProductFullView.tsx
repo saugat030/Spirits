@@ -33,7 +33,6 @@ const ProductFullView = () => {
     const { data } = await axios.get(
       `http://localhost:3000/api/products/${params.id}`
     );
-    console.log(data[0]);
     setProductName(data[0].name);
     setPrice(data[0].price);
     setCategory(data[0].type_name);
@@ -84,7 +83,7 @@ const ProductFullView = () => {
           <hr />
           <div className=" py-8 grid grid-cols-2 w-full place-content-evenly">
             <h1 className="text-5xl font-bold text-yellow-400 ">
-              ${parseInt(price) - 2}
+              ${parseInt(price) - 2 < 1 ? 1 : parseInt(price)}
             </h1>
             <h2 className="text-2xl text-yellow-400 flex gap-1">
               <PiStarFill />

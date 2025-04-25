@@ -98,7 +98,7 @@ const ProductEditForm = ({ selectedProduct, closeModal }: ProductEditType) => {
                 setError("");
               }}
               id="image_link"
-              className="border w-full font-normal border-black focus:border-blue-500  px-3 py-2 rounded block mt-1"
+              className="border w-full font-normal border-black focus:border-blue-500 px-3 py-2 rounded block mt-1"
             />
           </label>
           <label htmlFor="description" className="font-semibold">
@@ -145,7 +145,7 @@ const ProductEditForm = ({ selectedProduct, closeModal }: ProductEditType) => {
           <label htmlFor="type_name" className="font-semibold">
             Type
             <select
-              defaultValue={selectedProduct.type_name}
+              defaultValue={selectedProduct?.type_name}
               onChange={(e) => {
                 setType_Name(e.target.value);
                 setError("");

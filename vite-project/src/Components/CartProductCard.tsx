@@ -2,10 +2,13 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { useShoppingCart } from "../Context/ShoppingCartContext";
+import ClipLoader from "react-spinners/ClipLoader";
+
 type CartCardProps = {
   id: number;
   quantity: number;
 };
+
 const CartProductCard = ({ id, quantity }: CartCardProps) => {
   const { removeFromCart, increaseCartQuantity, decreaseCartQuantity } =
     useShoppingCart();
@@ -13,6 +16,8 @@ const CartProductCard = ({ id, quantity }: CartCardProps) => {
   const [price, setPrice] = useState<number>(0);
   const [category, setCategory] = useState<string>("");
   const [img_link, setImglink] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+
   async function getProducts() {
     const { data } = await axios.get(
       `http://localhost:3000/api/products/${id}`
@@ -21,10 +26,16 @@ const CartProductCard = ({ id, quantity }: CartCardProps) => {
     setPrice(data[0].price);
     setCategory(data[0].type_name);
     setImglink(data[0].image_link);
+    setLoading(false);
   }
+
   useEffect(() => {
     getProducts();
-  });
+  }, []);
+
+  if (loading) {
+    return <ClipLoader color="brown" size={100}></ClipLoader>;
+  }
   return (
     <section className="flex items-center gap-28 h-36 py-2 px-4 rounded-md bg-slate-100 mt-8">
       <figure className="h-full flex p-1 flex-1">

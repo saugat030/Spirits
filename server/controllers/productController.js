@@ -21,11 +21,13 @@ export const getAllSpirits = async (req, res) => {
       if (result.rows.length > 0) {
         const data = result.rows;
         //res.json le automatically js object lai jsonify handuinxa so no need :JSON.stringify(data);
+        db.release();
         return res.json({
           page,
           statistics: data,
         });
       } else {
+        db.release();
         console.log("No data in the table with that type.");
         res.status(404).json({ message: "No products found with that type" });
       }
@@ -43,12 +45,13 @@ export const getAllSpirits = async (req, res) => {
       );
       if (result.rows.length > 0) {
         const data = result.rows;
-
+        db.release();
         return res.json({
           page,
           statistics: data,
         });
       } else {
+        db.release();
         console.log("No products found with that name");
         res.status(404).json({ message: "No products found with that name" });
       }
@@ -114,13 +117,14 @@ export const getSpiritsById = async (req, res) => {
         const data = result.rows;
 
         //res.json le automatically js object lai jsonify handuinxa so no need :JSON.stringify(data);
-
-        res.json(data);
+        db.release();
+        return res.status(200).json(data);
       } else {
         console.log("No data in the table.");
         res.status(404).json({ message: "No products found" });
       }
     } catch (err) {
+      db.release();
       console.error(err);
       res.status(500).json({ error: "Internal server error" });
     }
@@ -134,10 +138,11 @@ export const getSpiritsById = async (req, res) => {
         const data = result.rows;
 
         //res.json le automatically js object lai jsonify handinxa so no need :JSON.stringify(data);
-
-        res.json(data);
+        db.release();
+        return res.json(data);
       } else {
-        console.log("No data in the table.");
+        console.log("No data in the table. Releasing Database...");
+        db.release();
         res.status(404).json({ message: "No products found" });
       }
     } catch (err) {
