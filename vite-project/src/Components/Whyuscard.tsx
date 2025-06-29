@@ -1,9 +1,5 @@
-interface WhyUsProps {
-  details: string;
-  description: string;
-}
-
 import { MdOutlineArrowRightAlt } from "react-icons/md";
+import { WhyUsProps } from "../types/home.types";
 
 const Whyuscard = ({ details, description }: WhyUsProps) => {
   return (

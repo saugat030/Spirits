@@ -144,9 +144,9 @@ export const logout = async (req, res) => {
       secure: false,
       sameSite: "lax",
     });
-    return res.json({ success: true, message: "Logged Out." });
+    return res.status(200).json({ success: true, message: "Logged Out." });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 //Check if user loggedIn:

@@ -8,20 +8,10 @@ import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
-export type productType = {
-  id: number;
-  name: string;
-  image_link: string;
-  description: string;
-  quantity: number;
-  type_id: number;
-  type_name: string;
-  price: number;
-};
+import { ProductData } from "../types/api.types";
 
 const BestSelling = () => {
-  const [products, setProducts] = useState<productType[]>([]);
+  const [products, setProducts] = useState<ProductData[]>([]);
   const [error, setError] = useState<string>("");
   const [alc, setAlc] = useState<string>("Whiskey");
 
@@ -117,7 +107,7 @@ const BestSelling = () => {
           slideShadows: true,
         }}
       >
-        {products.slice(0, 5).map((item: productType, index) => {
+        {products.slice(0, 5).map((item: ProductData, index) => {
           return (
             <SwiperSlide key={index}>
               <Products

@@ -1,4 +1,3 @@
-// import img from "../static/landingBg.jpg";
 import { useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +6,8 @@ const Landing = () => {
   const [searchKey, setSearchkey] = useState<string>("");
   const navigate = useNavigate();
   function handleClick() {
-    navigate(`/products?name=${searchKey}`);
+    //Even tho spacebar in the url is automatically handled better to use it for understanding
+    navigate(`/products?name=${encodeURIComponent(searchKey)}`);
   }
   return (
     <>
@@ -23,7 +23,7 @@ const Landing = () => {
           </p>
           <div className="flex-col flex gap-16 justify-center items-center">
             <div
-              className="flex items-center bg-gray-600/20 backdrop-blur-sm 2xl::pl-4 p-2 rounded-full 2xl:w-[400px] w-[350px] mx-auto border hover:scale-105 duration-200 border-gray-400
+              className="flex items-center bg-gray-600/20 backdrop-blur-sm 2xl:pl-4 p-2 rounded-full lg:w-[400px] w-[370px] mx-auto border border-gray-400
            mt-6"
             >
               <input
@@ -33,7 +33,7 @@ const Landing = () => {
                 onChange={(e) => {
                   setSearchkey(e.target.value);
                 }}
-                className="flex-1 bg-transparent text-white placeholder-gray-300 outline-none"
+                className="flex-1 bg-transparent text-white placeholder-gray-300 outline-none pl-4"
               />
               <button
                 className="bg-orange-500 hover:bg-orange-600 text-white rounded-full md:p-3 p-2 md:ml-2"
@@ -42,9 +42,6 @@ const Landing = () => {
                 <IoSearch />
               </button>
             </div>
-            <button className="px-3 py-2 text-lg text-white bg-orange-500 opacity-90 rounded-2xl md:hidden">
-              Find what matches your taste
-            </button>
           </div>
         </div>
       </div>

@@ -5,8 +5,8 @@ import axios from "axios";
 import { Navigate, Outlet } from "react-router-dom";
 import SideBar from "../Components/protected/SideBar";
 import NavBar from "../Components/NavBar";
-
 import { ClipLoader } from "react-spinners";
+
 const AdminDashBoard = () => {
   const [dashboardData, setDashboardData] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);

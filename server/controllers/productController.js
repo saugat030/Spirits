@@ -29,7 +29,10 @@ export const getAllSpirits = async (req, res) => {
       } else {
         db.release();
         console.log("No data in the table with that type.");
-        res.status(404).json({ message: "No products found with that type" });
+        res.status(404).json({
+          success: false,
+          message: "No products found with that type",
+        });
       }
     } catch (err) {
       console.error(err);
@@ -94,7 +97,7 @@ export const getAllSpirits = async (req, res) => {
       } else {
         console.log("No data in the table.");
         db.release();
-        res.status(200).json({ message: "No products found" });
+        res.status(400).json({ message: "No products found" });
       }
     } catch (err) {
       console.error(err);
@@ -121,12 +124,12 @@ export const getSpiritsById = async (req, res) => {
         return res.status(200).json(data);
       } else {
         console.log("No data in the table.");
-        res.status(404).json({ message: "No products found" });
+        res.status(404).json({ success: false, message: "No products found" });
       }
     } catch (err) {
       db.release();
       console.error(err);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ success: false, error: "Internal server error" });
     }
   } else {
     try {
@@ -136,10 +139,15 @@ export const getSpiritsById = async (req, res) => {
       );
       if (result.rows.length > 0) {
         const data = result.rows;
-
         //res.json le automatically js object lai jsonify handinxa so no need :JSON.stringify(data);
         db.release();
-        return res.json(data);
+        return res
+          .status(200)
+          .json({
+            success: true,
+            message: "Products fetched successfully.",
+            data: data,
+          });
       } else {
         console.log("No data in the table. Releasing Database...");
         db.release();

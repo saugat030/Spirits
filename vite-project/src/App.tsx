@@ -13,28 +13,58 @@ import Settings from "./Components/protected/Settings";
 import Orders from "./Components/protected/Orders";
 import Dashboard from "./Components/protected/Dashboard";
 import AddProducts from "./Components/protected/AddProducts";
+import ProtectedRoute from "./Components/protected/protectedRoute";
+import { AuthContextProvider } from "./Context/AuthContext";
+
 function App() {
   return (
-    <ShoppingCartProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/products/:id" element={<ProductFullView />} />
-          <Route path="/login" element={<Authentication />} />
-          <Route path="/cart" element={<CartPage />} />
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminDashBoard />}>
-            <Route index element={<Dashboard />} />
-            <Route path="users" element={<Users />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="products/add" element={<AddProducts />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="orders" element={<Orders />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </ShoppingCartProvider>
+    <AuthContextProvider>
+      <ShoppingCartProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/:id" element={<ProductFullView />} />
+            <Route path="/login" element={<Authentication />} />
+            {/* Protected routes that require login */}
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <CartPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* Admin Routes - Role-based protection */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requiredRole="admin" requireVerified={true}>
+                  <AdminDashBoard />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="users" element={<Users />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="products/add" element={<AddProducts />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="orders" element={<Orders />} />
+            </Route>
+
+            {/* Fallback routes */}
+            <Route
+              path="/unauthorized"
+              element={<div>Unauthorized Access</div>}
+            />
+            <Route
+              path="/verify-account"
+              element={<div>Please verify your account</div>}
+            />
+          </Routes>
+        </BrowserRouter>
+      </ShoppingCartProvider>
+    </AuthContextProvider>
   );
 }
 
