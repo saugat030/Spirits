@@ -17,7 +17,7 @@ const Landing = () => {
           <h1 className="line-clamp-2 w-full xl:w-[60%] 2xl:w-1/2 text-center mx-auto font-bold xl:text-3xl 2xl:text-5xl text-lg 2xl:py-2 p-0">
             Drink because you are happy, but never because you are miserable.
           </h1>
-          <p className="mx-auto md:block hidden w-[40%]  text-center 2xl:text-xl xl:text-lg text-gray-400">
+          <p className="mx-auto md:block hidden w-[40%]  text-center 2xl:text-xl xl:text-lg text-gray-300">
             Drink moderately, for drunkenness neither keeps a secret, not
             observes a promise.
           </p>

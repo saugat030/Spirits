@@ -3,58 +3,57 @@ import ShopByCategs from "../Components/ShopByCategs";
 import MostPopular from "../Components/MostPopular";
 import Footer from "../Components/Footer";
 import { useEffect, useState } from "react";
-import { productType } from "../Components/BestSelling";
-import { useSearchParams } from "react-router-dom";
-import { Dispatch, SetStateAction } from "react";
-import axios from "axios";
-
-export type MostPopularProps = {
-  productsValue: productType[];
-  error: string;
-  page: number;
-  setPage: Dispatch<SetStateAction<number>>;
-};
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useGetProducts } from "../services/api/productsApi";
 
 const ProductsPage = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const alcName = searchParams.get("name");
-  const [products, setProducts] = useState<productType[]>([]);
-  const [error, setError] = useState<string>("");
+  const type = searchParams.get("type");
   const [category, setCategory] = useState<string>("");
-  const [page, setPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(12);
 
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/api/products?type=${category}&name=${alcName}&page=${page}`
-      );
-      if (response.data.statistics) {
-        setProducts(response.data.statistics);
-        console.log(response.data.statistics);
-        setError("");
-      } else {
-        setError(response.data.message);
-        console.log(response.data.message);
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  const {
+    data: productsData,
+    error,
+    isLoading,
+  } = useGetProducts({
+    type: category,
+    name: alcName,
+    page: currentPage,
+    limit: itemsPerPage,
+  });
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  console.log(page);
-  console.log(error);
+
+  const handleCategoryChange = (newCategory: string) => {
+    setCurrentPage(1); // Reset to first page when category changes
+    navigate(`?type=${newCategory}`);
+  };
+
   useEffect(() => {
-    fetchProducts();
-  }, [category, alcName, page]);
+    if (type && category !== type) {
+      setCategory(type);
+    }
+  }, [type]);
 
   return (
     <div className="font-Poppins">
       <NavBar page="products" />
-      <ShopByCategs category={category} setCateg={setCategory} />
+      <ShopByCategs category={category} setCateg={handleCategoryChange} />
       <MostPopular
-        productsValue={products}
+        title={alcName ? `Showing results for " ${alcName} "` : "Most Popular"}
+        products={productsData}
         error={error}
-        setPage={setPage}
-        page={page}
+        isLoading={isLoading}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
       />
       <Footer size="lg" />
     </div>

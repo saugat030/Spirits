@@ -207,16 +207,16 @@ export const getSpiritsById = async (req, res) => {
         return res.status(200).json({
           success: true,
           message: "Products fetched successfully.",
-          data: data,
+          data,
         });
       } else {
         console.log("No data in the table. Releasing Database...");
         db.release();
-        res.status(404).json({ message: "No products found" });
+        res.status(404).json({ success: false, message: "No products found" });
       }
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ success: false, error: "Internal server error" });
     }
   }
 };
@@ -225,17 +225,13 @@ export const getSpiritsByPrice = async (req, res) => {
   let { min } = req.query;
   let { max } = req.query;
   console.log("A req has hit the api endpoint: " + req.url);
-  console.log(
-    "The fiilter for min price and max price are : " + minPrice,
-    maxPrice
-  );
+  console.log("The fiilter for min price and max price are : " + min, max);
   try {
     const db = await dbConnect();
     const result = await db.query(
       "select * from liquors join categories on liquors.type_id = categories.type_id where price > ($1) and price < ($2) order by price asc",
       [min, max]
     );
-    console.log(result.rows);
     if (result.rows.length > 0) {
       return res.json(result.rows);
     } else {
