@@ -2,6 +2,12 @@ import { CATEGORIES } from "../constants/homepage.constants";
 import { ShopByCategsProps } from "../types/home.types";
 
 const ShopByCategs = (props: ShopByCategsProps) => {
+  const handleCategoryClick = (categoryName: string) => {
+    const isActive = props.category === categoryName;
+    const newCategory = isActive ? "" : categoryName;
+    props.setCateg(newCategory);
+  };
+
   return (
     <section className="flex flex-col items-center gap-[28px] py-[48px] h-[450px] bg-gray-100">
       <h1 className="text-center text-4xl font-semibold w-full">
@@ -13,7 +19,7 @@ const ShopByCategs = (props: ShopByCategsProps) => {
           return (
             <div
               key={category.name}
-              onClick={() => props.setCateg(isActive ? "" : category.name)}
+              onClick={() => handleCategoryClick(category.name)}
               className={`h-[210px] w-[180px] flex flex-col justify-between items-center ${
                 isActive ? "hover:scale-100" : "hover:scale-110"
               } duration-300 transform cursor-pointer rounded-xl`}

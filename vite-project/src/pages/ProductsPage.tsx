@@ -11,6 +11,7 @@ const ProductsPage = () => {
   const [searchParams] = useSearchParams();
   const alcName = searchParams.get("name");
   const type = searchParams.get("type");
+
   const [category, setCategory] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(12);
@@ -33,15 +34,37 @@ const ProductsPage = () => {
   };
 
   const handleCategoryChange = (newCategory: string) => {
-    setCurrentPage(1); // Reset to first page when category changes
-    navigate(`?type=${newCategory}`);
+    // Build new search params
+    const newSearchParams = new URLSearchParams();
+
+    // Keep the name param if it exists
+    if (alcName) {
+      newSearchParams.set("name", alcName);
+    }
+
+    // Add type param if category is selected
+    if (newCategory) {
+      newSearchParams.set("type", newCategory);
+    }
+
+    // Navigate with the new params - this will trigger the useEffect to update state
+    const queryString = newSearchParams.toString();
+    navigate(queryString ? `?${queryString}` : "/products");
   };
 
+  // Initialize and sync category from URL params
   useEffect(() => {
-    if (type && category !== type) {
-      setCategory(type);
+    const newCategory = type || "";
+    if (category !== newCategory) {
+      setCategory(newCategory);
+      setCurrentPage(1);
     }
   }, [type]);
+
+  // Reset page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [alcName]);
 
   return (
     <div className="font-Poppins">

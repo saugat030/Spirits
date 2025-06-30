@@ -1,12 +1,10 @@
-import { ApiResponse, ProductData } from "../types/api.types";
-
 export const DROPDOWN_CONSTANTS = [
-  { label: "Whiskey", link: "/products?category=whiskey" },
-  { label: "Vodka", link: "/products?category=vodka" },
-  { label: "Beer", link: "/products?category=beer" },
-  { label: "Wine", link: "/products?category=wine" },
-  { label: "Rum", link: "/products?category=rum" },
-  { label: "Tequilla", link: "/products?category=tequilla" },
+  { label: "Whiskey", link: "/products?type=Whiskey" },
+  { label: "Vodka", link: "/products?type=Vodka" },
+  { label: "Beer", link: "/products?type=Beer" },
+  { label: "Wine", link: "/products?type=Wine" },
+  { label: "Rum", link: "/products?type=Rum" },
+  { label: "Tequilla", link: "/products?type=Tequilla" },
 ];
 const NAV_ITEMS = [
   { label: "Spirits", link: "#" },
