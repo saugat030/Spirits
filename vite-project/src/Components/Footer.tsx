@@ -13,12 +13,12 @@ const Footer = (props: FooterProp) => {
   return (
     <section
       id="footer"
-      className={`container mx-auto flex flex-col p-2 ${
-        props.size !== "sm" ? "mt-64 gap-24" : "gap-4"
+      className={`container mx-auto flex flex-col lg:p-2 p-4 ${
+        props.size !== "sm" ? "lg:mt-64 mt-32 gap-24" : "gap-4"
       }`}
     >
-      <div className="flex justify-between items-center w-full">
-        <div className="flex flex-col gap-10 w-[25%]">
+      <div className="flex flex-col lg:flex-row lg:justify-between justify-center lg:items-center gap-10 w-full">
+        <div className="flex lg:flex-col items-start flex-row gap-10 lg:w-[25%] w-full">
           <h2 className="text-3xl font-semibold">Spirits</h2>
           {props.size != "sm" && (
             <p className="text-gray-600 text-justify">

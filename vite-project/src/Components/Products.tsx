@@ -3,13 +3,9 @@ import { FaCirclePlus } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-type propType = {
-  imgsrc: string;
-  name: string;
-  price: number;
-  id: number;
-};
-const Products = ({ imgsrc, name, price, id }: propType) => {
+import { ProductCardPropType } from "../types/home.types";
+
+const Products = ({ imgSrc, name, price, id }: ProductCardPropType) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const navigate = useNavigate();
   function handleClick() {
@@ -22,7 +18,7 @@ const Products = ({ imgsrc, name, price, id }: propType) => {
   return (
     <section
       onClick={handleClick}
-      className="h-[430px] transform w-[256px] duration-200 rounded-lg p-2 shadow-md shadow-slate-300 bg-gray-100 flex flex-col gap-5 hover:scale-105 cursor-pointer"
+      className="h-[430px] transform w-[256px] duration-200 rounded-lg p-2 shadow-md shadow-slate-300 bg-gray-100 flex flex-col gap-5 cursor-pointer"
     >
       <figure className="text-center relative flex justify-center items-center">
         {!imageLoaded && (
@@ -31,7 +27,7 @@ const Products = ({ imgsrc, name, price, id }: propType) => {
           </div>
         )}
         <img
-          src={imgsrc}
+          src={imgSrc}
           alt=""
           className="h-[280px] w-full object-fill rounded-xl"
           onLoad={() => setImageLoaded(true)}

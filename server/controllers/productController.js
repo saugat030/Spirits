@@ -11,100 +11,163 @@ export const getAllSpirits = async (req, res) => {
   name = name === "null" || name === "" ? null : name;
   console.log("The requested type and name is: " + type, name);
 
+  const offset = (page - 1) * limit;
+
   if (type) {
     try {
       const db = await dbConnect();
-      const result = await db.query(
-        "select id, name , image_link , description , quantity , categories.type_id , type_name , price from liquors join categories on liquors.type_id = categories.type_id where type_name = ($1) order by id asc",
+
+      // Get total count for pagination
+      const countResult = await db.query(
+        "SELECT COUNT(*) FROM liquors JOIN categories ON liquors.type_id = categories.type_id WHERE type_name = ($1)",
         [type]
       );
+      const total = parseInt(countResult.rows[0].count);
+
+      // Get paginated data
+      const result = await db.query(
+        "SELECT id, name, image_link, description, quantity, categories.type_id, type_name, price FROM liquors JOIN categories ON liquors.type_id = categories.type_id WHERE type_name = ($1) ORDER BY id ASC LIMIT $2 OFFSET $3",
+        [type, limit, offset]
+      );
+
+      db.release();
+
       if (result.rows.length > 0) {
+        const totalPages = Math.ceil(total / limit);
         const data = result.rows;
-        //res.json le automatically js object lai jsonify handuinxa so no need :JSON.stringify(data);
-        db.release();
+
         return res.json({
+          success: true,
+          message: "Products fetched successfully",
+          data,
           page,
-          statistics: data,
+          limit,
+          total,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
         });
       } else {
-        db.release();
         console.log("No data in the table with that type.");
-        res.status(404).json({
+        return res.status(404).json({
           success: false,
           message: "No products found with that type",
         });
       }
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: "Internal server error" });
     }
   } else if (name) {
     const searchKey = `%${name}%`;
     try {
       const db = await dbConnect();
-      const result = await db.query(
-        "select id, name , image_link , description , quantity , categories.type_id , type_name , price from liquors join categories on liquors.type_id = categories.type_id where name ilike ($1) order by id asc",
+
+      // Get total count for pagination
+      const countResult = await db.query(
+        "SELECT COUNT(*) FROM liquors JOIN categories ON liquors.type_id = categories.type_id WHERE name ILIKE ($1)",
         [searchKey]
       );
+      const total = parseInt(countResult.rows[0].count);
+
+      // Get paginated data
+      const result = await db.query(
+        "SELECT id, name, image_link, description, quantity, categories.type_id, type_name, price FROM liquors JOIN categories ON liquors.type_id = categories.type_id WHERE name ILIKE ($1) ORDER BY id ASC LIMIT $2 OFFSET $3",
+        [searchKey, limit, offset]
+      );
+
+      db.release();
+
       if (result.rows.length > 0) {
+        const totalPages = Math.ceil(total / limit);
         const data = result.rows;
-        db.release();
+
         return res.json({
+          success: true,
+          message: "Products fetched successfully",
+          data,
           page,
-          statistics: data,
+          limit,
+          total,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
         });
       } else {
-        db.release();
         console.log("No products found with that name");
-        res.status(404).json({ message: "No products found with that name" });
+        return res.status(404).json({
+          success: false,
+          message: "No products found with that name",
+        });
       }
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: "Internal server error" });
     }
   } else {
     try {
       const db = await dbConnect();
-      const result = await db.query(
-        `SELECT 
-              id, 
-              name, 
-              image_link, 
-              description, 
-              quantity, 
-              categories.type_id, 
-              type_name, 
-              price 
-           FROM 
-              liquors 
-           JOIN 
-              categories 
-           ON 
-              liquors.type_id = categories.type_id 
-           ORDER BY 
-              id ASC 
-           LIMIT $1 OFFSET $2`,
-        [limit, (page - 1) * limit]
+      // Get total count for pagination
+      const countResult = await db.query(
+        "SELECT COUNT(*) FROM liquors JOIN categories ON liquors.type_id = categories.type_id"
       );
+      const total = parseInt(countResult.rows[0].count);
+      // Get paginated data
+      const result = await db.query(
+        `SELECT
+              id,
+              name,
+              image_link,
+              description,
+              quantity,
+              categories.type_id,
+              type_name,
+              price
+           FROM
+              liquors
+           JOIN
+              categories
+           ON
+              liquors.type_id = categories.type_id
+           ORDER BY
+              id ASC
+           LIMIT $1 OFFSET $2`,
+        [limit, offset]
+      );
+
+      db.release();
+
       if (result.rows.length > 0) {
+        const totalPages = Math.ceil(total / limit);
         const data = result.rows;
-        //res.json le automatically js object lai jsonify handinxa so no need :JSON.stringify(data);
-        db.release();
+
         return res.json({
+          success: true,
+          message: "Products fetched successfully",
+          data,
           page,
-          statistics: data,
+          limit,
+          total,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
         });
       } else {
         console.log("No data in the table.");
-        db.release();
-        res.status(400).json({ message: "No products found" });
+        return res.status(404).json({
+          success: false,
+          message: "No products found",
+        });
       }
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: "Internal server error" });
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
     }
   }
 };
+
 export const getSpiritsById = async (req, res) => {
   const id = parseInt(req.params.id);
   console.log("A request has hit the endpoint: " + req.url);
@@ -141,13 +204,11 @@ export const getSpiritsById = async (req, res) => {
         const data = result.rows;
         //res.json le automatically js object lai jsonify handinxa so no need :JSON.stringify(data);
         db.release();
-        return res
-          .status(200)
-          .json({
-            success: true,
-            message: "Products fetched successfully.",
-            data: data,
-          });
+        return res.status(200).json({
+          success: true,
+          message: "Products fetched successfully.",
+          data: data,
+        });
       } else {
         console.log("No data in the table. Releasing Database...");
         db.release();
@@ -159,6 +220,7 @@ export const getSpiritsById = async (req, res) => {
     }
   }
 };
+
 export const getSpiritsByPrice = async (req, res) => {
   let { min } = req.query;
   let { max } = req.query;
