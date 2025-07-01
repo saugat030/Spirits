@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../axiosInstance";
-import axios from "axios";
 
 interface AuthData {
   email: string;
@@ -16,7 +15,6 @@ interface AuthResponse {
 }
 
 export const useLogin = () => {
-  axios.defaults.withCredentials = true;
   return useMutation<AuthResponse, Error, AuthData>({
     mutationFn: async (data: AuthData): Promise<AuthResponse> => {
       console.log(
@@ -54,7 +52,6 @@ export const useLogin = () => {
 };
 
 export const useSignup = () => {
-  axios.defaults.withCredentials = true;
   return useMutation<AuthResponse, Error, SignupData>({
     mutationFn: async (data: SignupData): Promise<AuthResponse> => {
       console.log(

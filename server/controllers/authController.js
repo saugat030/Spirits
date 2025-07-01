@@ -72,70 +72,103 @@ export const signup = async (req, res) => {
 //Login logic
 export const login = async (req, res) => {
   console.log("Login Route Hit");
+  console.log("Request body:", req.body);
+  console.log("JWT_SECRET value:", process.env.JWT_SECRET); // Remove in production!
+
   const { email, password } = req.body;
-  //check if the email or pass exists.
-  console.log("Email and password :" + email, password);
+
+  console.log("Email:", email);
+  console.log("Password", password);
+
+  // Super basic validation
   if (!email || !password) {
-    return res.status(401).json({
+    console.error("Missing email or password");
+    return res.status(400).json({
       success: false,
       message: "Missing details with either email or password",
     });
   }
-  //Check for db errors:
+
   try {
-    //check is the user exists in the databse:
     const db = await dbConnect();
     const result = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
-    if (result.rows.length > 0) {
-      //this if else block checks if user exists in the databse.
-      //if user exists then :
-      const user = result.rows[0];
-      const storedHashedPassword = user.password;
-      bcrypt.compare(password, storedHashedPassword, (err, result) => {
-        if (err) {
-          //this if block checks if comparing was successfull:
-          console.error("Error comparing passwords:", err);
-        } else {
-          //If no error in comparing password then the result is obtained which is either 0 or 1. 0 if false 1 if true.
-          if (result) {
-            //If result is true and password and email matches , generate a token.
-            const token = jwt.sign(
-              { id: user.id, role: user.role },
-              process.env.JWT_SECRET,
-              {
-                expiresIn: "7d",
-              }
-            );
-            //send the token in the cookie
-            res.cookie("token", token, {
-              httpOnly: true,
-              secure: false,
-              sameSite: "lax",
-              maxAge: 7 * 24 * 60 * 1000,
-            });
-            return res.status(200).json({
-              success: true,
-              message: "User successfully logged in",
-            });
-          } else {
-            res
-              .status(401)
-              .json({ success: false, message: "Invalid Password." });
-          }
-        }
-      });
-    } else {
-      //If email not found in the database
-      console.log("User not found. Try signing in..");
+
+    console.log("Database query result:", {
+      rowCount: result.rows.length,
+      userFound: result.rows.length > 0,
+    });
+
+    if (result.rows.length === 0) {
+      console.error("User not found in database");
       return res.status(401).json({
         success: false,
         message: "User account with the requested email not found.",
       });
     }
+
+    const user = result.rows[0];
+    console.log("User found:", {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      hasPassword: user.password ? "Yes" : "No",
+    });
+
+    try {
+      //Check if the password is valid
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      console.log("🔐 Password comparison result:", isPasswordValid);
+      if (!isPasswordValid) {
+        console.log("Invalid password");
+        return res.status(401).json({
+          success: false,
+          message: "Invalid Password.",
+        });
+      }
+      // Password is valid, generate token
+      console.log("✅ Password valid, generating token...");
+
+      const token = jwt.sign(
+        {
+          id: user.id,
+          role: user.role,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "7d",
+        }
+      );
+
+      console.log("✅ Token generated successfully");
+
+      // Set cookie
+      const cookieOptions = {
+        httpOnly: true,
+        secure: true, // true in production
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // Fixed: was missing * 60 for seconds
+      };
+      res.cookie("token", token, cookieOptions);
+      console.log("✅ Login successful");
+      return res.status(200).json({
+        success: true,
+        message: "User successfully logged in",
+      });
+    } catch (bcryptError) {
+      console.error("❌ Bcrypt comparison error:", bcryptError);
+      return res.status(500).json({
+        success: false,
+        message: "Password verification failed",
+      });
+    }
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("❌ Database/Server error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 //Logout:
@@ -154,13 +187,14 @@ export const logout = async (req, res) => {
 //Check if user loggedIn:
 //also add the userAuth middleware that checks if the user is loggedin.
 export const isAuth = async (req, res) => {
+  console.log("isAuth reached.");
   try {
     //this function will only be reached if the userAuth middleware calls it. Thats why we can say code ya samma pugyo vaney pani userlogged in nai hunxa.
     return res
       .status(200)
       .json({ success: true, message: "User is authenticated." });
   } catch (error) {
-    console.error(error.message);
+    console.error("Error in the isAuth function", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };

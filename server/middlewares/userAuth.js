@@ -2,7 +2,8 @@ import jwt from "jsonwebtoken";
 //Middleware to verify the user valid or not. i.e logged in xa ki xaina vanera.
 const userAuth = async (req, res, next) => {
   const { token } = req.cookies;
-  console.log(token);
+  console.log("Logging token ", token);
+  console.log("auth middleware reached.");
   //check if token exists :
   if (!token) {
     return res.status(401).json({
@@ -26,7 +27,7 @@ const userAuth = async (req, res, next) => {
     //This next(); function can only be reaced if the token is valid. So only after the token is valid we go to the next middleware/methd. Natra it will return an error and terminate.
     next();
   } catch (error) {
-    console.error("Log from userAuth middleware" + error.message);
+    console.error("Log from userAuth middleware " + error.message);
     res.status(400).json({ sucess: false, message: error.message });
   }
 };
