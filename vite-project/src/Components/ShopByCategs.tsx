@@ -1,4 +1,4 @@
-import { CATEGORIES } from "../constants/homepage.constants";
+import { CATEGORIES } from "../constants/productConstants";
 import { ShopByCategsProps } from "../types/home.types";
 
 const ShopByCategs = (props: ShopByCategsProps) => {
@@ -9,11 +9,11 @@ const ShopByCategs = (props: ShopByCategsProps) => {
   };
 
   return (
-    <section className="flex flex-col items-center gap-[28px] py-[48px] h-[450px] bg-gray-100">
-      <h1 className="text-center text-4xl font-semibold w-full">
+    <section className="flex flex-col items-center gap-[28px] py-[48px] min-h-[450px] bg-gray-100">
+      <h1 className="text-center lg:text-4xl text-3xl font-semibold w-full">
         Shop by Categories
       </h1>
-      <div className="h-[300px] py-5 w-full flex justify-center gap-[24px]">
+      <div className=" min-h-[300px] py-5 w-full flex flex-wrap justify-center gap-[24px]">
         {CATEGORIES.map((category) => {
           const isActive = props.category === category.name;
           return (

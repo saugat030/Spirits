@@ -86,6 +86,7 @@ const BestSelling = () => {
 
       {isError && (
         <Products
+          type="Drink"
           imgSrc=""
           name={error?.message || "Cannot connect to the server"}
           price={0}
@@ -112,13 +113,13 @@ const BestSelling = () => {
             //As the name suggests control the 3d like effect. Basically kati deep push garne slides lai vanne control ho.
             modifier: 1,
             //Multiplies the effects by this number. Depth 200 xa vaney modifier 2 garda 200*2 hunxa (same thing with rotate)
-            slideShadows: true,
           }}
         >
           {products.slice(0, 5).map((item: ProductData, index) => {
             return (
-              <SwiperSlide key={item.id || index}>
+              <SwiperSlide key={item.id || index} className="rounded-2xl">
                 <Products
+                  type={item.type_name}
                   imgSrc={item.image_link}
                   name={item.name}
                   price={item.price}

@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import axios from "axios";
 import Logo from "../static/Logo.png";
 import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
+import { useLogin, useSignup } from "../services/api/authApi";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [state, setState] = useState<"Login" | "Sign Up">("Login");
@@ -18,44 +19,49 @@ const Login = () => {
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [validationError, setValidationError] = useState<string>("");
-  const func = async () => {
-    axios.defaults.withCredentials = true;
-    if (state == "Login") {
-      try {
-        const response = await axios.post(
-          "http://localhost:3000/api/auth/login",
-          {
-            email: email,
-            password: password,
-          }
-        );
-        if (response.data.success) {
+  const { mutate: loginMutate, isPending: loginPending } = useLogin();
+  const { mutate: signupMutate, isPending: signupPending } = useSignup();
+
+  const handleLogin = () => {
+    loginMutate(
+      { email, password },
+      {
+        onSuccess: async (data) => {
+          console.log("Login successful:", data.message);
+          setIsLoggedin(true);
+          toast.success("Logged in Successfuly.");
+          await getUserData();
+          // Navigation will be handled by useEffect when userData updates
+        },
+        onError: (error) => {
+          console.error("Login failed:", error.message);
+          toast.error("Login Failed");
+          setValidationError(error.message);
+        },
+      }
+    );
+  };
+
+  const handleSignup = () => {
+    signupMutate(
+      { username, email, password },
+      {
+        onSuccess: async (data) => {
+          console.log("Signup successful:", data.message);
           setIsLoggedin(true);
           await getUserData();
-        } else {
-          setValidationError(response.data.message);
-        }
-      } catch (error: any) {
-        setValidationError(error.message);
-        console.log(error.message);
+          toast.success("Sign in successful");
+          // Navigation will be handled by useEffect when userData updates
+        },
+        onError: (error) => {
+          console.error("Signup failed:", error.message);
+          toast.error("Signup Failed");
+          setValidationError(error.message);
+        },
       }
-    } else {
-      try {
-        const response = await axios.post("http://localhost:3000/signup", {
-          name: username,
-          email: email,
-          password: password,
-        });
-        if (response.data.success) {
-          setIsLoggedin(true);
-          getUserData();
-          navigate("/");
-        }
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    }
+    );
   };
+
   useEffect(() => {
     if (!userData) return;
     if (userData.role === "admin") {
@@ -63,49 +69,61 @@ const Login = () => {
     } else {
       navigate("/");
     }
-  }, [userData]);
+  }, [userData, navigate]);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (state == "Login") {
-      if (!email || !password) {
-        setValidationError("Please fill all the credntials before submitting.");
-        return;
-      }
-    }
-    if (state == "Sign Up") {
-      if (!email || !password || !username) {
-        setValidationError("Please fill all the credntials before submitting.");
-        return;
-      }
-    }
 
-    func();
+    // Clear previous validation errors
+    setValidationError("");
+
+    if (state === "Login") {
+      if (!email || !password) {
+        setValidationError(
+          "Please fill all the credentials before submitting."
+        );
+        return;
+      }
+      handleLogin();
+    } else {
+      if (!email || !password || !username) {
+        setValidationError(
+          "Please fill all the credentials before submitting."
+        );
+        return;
+      }
+      handleSignup();
+    }
   }
 
   function handleState() {
-    if (state == "Login") {
+    if (state === "Login") {
       setState("Sign Up");
     } else {
       setState("Login");
     }
+    // Clear validation errors when switching states
+    setValidationError("");
   }
+
+  const isLoading = loginPending || signupPending;
+
   return (
-    <div className="bg-loginBg h-screen bg-cover flex justify-end font-Poppins">
-      <div className="bg-white/50 h-full w-[25%] flex-col flex justify-between items-center">
-        <div className="flex gap-8 flex-col w-3/4  py-10">
+    <div className="bg-loginBg h-screen bg-cover flex justify-end font-Poppins overflow-hidden">
+      <div className="bg-white/50 h-full lg:w-[30%] w-full flex-col flex justify-between items-center">
+        <div className="flex gap-8 flex-col w-3/4 py-10">
           <nav className="h-16 items-center text-2xl flex">
             <img src={Logo} alt="Logo" className="h-full object-contain" />
-            Jhyape
+            Spirits
           </nav>
           <h1 className="text-3xl font-semibold text-red-800">{state}</h1>
           <form
             method="post"
             onSubmit={handleSubmit}
-            className="flex flex-col gap-6 "
+            className="flex flex-col gap-6"
           >
-            {state == "Sign Up" && (
-              <label htmlFor="usename">
+            {state === "Sign Up" && (
+              <label htmlFor="username">
                 <input
                   type="text"
                   value={username}
@@ -116,36 +134,39 @@ const Login = () => {
                     setUsername(e.target.value);
                     setValidationError("");
                   }}
-                  className="bg-gray-100 rounded-xl p-2 text-black w-full"
+                  disabled={isLoading}
+                  className="bg-gray-100 rounded-xl p-2 text-black w-full disabled:opacity-50"
                 />
               </label>
             )}
             <label htmlFor="email">
               <input
-                type="text"
+                type="email"
                 value={email}
-                id="name"
+                id="email"
                 name="email"
                 placeholder="Email"
                 onChange={(e) => {
                   setEmail(e.target.value);
                   setValidationError("");
                 }}
-                className="bg-gray-100 rounded-xl p-2 text-black w-full"
+                disabled={isLoading}
+                className="bg-gray-100 rounded-xl p-2 text-black w-full disabled:opacity-50"
               />
             </label>
             <label htmlFor="password">
               <input
-                type="text"
+                type="password"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   setValidationError("");
                 }}
-                id="name"
+                id="password"
                 name="password"
                 placeholder="Password"
-                className="bg-gray-100 rounded-xl p-2 text-black w-full"
+                disabled={isLoading}
+                className="bg-gray-100 rounded-xl p-2 text-black w-full disabled:opacity-50"
               />
             </label>
             {validationError && (
@@ -164,18 +185,19 @@ const Login = () => {
               </label>
               <button
                 type="submit"
-                className="border-2 hover:border-yellow-700 shadow-md shadow-gray-700 border-amber-700 hover:bg-transparent hover:text-black bg-yellow-600 text-white rounded-xl py-1 font-semibold px-2 w-1/3 duration-200"
+                disabled={isLoading}
+                className="border-2 hover:border-yellow-700 shadow-md shadow-gray-700 border-amber-700 hover:bg-transparent hover:text-black bg-yellow-600 text-white rounded-xl py-1 font-semibold px-2 w-1/3 duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {state}
+                {isLoading ? "Loading..." : state}
               </button>
             </div>
             <h1
               className="p-2 text-blue-600 hover:underline cursor-pointer"
               onClick={handleState}
             >
-              {state == "Login"
-                ? "Dont have an account ? Sign Up here"
-                : "Already have an account ? Login here"}
+              {state === "Login"
+                ? "Don't have an account? Sign Up here"
+                : "Already have an account? Login here"}
             </h1>
           </form>
         </div>

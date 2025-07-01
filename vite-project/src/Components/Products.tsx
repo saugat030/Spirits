@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { ProductCardPropType } from "../types/home.types";
 
-const Products = ({ imgSrc, name, price, id }: ProductCardPropType) => {
+const Products = ({ imgSrc, name, price, id, type }: ProductCardPropType) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const navigate = useNavigate();
   function handleClick() {
@@ -18,7 +18,7 @@ const Products = ({ imgSrc, name, price, id }: ProductCardPropType) => {
   return (
     <section
       onClick={handleClick}
-      className="h-[430px] transform w-[256px] duration-200 rounded-lg p-2 shadow-md shadow-slate-300 bg-gray-100 flex flex-col gap-5 cursor-pointer"
+      className="transform w-[256px] duration-200 rounded-lg p-2 shadow-md shadow-slate-300 bg-gray-100 flex flex-col gap-1 cursor-pointer"
     >
       <figure className="text-center relative flex justify-center items-center">
         {!imageLoaded && (
@@ -43,8 +43,11 @@ const Products = ({ imgSrc, name, price, id }: ProductCardPropType) => {
           <PiStarFill />
         </div>
       </div>
+
+      <h5 className="text-[#0D1B39] text-sm font-medium">{type}</h5>
+
       <div className="flex justify-between font-medium w-full text-lg">
-        <h5 className="text-[#0D1B39] text-2xl font-semibold">${price}</h5>
+        <h5 className="text-[#0D1B39] text-xl font-semibold">Rs. {price}</h5>
         <p>
           <FaCirclePlus className="text-3xl text-[#0D1B39]" />
         </p>

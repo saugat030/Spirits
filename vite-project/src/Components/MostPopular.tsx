@@ -108,7 +108,7 @@ const MostPopular = ({
 
   return (
     <section className="mt-16">
-      <div className="flex gap-10">
+      <div className="flex lg:flex-row flex-col gap-10">
         <FilterSection />
         <div className="flex flex-col gap-12 flex-1">
           <div className="px-5">
@@ -135,7 +135,7 @@ const MostPopular = ({
 
           {!isLoading && !error && products?.data && (
             <>
-              <div className="flex flex-wrap gap-[48px] items-center px-5 min-h-[400px]">
+              <div className="flex flex-wrap gap-[48px] items-center justify-center lg:justify-normal px-5 min-h-[400px]">
                 {products.data.length > 0 ? (
                   products.data.map((item) => (
                     <Products
@@ -143,6 +143,7 @@ const MostPopular = ({
                       imgSrc={item.image_link}
                       name={item.name || "Unknown Product"}
                       price={item.price}
+                      type={item.type_name}
                       id={item.id}
                     />
                   ))

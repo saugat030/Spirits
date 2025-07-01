@@ -67,7 +67,7 @@ const ProductsPage = () => {
   }, [alcName]);
 
   return (
-    <div className="font-Poppins">
+    <div className="font-Poppins overflow-hidden">
       <NavBar page="products" />
       <ShopByCategs category={category} setCateg={handleCategoryChange} />
       <MostPopular

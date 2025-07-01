@@ -13,6 +13,7 @@ import API from "../services/axiosInstance";
 import { toast } from "react-toastify";
 import { ApiResponse } from "../types/api.types";
 import { DROPDOWN_CONSTANTS } from "../constants/homepage.constants";
+import { HashLink } from "react-router-hash-link";
 
 const NavBar = (props: NavType) => {
   const navigate = useNavigate();
@@ -116,10 +117,26 @@ const NavBar = (props: NavType) => {
             <Link to="/products">Shop</Link>
           </li>
           <li className="hover:text-gray-300 transition duration-200 cursor-pointer">
-            <a href="#About">About</a>
+            <HashLink
+              smooth
+              to="/#About"
+              scroll={(el) => {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
+              About
+            </HashLink>
           </li>
           <li className="hover:text-gray-300 transition duration-200 cursor-pointer">
-            <a href="#footer">Contact</a>
+            <HashLink
+              smooth
+              to="/#footer"
+              scroll={(el) => {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
+              Contact
+            </HashLink>
           </li>
         </ul>
 

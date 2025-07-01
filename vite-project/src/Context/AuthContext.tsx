@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, ReactNode, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 type userDataType = {
   name: string;
   role: string;
@@ -32,17 +33,23 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
       if (data.success) {
         setIsLoggedin(true);
         getUserData();
+      } else {
+        console.log(
+          "Error happened while trying to check the auth state. ",
+          data.message
+        );
       }
     } catch (err: any) {
       console.log(err.message);
     }
   };
+
   const getUserData = async () => {
     try {
       const { data } = await axios.get(
         "http://localhost:3000/api/auth/user/data"
       );
-      data.success ? setUserData(data.userData) : alert(data.message);
+      data.success ? setUserData(data.userData) : toast.error(data.message);
     } catch (err: any) {
       console.error(err.message);
       alert(err.message);

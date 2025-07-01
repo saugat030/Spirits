@@ -11,6 +11,7 @@ export type ProductCardPropType = {
   imgSrc: string;
   name: string;
   price: number;
+  type: string;
   id: number;
 };
 export type ClientsType = {

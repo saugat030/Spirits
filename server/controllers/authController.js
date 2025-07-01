@@ -10,7 +10,7 @@ export const signup = async (req, res) => {
   console.log(name, email, password);
   //check if name, email, and password exists :
   if (!name || !email || !password) {
-    return res.json({
+    return res.status(401).json({
       success: false,
       message: "Missing some registration details",
     });
@@ -26,7 +26,7 @@ export const signup = async (req, res) => {
     );
     if (checkExisting.rows.length > 0) {
       console.log("User already exixts");
-      res.json({ success: false, message: "User already exists..." });
+      res.status(409).json({ success: false, message: "User already exists." });
     } else {
       //User is new and needs to be added:
       //hashing the password and saving it in the database:
@@ -58,7 +58,7 @@ export const signup = async (req, res) => {
             sameSite: "lax",
             maxAge: 7 * 24 * 60 * 1000,
           });
-          return res.json({
+          return res.status(201).json({
             success: true,
             message: "User successfully registered",
           });
@@ -66,7 +66,7 @@ export const signup = async (req, res) => {
       });
     }
   } catch (err) {
-    res.json({ success: false, message: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 //Login logic
@@ -76,7 +76,7 @@ export const login = async (req, res) => {
   //check if the email or pass exists.
   console.log("Email and password :" + email, password);
   if (!email || !password) {
-    return res.json({
+    return res.status(401).json({
       success: false,
       message: "Missing details with either email or password",
     });
@@ -115,25 +115,27 @@ export const login = async (req, res) => {
               sameSite: "lax",
               maxAge: 7 * 24 * 60 * 1000,
             });
-            return res.json({
+            return res.status(200).json({
               success: true,
               message: "User successfully logged in",
             });
           } else {
-            res.json({ success: false, message: "Invalid Password." });
+            res
+              .status(401)
+              .json({ success: false, message: "Invalid Password." });
           }
         }
       });
     } else {
       //If email not found in the database
       console.log("User not found. Try signing in..");
-      return res.json({
+      return res.status(401).json({
         success: false,
         message: "User account with the requested email not found.",
       });
     }
   } catch (error) {
-    return res.json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 //Logout:
@@ -154,10 +156,12 @@ export const logout = async (req, res) => {
 export const isAuth = async (req, res) => {
   try {
     //this function will only be reached if the userAuth middleware calls it. Thats why we can say code ya samma pugyo vaney pani userlogged in nai hunxa.
-    return res.json({ success: true, message: "User is authenticated." });
+    return res
+      .status(200)
+      .json({ success: true, message: "User is authenticated." });
   } catch (error) {
     console.error(error.message);
-    res.json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 //Get all user data. To access this the user must be logged in.
@@ -166,12 +170,15 @@ export const userData = async (req, res) => {
     //userId and role will come from the isAuthenticated middleware.
     const { userId } = req.body;
     const { role } = req.body;
+    console.log("user data route hit", req.url);
+    console.log("user data", userId, role);
     const db = await dbConnect();
     const result = await db.query("select * from users where id = ($1)", [
       userId,
     ]);
+    db.release();
     if (result.rows.length > 0) {
-      res.json({
+      res.status(200).json({
         success: true,
         userData: {
           name: result.rows[0].name,
@@ -181,13 +188,13 @@ export const userData = async (req, res) => {
         },
       });
     } else {
-      return res.json({
+      return res.status(401).json({
         succes: false,
-        message: "User with that id not found.",
+        message: "User with that ID not found.",
       });
     }
   } catch (error) {
-    console.error(error.message);
-    res.json({ success: false, message: error.message });
+    console.error("ERROR IN GET USER DATA ROUTE", error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
