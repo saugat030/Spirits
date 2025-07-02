@@ -78,7 +78,7 @@ const Footer = (props: FooterProp) => {
           props.size != "sm" ? "text-md text-gray-400" : "text-sm text-gray-700"
         }`}
       >
-        <h6>Copyright &#169; 2021</h6>
+        <h6>Copyright &#169; 2025</h6>
         <div className="flex gap-5 ">
           <h6 className={`${props.size != "sm" ? "me-16" : ""}`}>
             Terms & Conditions

@@ -53,16 +53,18 @@ export function ShoppingCartProvider({ children }: ShoppingCartProviderProp) {
   }
   function decreaseCartQuantity(id: number) {
     setCartItems((currItems) => {
-      if (currItems.find((item) => item.id == id) == null) {
+      const existingItem = currItems.find((item) => item.id === id);
+
+      if (!existingItem) return currItems;
+
+      if (existingItem.quantity === 1) {
+        // Remove item from cart
         return currItems.filter((item) => item.id !== id);
       } else {
-        return currItems.map((item) => {
-          if (item.id === id) {
-            return { ...item, quantity: item.quantity - 1 };
-          } else {
-            return item;
-          }
-        });
+        // Decrement quantity
+        return currItems.map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+        );
       }
     });
   }

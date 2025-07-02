@@ -1,26 +1,25 @@
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { Trash2, Loader2 } from "lucide-react";
 import { useShoppingCart } from "../Context/ShoppingCartContext";
-import { useGetProductById } from "../services/api/productsApi";
+import { ProductData } from "../types/api.types";
 
-type CartCardProps = {
+type CartProductCardProps = {
   id: number;
   quantity: number;
+  product?: ProductData;
+  isLoading?: boolean;
+  error?: unknown;
 };
 
-const CartProductCard = ({ id, quantity }: CartCardProps) => {
+const CartProductCard = ({
+  id,
+  quantity,
+  product,
+  isLoading,
+  error,
+}: CartProductCardProps) => {
   const { removeFromCart, increaseCartQuantity, decreaseCartQuantity } =
     useShoppingCart();
-
-  // Use the hook to fetch product data
-  const {
-    data: productResponse,
-    isLoading,
-    error,
-  } = useGetProductById(id.toString());
-
-  // Extract product data from the API response
-  const product = productResponse?.data;
 
   if (isLoading) {
     return (
@@ -63,7 +62,7 @@ const CartProductCard = ({ id, quantity }: CartCardProps) => {
     <div className="px-6 py-6 transition-all duration-200">
       <div className="grid grid-cols-12 gap-4 items-center">
         {/* Product Info */}
-        <div className="col-span-6 lg:col-span-5 flex items-center gap-4">
+        <div className="col-span-6 lg:col-span-5 flex lg:flex-row flex-col justify-center lg:justify-normal items-center gap-4">
           <div className="relative group">
             <img
               src={product.image_link}

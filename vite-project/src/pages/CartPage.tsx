@@ -4,12 +4,12 @@ import Footer from "../Components/Footer";
 
 const CartPage = () => {
   return (
-    <div className="font-Poppins w-screen overflow-hidden">
+    <div className="font-Poppins overflow-hidden">
       <NavBar page="cart" />
       <div className="flex w-full gap-12 p-6">
         <Cart />
       </div>
-      <Footer size="jello" />
+      <Footer size="this" />
     </div>
   );
 };
