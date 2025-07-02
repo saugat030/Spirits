@@ -12,7 +12,13 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
-        <ToastContainer />
+        <ToastContainer
+          theme="colored"
+          autoClose={1000}
+          draggable={true}
+          toastClassName="font-Poppins"
+          limit={4}
+        />
         <App />
       </AuthContextProvider>
     </QueryClientProvider>

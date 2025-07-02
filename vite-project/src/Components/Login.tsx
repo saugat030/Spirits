@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import Logo from "../static/Logo.png";
 import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
@@ -113,7 +112,11 @@ const Login = () => {
       <div className="bg-white/50 h-full lg:w-[30%] w-full flex-col flex justify-between items-center">
         <div className="flex gap-8 flex-col w-3/4 py-10">
           <nav className="h-16 items-center text-2xl flex">
-            <img src={Logo} alt="Logo" className="h-full object-contain" />
+            <img
+              src="/static/Logo.png"
+              alt="Logo"
+              className="h-full object-contain"
+            />
             Spirits
           </nav>
           <h1 className="text-3xl font-semibold text-red-800">{state}</h1>

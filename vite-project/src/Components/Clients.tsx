@@ -1,10 +1,7 @@
-import biste from "../static/Biste.png";
-import madu from "../static/Madu vaxo.jpg";
-import chigga from "../static/Chigga.jpg";
 import { ClientsType } from "../types/home.types";
 
 const Clients = (props: ClientsType) => {
-  const arr = [biste, chigga, madu];
+  const arr = ["/static/Biste.png", "/static/Chigga.jpg", "/static/Madu.jpg"];
   return (
     <div className="bg-transparent py-6 px-3 text-slate-200 h-full border-2 lg:w-3/4 w-full flex gap-5 flex-col justify-center items-center rounded-xl">
       <p className="text-xl text-pretty italic">{props.review}</p>

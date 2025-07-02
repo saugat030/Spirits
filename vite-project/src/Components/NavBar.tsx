@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { IoMenuSharp, IoClose } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import Logo from "../static/Logo.png";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import axios from "axios";
@@ -87,7 +86,7 @@ const NavBar = (props: NavType) => {
       >
         {/* Logo */}
         <div className="font-bold md:text-3xl text-2xl flex items-center h-24">
-          <img src={Logo} alt="Logo" className="h-[80%] ms-2" />
+          <img src="/static/Logo.png" alt="Logo" className="h-[80%] ms-2" />
           <Link to="/">Spirits</Link>
         </div>
 
@@ -144,8 +143,12 @@ const NavBar = (props: NavType) => {
         <div className="hidden md:flex items-center gap-8">
           {userData ? (
             <div className="flex gap-5 items-center">
-              <div className="rounded-full bg-white text-black px-3 py-2 font-bold text-lg hover:scale-95 duration-150 cursor-pointer">
-                {userData.name}
+              <div
+                className={`rounded-full ${
+                  isHomePage ? "bg-white text-black " : "bg-black text-white "
+                } flex justify-center items-center font-bold text-lg hover:scale-95 duration-150 cursor-pointer h-[45px] w-[45px] p-2`}
+              >
+                {userData.name.slice(0, 2)}
               </div>
               <button
                 className="text-xl font-semibold hover:underline hover:scale-105 duration-200"
@@ -222,7 +225,7 @@ const NavBar = (props: NavType) => {
           {/* Mobile Menu Header */}
           <div className="flex justify-between items-center p-6 border-b">
             <div className="font-bold text-2xl text-black flex items-center">
-              <img src={Logo} alt="Logo" className="h-8 mr-2" />
+              <img src="/static/Logo.png" alt="Logo" className="h-8 mr-2" />
               Spirits
             </div>
             <button

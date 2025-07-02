@@ -2,12 +2,12 @@ export type ApiResponse<T> = {
   success: boolean;
   message: string;
   data: T;
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
+  page?: number;
+  limit?: number;
+  total?: number;
+  totalPages?: number;
+  hasNext?: boolean;
+  hasPrev?: boolean;
 };
 
 export type ProductData = {

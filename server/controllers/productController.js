@@ -169,6 +169,7 @@ export const getAllSpirits = async (req, res) => {
 };
 
 export const getSpiritsById = async (req, res) => {
+  //parsing is necessary here kinaki query string "string" ma aauxa
   const id = parseInt(req.params.id);
   console.log("A request has hit the endpoint: " + req.url);
   console.log("A requested product for the id : " + id);
@@ -179,15 +180,20 @@ export const getSpiritsById = async (req, res) => {
         "select id, name , image_link , description , quantity , categories.type_id , type_name , price from liquors join categories on liquors.type_id = categories.type_id where id = ($1) order by id asc",
         [id]
       );
+      db.release();
       if (result.rows.length > 0) {
-        const data = result.rows;
-
+        const data = result.rows[0];
         //res.json le automatically js object lai jsonify handuinxa so no need :JSON.stringify(data);
-        db.release();
-        return res.status(200).json(data);
+        return res.status(200).json({
+          success: true,
+          message: `Product with the ID: ${id} fetched successfully.`,
+          data,
+        });
       } else {
-        console.log("No data in the table.");
-        res.status(404).json({ success: false, message: "No products found" });
+        console.log("No data in the table for that id");
+        res
+          .status(404)
+          .json({ success: false, message: "No products found with that ID" });
       }
     } catch (err) {
       db.release();
@@ -195,29 +201,10 @@ export const getSpiritsById = async (req, res) => {
       res.status(500).json({ success: false, error: "Internal server error" });
     }
   } else {
-    try {
-      const db = await dbConnect();
-      const result = await db.query(
-        "select id, name , image_link , description , quantity , categories.type_id , type_name , price from liquors join categories on liquors.type_id = categories.type_id order by id asc"
-      );
-      if (result.rows.length > 0) {
-        const data = result.rows;
-        //res.json le automatically js object lai jsonify handinxa so no need :JSON.stringify(data);
-        db.release();
-        return res.status(200).json({
-          success: true,
-          message: "Products fetched successfully.",
-          data,
-        });
-      } else {
-        console.log("No data in the table. Releasing Database...");
-        db.release();
-        res.status(404).json({ success: false, message: "No products found" });
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, error: "Internal server error" });
-    }
+    console.log("No data in the table for that id");
+    res
+      .status(404)
+      .json({ success: false, message: "No products found with that ID" });
   }
 };
 

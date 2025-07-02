@@ -7,9 +7,9 @@ export default {
         Poppins: ["Poppins", "sans-serif"],
       },
       backgroundImage: {
-        landingBg: "url('./static/landingBg.jpg')",
-        reviewBg: "url('./static/landingBg.jpg')",
-        loginBg: "url('./static/loginBg.jpg')",
+        landingBg: "url('/static/landingBg.jpg')",
+        reviewBg: "url('/static/landingBg.jpg')",
+        loginBg: "url('/static/loginBg.jpg')",
       },
     },
   },

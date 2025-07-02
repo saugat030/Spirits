@@ -27,19 +27,12 @@ function App() {
             <Route path="/products/:id" element={<ProductFullView />} />
             <Route path="/login" element={<Authentication />} />
             {/* Protected routes that require login */}
-            <Route
-              path="/cart"
-              element={
-                <ProtectedRoute>
-                  <CartPage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/cart" element={<CartPage />} />
             {/* Admin Routes - Role-based protection */}
             <Route
               path="/admin"
               element={
-                <ProtectedRoute requiredRole="admin" requireVerified={true}>
+                <ProtectedRoute requiredRole="admin">
                   <AdminDashBoard />
                 </ProtectedRoute>
               }

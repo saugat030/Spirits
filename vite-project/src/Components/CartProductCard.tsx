@@ -1,8 +1,7 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import { Trash2, Loader2 } from "lucide-react";
 import { useShoppingCart } from "../Context/ShoppingCartContext";
-import ClipLoader from "react-spinners/ClipLoader";
+import { useGetProductById } from "../services/api/productsApi";
 
 type CartCardProps = {
   id: number;
@@ -12,73 +11,124 @@ type CartCardProps = {
 const CartProductCard = ({ id, quantity }: CartCardProps) => {
   const { removeFromCart, increaseCartQuantity, decreaseCartQuantity } =
     useShoppingCart();
-  const [name, setName] = useState<string>("");
-  const [price, setPrice] = useState<number>(0);
-  const [category, setCategory] = useState<string>("");
-  const [img_link, setImglink] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
 
-  async function getProducts() {
-    const { data } = await axios.get(
-      `http://localhost:3000/api/products/${id}`
-    );
-    setName(data[0].name);
-    setPrice(data[0].price);
-    setCategory(data[0].type_name);
-    setImglink(data[0].image_link);
-    setLoading(false);
-  }
+  // Use the hook to fetch product data
+  const {
+    data: productResponse,
+    isLoading,
+    error,
+  } = useGetProductById(id.toString());
 
-  useEffect(() => {
-    getProducts();
-  }, []);
+  // Extract product data from the API response
+  const product = productResponse?.data;
 
-  if (loading) {
-    return <ClipLoader color="brown" size={100}></ClipLoader>;
-  }
-  return (
-    <section className="flex items-center gap-28 h-36 py-2 px-4 rounded-md bg-slate-100 mt-8">
-      <figure className="h-full flex p-1 flex-1">
-        <img src={img_link} alt="JACK DANIELS" className="h-full" />
-        <div className="flex flex-col justify-around items-start">
-          <h3 className="font-semibold text-xl">{name}</h3>
-          <h2 className="text-gray-600 text-md">{category}</h2>
-          <button
-            onClick={() => {
-              removeFromCart(id);
-            }}
-            className="text-red-600 hover:text-white hover:border border-black px-1 py-0.5 rounded-lg  hover:bg-red-600 font-medium"
-          >
-            Remove
-          </button>
+  if (isLoading) {
+    return (
+      <div className="px-6 py-8">
+        <div className="grid grid-cols-12 gap-4 items-center">
+          <div className="col-span-6 lg:col-span-5 flex items-center gap-4">
+            <div className="w-20 h-20 bg-gray-200 rounded-lg animate-pulse"></div>
+            <div className="flex-1">
+              <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3"></div>
+            </div>
+          </div>
+          <div className="col-span-2 flex justify-center">
+            <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+          </div>
+          <div className="col-span-2 text-center">
+            <div className="h-4 bg-gray-200 rounded animate-pulse mx-auto w-16"></div>
+          </div>
+          <div className="col-span-2 text-center">
+            <div className="h-4 bg-gray-200 rounded animate-pulse mx-auto w-20"></div>
+          </div>
         </div>
-      </figure>
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => {
-            increaseCartQuantity(id);
-          }}
-          className="hover:text-white hover:bg-green-900 rounded-full"
-        >
-          <CiCirclePlus className="text-4xl" strokeWidth={1} />
-        </button>
-        <span className="text-2xl font-semibold mx-2">{quantity}</span>
-        <button
-          onClick={() => {
-            decreaseCartQuantity(id);
-          }}
-          className="hover:text-white hover:bg-red-800 rounded-full"
-        >
-          <CiCircleMinus className="text-4xl" strokeWidth={1} />
-        </button>
       </div>
-      <p id="Price_For_One" className="font-semibold text-xl">
-        $ {price}
-      </p>
-      <p id="Price_For_Total" className="font-semibold text-2xl">
-        $ {price * quantity}
-      </p>
-    </section>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="px-6 py-8">
+        <div className="grid grid-cols-12 gap-4 items-center">
+          <div className="col-span-12 text-center text-red-500 font-medium">
+            Error loading product details
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-6 py-6 transition-all duration-200">
+      <div className="grid grid-cols-12 gap-4 items-center">
+        {/* Product Info */}
+        <div className="col-span-6 lg:col-span-5 flex items-center gap-4">
+          <div className="relative group">
+            <img
+              src={product.image_link}
+              alt={product.name}
+              className="w-20 h-20 object-cover rounded-lg shadow-md group-hover:shadow-lg transition-shadow duration-200"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition-opacity duration-200"></div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-lg text-gray-900 truncate mb-1">
+              {product.name}
+            </h3>
+            <p className="text-sm text-gray-500 mb-2">{product.type_name}</p>
+            <button
+              onClick={() => removeFromCart(id)}
+              className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 px-2 py-1 rounded-md transition-colors duration-200 font-medium"
+            >
+              <Trash2 className="w-4 h-4" />
+              Remove
+            </button>
+          </div>
+        </div>
+
+        {/* Quantity Controls */}
+        <div className="col-span-2 flex justify-center">
+          <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1">
+            <button
+              onClick={() => decreaseCartQuantity(id)}
+              className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-200"
+              aria-label="Decrease quantity"
+            >
+              <CiCircleMinus className="text-xl" strokeWidth={1} />
+            </button>
+            <span className="text-lg font-semibold text-gray-900 min-w-[2rem] text-center">
+              {quantity}
+            </span>
+            <button
+              onClick={() => increaseCartQuantity(id)}
+              className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-white hover:bg-green-500 rounded-md transition-colors duration-200"
+              aria-label="Increase quantity"
+            >
+              <CiCirclePlus className="text-xl" strokeWidth={1} />
+            </button>
+          </div>
+        </div>
+
+        {/* Unit Price */}
+        <div className="col-span-2 text-center">
+          <p className="text-lg font-semibold text-gray-900">
+            Rs. {product.price}
+          </p>
+          <p className="text-xs text-gray-500">per item</p>
+        </div>
+
+        {/* Total Price */}
+        <div className="col-span-2 text-center">
+          <p className="text-xl font-bold text-green-600">
+            Rs. {(product.price * quantity).toFixed(2)}
+          </p>
+          <p className="text-xs text-gray-500">
+            {quantity} × Rs. {product.price}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 

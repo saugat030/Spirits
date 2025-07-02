@@ -52,3 +52,39 @@ export const useGetProducts = ({
     refetchOnWindowFocus: false,
   });
 };
+
+export const useGetProductById = (id: string | null) => {
+  return useQuery<ApiResponse<ProductData>, Error>({
+    queryKey: ["product", id],
+    queryFn: async (): Promise<ApiResponse<ProductData>> => {
+      if (!id) {
+        throw new Error("Product ID is required");
+      }
+
+      const url = `/products/${id}`;
+      console.log("Fetching product with ID:", id);
+
+      try {
+        const response = await API.get(url);
+        if (!response.data) {
+          throw new Error("No data received from server");
+        }
+        console.log("Product by ID data:", response.data);
+        return response.data;
+      } catch (error: any) {
+        // Axios catches all the responses with status 200 bahek as error and the axios error is an object that contains a message, response etc fields. To access the backend's message, error.response.data.message
+        // throwing that error makes it so that the error is caught by the useQuery's "error".
+        console.log("Error fetching Product by ID", error);
+        throw new Error(
+          error.response.data.message || "Error fetching the product"
+        );
+      }
+    },
+    enabled: !!id, // Only run query if id is provided
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    refetchOnWindowFocus: false,
+  });
+};

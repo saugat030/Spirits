@@ -5,7 +5,7 @@ const OurClients = () => {
   return (
     // This section is being overlapped tesaile esma inspect handa margin dekhindaina
     <section className="relative lg:mt-40 mt-20 p-4 lg:p-0">
-      <div className="absolute inset-0 bg-[url('src/static/Ourclients.jpg')] bg-center bg-cover bg-no-repeat bg-fixed brightness-[0.35] z-0"></div>
+      <div className="absolute inset-0 bg-[url('/static/Ourclients.jpg')] bg-center bg-cover bg-no-repeat bg-fixed brightness-[0.35] z-0"></div>
       <div className="relative z-10 flex flex-col justify-between py-20 items-center gap-8 h-full">
         <div id="headings">
           <h2 className="text-white italic text-xl text-center mb-2">
