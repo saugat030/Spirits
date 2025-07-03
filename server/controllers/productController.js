@@ -196,7 +196,6 @@ export const getSpiritsById = async (req, res) => {
           .json({ success: false, message: "No products found with that ID" });
       }
     } catch (err) {
-      db.release();
       console.error(err);
       res.status(500).json({ success: false, error: "Internal server error" });
     }

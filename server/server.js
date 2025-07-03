@@ -7,6 +7,7 @@ import productRoutes from "./routes/productRoutes.js";
 import ordersRoutes from "./routes/ordersRoute.js";
 import statsRoutes from "./routes/statsRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+// import { dbConnect } from "./config/dbConnect.js";
 // import createAdmin from "./createAdmin.js";
 dotenv.config();
 const app = express();
