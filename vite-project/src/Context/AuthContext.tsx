@@ -26,7 +26,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   const getAuthState = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3000/api/auth/isAuth");
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/isAuth`
+      );
       console.log(data);
       if (data.success) {
         setIsLoggedin(true);
@@ -46,12 +48,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const getUserData = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:3000/api/auth/user/data"
+        `${import.meta.env.VITE_API_BASE_URL}/auth/user/data`
       );
       data.success ? setUserData(data.userData) : toast.error(data.message);
     } catch (err: any) {
       console.error(err.message);
-      alert(err.message);
+      toast.error(err.message);
     }
   };
 
