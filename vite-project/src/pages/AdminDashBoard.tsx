@@ -10,6 +10,7 @@ import { ClipLoader } from "react-spinners";
 const AdminDashBoard = () => {
   const [dashboardData, setDashboardData] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
+  console.log(dashboardData);
   const authContext = useContext(AuthContext);
   if (!authContext) {
     throw new Error("AuthContext must be used within AuthContextProvider");

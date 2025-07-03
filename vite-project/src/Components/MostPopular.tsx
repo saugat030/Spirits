@@ -1,6 +1,8 @@
+"use client";
+
 import Products from "./Products";
 import FilterSection from "./FilterSection";
-import { MostPopularProps } from "../types/home.types";
+import type { MostPopularProps } from "../types/home.types";
 
 const MostPopular = ({
   title,
@@ -10,7 +12,7 @@ const MostPopular = ({
   onPageChange,
 }: MostPopularProps) => {
   const renderPaginationButtons = () => {
-    if (!products) return null;
+    if (!products?.page || !products?.totalPages) return null;
 
     const { page: currentPage, totalPages } = products;
     const buttons: (number | string)[] = [];
@@ -41,7 +43,6 @@ const MostPopular = ({
       }
 
       if (endPage < totalPages - 1) buttons.push("...");
-
       buttons.push(totalPages);
     }
 
@@ -58,7 +59,6 @@ const MostPopular = ({
         >
           Previous
         </button>
-
         {buttons.map((item, index) => (
           <button
             key={`${item}-${index}`}
@@ -75,7 +75,6 @@ const MostPopular = ({
             {item}
           </button>
         ))}
-
         <button
           disabled={currentPage === totalPages || isLoading}
           onClick={() => onPageChange(currentPage + 1)}
@@ -92,7 +91,14 @@ const MostPopular = ({
   };
 
   const renderPaginationInfo = () => {
-    if (!products) return null;
+    if (
+      !products?.page ||
+      !products?.limit ||
+      !products?.total ||
+      !products?.totalPages
+    ) {
+      return null;
+    }
 
     const { page, limit, total, totalPages } = products;
     const startItem = (page - 1) * limit + 1;
@@ -128,7 +134,7 @@ const MostPopular = ({
           {error && !isLoading && (
             <div className="flex justify-center items-center py-20">
               <h1 className="text-red-500 text-2xl">
-                {error.response.data.message}
+                {error?.response?.data?.message || "An error occurred"}
               </h1>
             </div>
           )}

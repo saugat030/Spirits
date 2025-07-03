@@ -6,14 +6,14 @@ export const DROPDOWN_CONSTANTS = [
   { label: "Rum", link: "/products?type=Rum" },
   { label: "Tequilla", link: "/products?type=Tequilla" },
 ];
-const NAV_ITEMS = [
-  { label: "Spirits", link: "#" },
-  { label: "Shop", link: "/products" },
-  { label: "About", link: "#About" },
-  { label: "Contact", link: "#Contact" },
-  { label: "Rum", link: "/products?category=rum" },
-  { label: "Tequilla", link: "/products?category=tequilla" },
-];
+// const NAV_ITEMS = [
+//   { label: "Spirits", link: "#" },
+//   { label: "Shop", link: "/products" },
+//   { label: "About", link: "#About" },
+//   { label: "Contact", link: "#Contact" },
+//   { label: "Rum", link: "/products?category=rum" },
+//   { label: "Tequilla", link: "/products?category=tequilla" },
+// ];
 export const WHYUS_DETAILS = [
   {
     details: "Euphoric",

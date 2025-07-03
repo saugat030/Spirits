@@ -27,11 +27,11 @@ const FilterSection = () => {
     "Tequilla",
   ];
 
-  const handleClearFilters = (): void => {
-    setSearchTerm("");
-    setPriceRange([0, 1000]);
-    setSelectedCategories([]);
-  };
+  // const handleClearFilters = (): void => {
+  //   setSearchTerm("");
+  //   setPriceRange([0, 1000]);
+  //   setSelectedCategories([]);
+  // };
 
   const toggleCollapse = (): void => {
     setIsCollapsed(!isCollapsed);

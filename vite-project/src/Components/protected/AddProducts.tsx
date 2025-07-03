@@ -161,7 +161,13 @@ const AddProducts = () => {
         <h1 className="2xl:text-2xl xl:text-xl font-bold mb-4 text-center">
           Card Preview
         </h1>
-        <Products id={1} imgsrc={imageUrl} name={productName} price={price} />
+        <Products
+          id={1}
+          imgSrc={imageUrl}
+          name={productName}
+          price={price}
+          type={type_name}
+        />
       </div>
     </div>
   );

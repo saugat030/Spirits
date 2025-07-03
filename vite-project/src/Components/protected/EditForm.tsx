@@ -15,7 +15,6 @@ const EditForm = ({ selectedUser, closeModal }: EditFormType) => {
   const [userRole, setUserRole] = useState<string | undefined>(
     selectedUser?.role
   );
-  const [isVerified, setIsVerified] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
   const updateUser = async () => {
@@ -27,7 +26,7 @@ const EditForm = ({ selectedUser, closeModal }: EditFormType) => {
           name: username,
           email: email,
           userRole: userRole,
-          isVerified: isVerified,
+          isVerified: false,
         }
       );
       if (response.data.statistics) {
