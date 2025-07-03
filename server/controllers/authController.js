@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { dbConnect } from "../config/dbConnect.js";
 const saltRounds = 10;
 
+const isProduction = process.env.NODE_ENV === "production";
 //Signup
 export const signup = async (req, res) => {
   //Form bata submited xa vaney it works normally tara if Postman bata xa ani you have selected the body-> raw-> JSON then you need to use a middleware for it. express.json
@@ -54,9 +55,9 @@ export const signup = async (req, res) => {
           );
           res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 1000,
+            secure: isProduction,
+            sameSite: isProduction ? "None" : "Lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
           });
           return res.status(201).json({
             success: true,
@@ -146,9 +147,9 @@ export const login = async (req, res) => {
       // Set cookie
       const cookieOptions = {
         httpOnly: true,
-        secure: true, // true in production
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // Fixed: was missing * 60 for seconds
+        secure: isProduction,
+        sameSite: isProduction ? "None" : "Lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       };
       res.cookie("token", token, cookieOptions);
       console.log("✅ Login successful");
@@ -176,8 +177,9 @@ export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.status(200).json({ success: true, message: "Logged Out." });
   } catch (error) {
