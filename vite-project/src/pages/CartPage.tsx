@@ -9,7 +9,7 @@ const CartPage = () => {
       <div className="flex w-full gap-12 p-6">
         <Cart />
       </div>
-      <Footer size="this" />
+      <Footer />
     </div>
   );
 };

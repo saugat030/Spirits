@@ -78,7 +78,7 @@ const ProductsPage = () => {
         currentPage={currentPage}
         onPageChange={handlePageChange}
       />
-      <Footer size="lg" />
+      <Footer />
     </div>
   );
 };
