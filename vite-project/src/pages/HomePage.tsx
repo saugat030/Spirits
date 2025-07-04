@@ -15,7 +15,7 @@ const HomePage = () => {
       <BestSelling />
       <Years />
       <OurClients />
-      <Footer size="lg" />
+      <Footer />
     </div>
   );
 };

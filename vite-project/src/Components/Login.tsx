@@ -108,103 +108,193 @@ const Login = () => {
   const isLoading = loginPending || signupPending;
 
   return (
-    <div className="bg-loginBg h-screen bg-cover flex justify-end font-Poppins overflow-hidden">
-      <div className="bg-white/50 h-full lg:w-[30%] w-full flex-col flex justify-between items-center">
-        <div className="flex gap-8 flex-col w-3/4 py-10">
-          <nav className="h-16 items-center text-2xl flex">
-            <img
-              src="/static/Logo.png"
-              alt="Logo"
-              className="h-full object-contain"
+    <div className="bg-loginBg h-screen bg-cover flex items-center justify-center font-Poppins p-4">
+      <div className="absolute inset-0 bg-black/30"></div>
+
+      <div className="relative z-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto">
+        {/* Logo and Brand */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
+              <img
+                src="/static/Logo.png"
+                alt="Logo"
+                className="w-8 h-8 object-contain"
+              />
+            </div>
+            <h1 className="text-2xl font-bold text-white">Spirits</h1>
+          </div>
+          <div className="w-16 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mx-auto"></div>
+        </div>
+
+        {/* Form Title */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-white mb-2">{state}</h2>
+          <p className="text-gray-300">
+            {state === "Login"
+              ? "Welcome back! Please sign in to your account"
+              : "Create your account to get started"}
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Username Field (Sign Up only) */}
+          {state === "Sign Up" && (
+            <div className="relative">
+              <input
+                type="text"
+                value={username}
+                id="username"
+                name="username"
+                placeholder="Username"
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  setValidationError("");
+                }}
+                disabled={isLoading}
+                className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-yellow-400/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+            </div>
+          )}
+
+          {/* Email Field */}
+          <div className="relative">
+            <input
+              type="email"
+              value={email}
+              id="email"
+              name="email"
+              placeholder="Email Address"
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setValidationError("");
+              }}
+              disabled={isLoading}
+              className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             />
-            Spirits
-          </nav>
-          <h1 className="text-3xl font-semibold text-red-800">{state}</h1>
-          <form
-            method="post"
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-6"
-          >
-            {state === "Sign Up" && (
-              <label htmlFor="username">
-                <input
-                  type="text"
-                  value={username}
-                  id="username"
-                  name="username"
-                  placeholder="Username"
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                    setValidationError("");
-                  }}
-                  disabled={isLoading}
-                  className="bg-gray-100 rounded-xl p-2 text-black w-full disabled:opacity-50"
-                />
-              </label>
-            )}
-            <label htmlFor="email">
-              <input
-                type="email"
-                value={email}
-                id="email"
-                name="email"
-                placeholder="Email"
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setValidationError("");
-                }}
-                disabled={isLoading}
-                className="bg-gray-100 rounded-xl p-2 text-black w-full disabled:opacity-50"
-              />
-            </label>
-            <label htmlFor="password">
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setValidationError("");
-                }}
-                id="password"
-                name="password"
-                placeholder="Password"
-                disabled={isLoading}
-                className="bg-gray-100 rounded-xl p-2 text-black w-full disabled:opacity-50"
-              />
-            </label>
-            {validationError && (
-              <div className="text-red-500 text-sm max-w-80">
+          </div>
+
+          {/* Password Field */}
+          <div className="relative">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setValidationError("");
+              }}
+              id="password"
+              name="password"
+              placeholder="Password"
+              disabled={isLoading}
+              className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+          </div>
+
+          {/* Validation Error */}
+          {validationError && (
+            <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-3 text-red-200 text-sm backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <svg
+                  className="w-4 h-4 text-red-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
                 {validationError}
               </div>
-            )}
-            <div className="w-full flex justify-between p-2">
-              <label htmlFor="remember" className="flex gap-2 items-center">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  className="checked:text-yellow-600 checked:bg-yellow-600 checked:border-black rounded cursor-pointer w-4 h-4 border bg-white border-black appearance-none"
-                />
-                Remember Me
-              </label>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="border-2 hover:border-yellow-700 shadow-md shadow-gray-700 border-amber-700 hover:bg-transparent hover:text-black bg-yellow-600 text-white rounded-xl py-1 font-semibold px-2 w-1/3 duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? "Loading..." : state}
-              </button>
             </div>
-            <h1
-              className="p-2 text-blue-600 hover:underline cursor-pointer"
+          )}
+
+          {/* Remember Me and Submit */}
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="remember"
+              className="flex items-center gap-2 text-gray-300 cursor-pointer"
+            >
+              <div className="relative">
+                <input type="checkbox" id="remember" className="sr-only" />
+                <div className="w-5 h-5 bg-white/10 border border-white/20 rounded flex items-center justify-center">
+                  <svg
+                    className="w-3 h-3 text-yellow-400 opacity-0 peer-checked:opacity-100 transition-opacity duration-200"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <span className="text-sm">Remember Me</span>
+            </label>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <svg
+                  className="animate-spin w-5 h-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Loading...
+              </div>
+            ) : (
+              state
+            )}
+          </button>
+
+          {/* Switch State */}
+          <div className="text-center">
+            <button
+              type="button"
               onClick={handleState}
+              className="text-gray-300 hover:text-white text-sm transition-colors duration-200"
             >
               {state === "Login"
-                ? "Don't have an account? Sign Up here"
-                : "Already have an account? Login here"}
-            </h1>
-          </form>
-        </div>
-        <Footer size="sm" />
+                ? "Don't have an account? "
+                : "Already have an account? "}
+              <span className="text-yellow-400 hover:text-yellow-300 font-medium">
+                {state === "Login" ? "Sign Up here" : "Login here"}
+              </span>
+            </button>
+          </div>
+        </form>
+
+        {/* Footer */}
+        {/* <div className="mt-8 pt-6 border-t border-white/10">
+          <Footer />
+        </div> */}
       </div>
     </div>
   );

@@ -174,7 +174,7 @@ const NavBar = (props: NavType) => {
             aria-label="Shopping cart"
           >
             <HiShoppingCart />
-            {cartQuantity && cartQuantity > 0 && (
+            {Number(cartQuantity) > 0 && (
               <div className="absolute -top-1 -right-1 text-sm text-white font-bold bg-red-600 rounded-full min-w-[20px] h-5 flex items-center justify-center">
                 {cartQuantity > 99 ? "99+" : cartQuantity}
               </div>

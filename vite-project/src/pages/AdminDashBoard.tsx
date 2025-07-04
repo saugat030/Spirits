@@ -19,7 +19,7 @@ const AdminDashBoard = () => {
 
   async function getDashDetails() {
     const { data } = await axios.get(
-      `http://localhost:3000/api/admin/dashboard`
+      `${import.meta.env.VITE_API_BASE_URL}/admin/dashboard`
     );
     setDashboardData(data.message);
     setLoading(false);
