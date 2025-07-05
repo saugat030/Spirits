@@ -5,166 +5,134 @@ export const getAllSpirits = async (req, res) => {
   let page = Number(req.query.page || 1);
   let limit = Number(req.query.limit || 12);
   console.log("the requested page and the limit offset is : " + page, limit);
+
   let type = req.query.type;
   let name = req.query.name;
+  let minPrice = req.query.minPrice ? Number(req.query.minPrice) : null;
+  let maxPrice = req.query.maxPrice ? Number(req.query.maxPrice) : null;
+
   type = type === "null" || type === "" ? null : type;
   name = name === "null" || name === "" ? null : name;
-  console.log("The requested type and name is: " + type, name);
+
+  console.log(
+    "The requested type, name, and price range is: " + type,
+    name,
+    minPrice,
+    maxPrice
+  );
 
   const offset = (page - 1) * limit;
 
-  if (type) {
-    try {
-      const db = await dbConnect();
+  try {
+    const db = await dbConnect();
 
-      // Get total count for pagination
-      const countResult = await db.query(
-        "SELECT COUNT(*) FROM liquors JOIN categories ON liquors.type_id = categories.type_id WHERE type_name = ($1)",
-        [type]
-      );
-      const total = parseInt(countResult.rows[0].count);
+    // Build dynamic WHERE clause and parameters
+    let whereConditions = [];
+    let queryParams = [];
+    let paramIndex = 1;
 
-      // Get paginated data
-      const result = await db.query(
-        "SELECT id, name, image_link, description, quantity, categories.type_id, type_name, price FROM liquors JOIN categories ON liquors.type_id = categories.type_id WHERE type_name = ($1) ORDER BY id ASC LIMIT $2 OFFSET $3",
-        [type, limit, offset]
-      );
-
-      db.release();
-
-      if (result.rows.length > 0) {
-        const totalPages = Math.ceil(total / limit);
-        const data = result.rows;
-
-        return res.json({
-          success: true,
-          message: "Products fetched successfully",
-          data,
-          page,
-          limit,
-          total,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
-        });
-      } else {
-        console.log("No data in the table with that type.");
-        return res.status(404).json({
-          success: false,
-          message: "No products found with that type",
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Internal server error" });
+    // Add type filter
+    if (type) {
+      whereConditions.push(`type_name = $${paramIndex}`);
+      queryParams.push(type);
+      paramIndex++;
     }
-  } else if (name) {
-    const searchKey = `%${name}%`;
-    try {
-      const db = await dbConnect();
 
-      // Get total count for pagination
-      const countResult = await db.query(
-        "SELECT COUNT(*) FROM liquors JOIN categories ON liquors.type_id = categories.type_id WHERE name ILIKE ($1)",
-        [searchKey]
-      );
-      const total = parseInt(countResult.rows[0].count);
-
-      // Get paginated data
-      const result = await db.query(
-        "SELECT id, name, image_link, description, quantity, categories.type_id, type_name, price FROM liquors JOIN categories ON liquors.type_id = categories.type_id WHERE name ILIKE ($1) ORDER BY id ASC LIMIT $2 OFFSET $3",
-        [searchKey, limit, offset]
-      );
-
-      db.release();
-
-      if (result.rows.length > 0) {
-        const totalPages = Math.ceil(total / limit);
-        const data = result.rows;
-
-        return res.json({
-          success: true,
-          message: "Products fetched successfully",
-          data,
-          page,
-          limit,
-          total,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
-        });
-      } else {
-        console.log("No products found with that name");
-        return res.status(404).json({
-          success: false,
-          message: "No products found with that name",
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Internal server error" });
+    // Add name filter
+    if (name) {
+      whereConditions.push(`name ILIKE $${paramIndex}`);
+      queryParams.push(`%${name}%`);
+      paramIndex++;
     }
-  } else {
-    try {
-      const db = await dbConnect();
-      // Get total count for pagination
-      const countResult = await db.query(
-        "SELECT COUNT(*) FROM liquors JOIN categories ON liquors.type_id = categories.type_id"
-      );
-      const total = parseInt(countResult.rows[0].count);
-      // Get paginated data
-      const result = await db.query(
-        `SELECT
-              id,
-              name,
-              image_link,
-              description,
-              quantity,
-              categories.type_id,
-              type_name,
-              price
-           FROM
-              liquors
-           JOIN
-              categories
-           ON
-              liquors.type_id = categories.type_id
-           ORDER BY
-              id ASC
-           LIMIT $1 OFFSET $2`,
-        [limit, offset]
-      );
 
-      db.release();
-
-      if (result.rows.length > 0) {
-        const totalPages = Math.ceil(total / limit);
-        const data = result.rows;
-
-        return res.json({
-          success: true,
-          message: "Products fetched successfully",
-          data,
-          page,
-          limit,
-          total,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
-        });
-      } else {
-        console.log("No data in the table.");
-        return res.status(404).json({
-          success: false,
-          message: "No products found",
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      return res
-        .status(500)
-        .json({ success: false, message: "Internal server error" });
+    // Add min price filter
+    if (minPrice !== null) {
+      whereConditions.push(`price >= $${paramIndex}`);
+      queryParams.push(minPrice);
+      paramIndex++;
     }
+
+    // Add max price filter
+    if (maxPrice !== null) {
+      whereConditions.push(`price <= $${paramIndex}`);
+      queryParams.push(maxPrice);
+      paramIndex++;
+    }
+
+    // Build the WHERE clause
+    const whereClause =
+      whereConditions.length > 0
+        ? `WHERE ${whereConditions.join(" AND ")}`
+        : "";
+
+    // Get total count for pagination
+    const countQuery = `
+      SELECT COUNT(*) 
+      FROM liquors 
+      JOIN categories ON liquors.type_id = categories.type_id 
+      ${whereClause}
+    `;
+
+    const countResult = await db.query(countQuery, queryParams);
+    const total = parseInt(countResult.rows[0].count);
+
+    // Get paginated data
+    const dataQuery = `
+      SELECT 
+        id, 
+        name, 
+        image_link, 
+        description, 
+        quantity, 
+        categories.type_id, 
+        type_name, 
+        price 
+      FROM liquors 
+      JOIN categories ON liquors.type_id = categories.type_id 
+      ${whereClause}
+      ORDER BY id ASC 
+      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+    `;
+
+    const dataParams = [...queryParams, limit, offset];
+    const result = await db.query(dataQuery, dataParams);
+
+    db.release();
+
+    if (result.rows.length > 0) {
+      const totalPages = Math.ceil(total / limit);
+      const data = result.rows;
+
+      return res.json({
+        success: true,
+        message: "Products fetched successfully",
+        data,
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+        filters: {
+          type,
+          name,
+          minPrice,
+          maxPrice,
+        },
+      });
+    } else {
+      console.log("No data found with the applied filters.");
+      return res.status(404).json({
+        success: false,
+        message: "No products found with the applied filters",
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
