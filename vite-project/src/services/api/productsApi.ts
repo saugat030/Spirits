@@ -6,28 +6,51 @@ import API from "../axiosInstance";
 export const useGetProducts = ({
   type,
   name,
+  minPrice,
+  maxPrice,
   page = 1,
   limit = 12,
 }: {
-  type?: string | null;
+  type?: string | string[] | null;
   name?: string | null;
+  minPrice?: number | null;
+  maxPrice?: number | null;
   page?: number | null;
   limit?: number | null;
 }) => {
   return useQuery<ApiResponse<ProductData[]>, Error>({
-    queryKey: ["products", { name, type, page, limit }],
+    queryKey: ["products", { name, type, minPrice, maxPrice, page, limit }],
     queryFn: async (): Promise<ApiResponse<ProductData[]>> => {
       const params = new URLSearchParams();
 
-      if (type) params.append("type", type);
+      // Handle type parameter (single or multiple)
+      if (type) {
+        if (Array.isArray(type)) {
+          type.forEach((t) => params.append("type", t));
+        } else {
+          params.append("type", type);
+        }
+      }
+
       if (name) params.append("name", name);
+      if (minPrice !== null && minPrice !== undefined)
+        params.append("minPrice", minPrice.toString());
+      if (maxPrice !== null && maxPrice !== undefined)
+        params.append("maxPrice", maxPrice.toString());
       if (page !== null) params.append("page", page.toString());
       if (limit !== null) params.append("limit", limit.toString());
 
       const queryString = params.toString();
       const url = `/products?${queryString}`;
 
-      console.log("Fetching products with:", { type, name, page, limit });
+      console.log("Fetching products with:", {
+        type,
+        name,
+        minPrice,
+        maxPrice,
+        page,
+        limit,
+      });
 
       try {
         const response = await API.get(url);

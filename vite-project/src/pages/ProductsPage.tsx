@@ -9,23 +9,35 @@ import { useGetProducts } from "../services/api/productsApi";
 const ProductsPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  // Extract all filter parameters from URL
   const alcName = searchParams.get("name");
-  const type = searchParams.get("type");
+  const searchTerm = searchParams.get("search");
+  const types = searchParams.getAll("type");
+  const minPrice = searchParams.get("minPrice");
+  const maxPrice = searchParams.get("maxPrice");
 
   const [category, setCategory] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(12);
 
-  const {
-    data: productsData,
-    error,
-    isLoading,
-  } = useGetProducts({
-    type: category,
-    name: alcName,
+  // Prepare parameters for the API call
+  const getTypeParam = () => {
+    if (types.length > 0) return types;
+    if (category) return category;
+    return null;
+  };
+
+  const apiParams = {
+    type: getTypeParam(),
+    name: searchTerm || alcName || null,
+    minPrice: minPrice ? parseInt(minPrice) : null,
+    maxPrice: maxPrice ? parseInt(maxPrice) : null,
     page: currentPage,
     limit: itemsPerPage,
-  });
+  };
+
+  const { data: productsData, error, isLoading } = useGetProducts(apiParams);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -35,36 +47,34 @@ const ProductsPage = () => {
 
   const handleCategoryChange = (newCategory: string) => {
     // Build new search params
-    const newSearchParams = new URLSearchParams();
+    const newSearchParams = new URLSearchParams(searchParams);
 
-    // Keep the name param if it exists
-    if (alcName) {
-      newSearchParams.set("name", alcName);
-    }
+    // Remove existing type params
+    newSearchParams.delete("type");
 
-    // Add type param if category is selected
+    // Add new type param if category is selected
     if (newCategory) {
       newSearchParams.set("type", newCategory);
     }
 
-    // Navigate with the new params - this will trigger the useEffect to update state
+    // Navigate with the new params
     const queryString = newSearchParams.toString();
     navigate(queryString ? `?${queryString}` : "/products");
   };
 
   // Initialize and sync category from URL params
   useEffect(() => {
-    const newCategory = type || "";
+    const newCategory = types.length === 1 ? types[0] : "";
     if (category !== newCategory) {
       setCategory(newCategory);
       setCurrentPage(1);
     }
-  }, [type]);
+  }, [types]);
 
-  // Reset page when search term changes
+  // Reset page when any filter parameter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [alcName]);
+  }, [alcName, searchTerm, types.join(","), minPrice, maxPrice]);
 
   return (
     <div className="font-Poppins overflow-hidden">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
 
 type Category = "Beer" | "Vodka" | "Rum" | "Whiskey" | "Wine" | "Tequilla";
@@ -13,6 +14,7 @@ interface FilterData {
 }
 
 const FilterSection = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
@@ -59,6 +61,30 @@ const FilterSection = () => {
     );
   };
 
+  const buildFilterUrl = (): string => {
+    const params = new URLSearchParams();
+
+    // Add search term if present
+    if (searchTerm.trim()) {
+      params.append("search", searchTerm.trim());
+    }
+
+    // Add categories
+    selectedCategories.forEach((category) => {
+      params.append("type", category);
+    });
+
+    // Add price range (only if different from default)
+    if (priceRange[0] > 0) {
+      params.append("minPrice", priceRange[0].toString());
+    }
+    if (priceRange[1] < 1000) {
+      params.append("maxPrice", priceRange[1].toString());
+    }
+
+    return `/products?${params.toString()}`;
+  };
+
   const handleFilter = (): void => {
     const filterData: FilterData = {
       search: searchTerm,
@@ -70,7 +96,11 @@ const FilterSection = () => {
     };
 
     console.log("Filter Values:", filterData);
-    // This data can later be used for API calls
+
+    // Navigate to the filtered products page
+    const filterUrl = buildFilterUrl();
+    console.log("Navigating to:", filterUrl);
+    navigate(filterUrl);
   };
 
   return (

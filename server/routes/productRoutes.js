@@ -2,7 +2,6 @@ import express from "express";
 import {
   getAllSpirits,
   getSpiritsById,
-  getSpiritsByPrice,
 } from "../controllers/productController.js";
 import {
   addProduct,
@@ -20,8 +19,6 @@ router.get("/products", getAllSpirits);
 //Get a particular product by Id:
 router.get("/products/:id", getSpiritsById);
 //Get by price:
-//example:filter/price?min=200&max=400
-router.get("/product/filter/price", getSpiritsByPrice);
 //Only accessible to admin. Admin le form ma type ko name halxa ex:"Whiskey" ani tesko equivalent type_id table ma insert garnu parxa this middleware function does that job.
 router.post("/products", userAuth, isAdmin, retrieveTypeId, addProduct);
 //Post use garda ni hunxa tara standard is using a put req while sending params in the endpoint.

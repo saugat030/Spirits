@@ -1,92 +1,90 @@
 import { dbConnect } from "../config/dbConnect.js";
 
 export const getAllSpirits = async (req, res) => {
-  console.log("The API hit the endpoint: " + req.url);
-  let page = Number(req.query.page || 1);
-  let limit = Number(req.query.limit || 12);
-  console.log("the requested page and the limit offset is : " + page, limit);
+  console.log("API Hit:", req.url);
 
-  let type = req.query.type;
-  let name = req.query.name;
-  let minPrice = req.query.minPrice ? Number(req.query.minPrice) : null;
-  let maxPrice = req.query.maxPrice ? Number(req.query.maxPrice) : null;
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 12);
+  const offset = (page - 1) * limit;
 
-  type = type === "null" || type === "" ? null : type;
+  let { type, name, minPrice, maxPrice } = req.query;
+
+  // Normalize input values
+  const types = Array.isArray(type)
+    ? type
+    : type && type !== "null" && type !== ""
+    ? [type]
+    : null;
+
   name = name === "null" || name === "" ? null : name;
 
-  console.log(
-    "The requested type, name, and price range is: " + type,
-    name,
-    minPrice,
-    maxPrice
-  );
+  // Add validation for price values
+  minPrice = minPrice && !isNaN(Number(minPrice)) ? Number(minPrice) : null;
+  maxPrice = maxPrice && !isNaN(Number(maxPrice)) ? Number(maxPrice) : null;
 
-  const offset = (page - 1) * limit;
+  // Ensure minPrice is not greater than maxPrice
+  if (minPrice !== null && maxPrice !== null && minPrice > maxPrice) {
+    return res.status(400).json({
+      success: false,
+      message: "Minimum price cannot be greater than maximum price",
+    });
+  }
+
+  console.log("Filters:", { types, name, minPrice, maxPrice });
 
   try {
     const db = await dbConnect();
-
-    // Build dynamic WHERE clause and parameters
     let whereConditions = [];
     let queryParams = [];
     let paramIndex = 1;
 
-    // Add type filter
-    if (type) {
-      whereConditions.push(`type_name = $${paramIndex}`);
-      queryParams.push(type);
+    // Multiple types using = ANY($n)
+    if (types && types.length > 0) {
+      // Added length check
+      whereConditions.push(`type_name = ANY($${paramIndex})`);
+      queryParams.push(types);
       paramIndex++;
     }
 
-    // Add name filter
+    // Name filter
     if (name) {
       whereConditions.push(`name ILIKE $${paramIndex}`);
       queryParams.push(`%${name}%`);
       paramIndex++;
     }
 
-    // Add min price filter
     if (minPrice !== null) {
       whereConditions.push(`price >= $${paramIndex}`);
       queryParams.push(minPrice);
       paramIndex++;
     }
 
-    // Add max price filter
     if (maxPrice !== null) {
       whereConditions.push(`price <= $${paramIndex}`);
       queryParams.push(maxPrice);
       paramIndex++;
     }
 
-    // Build the WHERE clause
     const whereClause =
       whereConditions.length > 0
         ? `WHERE ${whereConditions.join(" AND ")}`
         : "";
 
-    // Get total count for pagination
+    // Count total items
     const countQuery = `
       SELECT COUNT(*) 
       FROM liquors 
       JOIN categories ON liquors.type_id = categories.type_id 
       ${whereClause}
     `;
-
     const countResult = await db.query(countQuery, queryParams);
     const total = parseInt(countResult.rows[0].count);
 
-    // Get paginated data
+    // Data query with pagination
     const dataQuery = `
       SELECT 
-        id, 
-        name, 
-        image_link, 
-        description, 
-        quantity, 
-        categories.type_id, 
-        type_name, 
-        price 
+        id, name, image_link, description, quantity,
+        categories.type_id, type_name, price 
       FROM liquors 
       JOIN categories ON liquors.type_id = categories.type_id 
       ${whereClause}
@@ -96,39 +94,27 @@ export const getAllSpirits = async (req, res) => {
 
     const dataParams = [...queryParams, limit, offset];
     const result = await db.query(dataQuery, dataParams);
-
     db.release();
 
-    if (result.rows.length > 0) {
-      const totalPages = Math.ceil(total / limit);
-      const data = result.rows;
-
-      return res.json({
-        success: true,
-        message: "Products fetched successfully",
-        data,
-        page,
-        limit,
-        total,
-        totalPages,
-        hasNext: page < totalPages,
-        hasPrev: page > 1,
-        filters: {
-          type,
-          name,
-          minPrice,
-          maxPrice,
-        },
-      });
-    } else {
-      console.log("No data found with the applied filters.");
-      return res.status(404).json({
-        success: false,
-        message: "No products found with the applied filters",
-      });
-    }
+    // Always return success response with data (even if empty)
+    const totalPages = Math.ceil(total / limit);
+    return res.json({
+      success: true,
+      message:
+        result.rows.length > 0
+          ? "Products fetched successfully"
+          : "No products found with the applied filters",
+      data: result.rows,
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNext: page < totalPages,
+      hasPrev: page > 1,
+      filters: { type: types, name, minPrice, maxPrice },
+    });
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching spirits:", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -172,29 +158,5 @@ export const getSpiritsById = async (req, res) => {
     res
       .status(404)
       .json({ success: false, message: "No products found with that ID" });
-  }
-};
-
-export const getSpiritsByPrice = async (req, res) => {
-  let { min } = req.query;
-  let { max } = req.query;
-  console.log("A req has hit the api endpoint: " + req.url);
-  console.log("The fiilter for min price and max price are : " + min, max);
-  try {
-    const db = await dbConnect();
-    const result = await db.query(
-      "select * from liquors join categories on liquors.type_id = categories.type_id where price > ($1) and price < ($2) order by price asc",
-      [min, max]
-    );
-    if (result.rows.length > 0) {
-      return res.json(result.rows);
-    } else {
-      res.json({
-        success: false,
-        message: "No products with such price filter found",
-      });
-    }
-  } catch (error) {
-    res.json({ success: false, message: error.message });
   }
 };
