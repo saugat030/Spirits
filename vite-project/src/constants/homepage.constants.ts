@@ -37,7 +37,7 @@ export const REVIEWS = [
     name: "Saurav Bista",
     imgid: 0,
     review:
-      "This shop has an incredible variety of wines, beers, and spirits, ranging from popular brands to rare finds. The staff is always welcoming and extremely knowledgeable, offering great recommendations tailored to my taste and budget. Every visit feels like a personalized experience. Highly recommend this gem to anyone looking for quality and excellent service!",
+      "This shop has an incredible variety of wines, beers, and spirits, ranging from popular brands to rare finds. The staff is always welcoming and extremely knowledgeable, offering great recommendations tailored to my taste and budget. Highly recommend this gem to anyone looking for quality and excellent service!",
     role: "Technical Writer and SEO",
   },
   {

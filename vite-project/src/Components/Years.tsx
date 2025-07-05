@@ -2,7 +2,7 @@ const Years = () => {
   return (
     <section
       id="About"
-      className="flex lg:flex-row flex-col gap-20 container mx-auto lg:mt-40 mt-20 p-4 lg:p-0"
+      className="flex lg:flex-row flex-col gap-20 container mx-auto my-20 p-4 lg:p-0"
     >
       <figure className="lg:w-1/2 w-full rounded-lg shadow-md shadow-amber-900">
         <img
@@ -11,7 +11,7 @@ const Years = () => {
         />
       </figure>
 
-      <div className="flex g:w-1/2 w-full flex-col gap-8">
+      <div className="flex lg:w-1/2  flex-col gap-8">
         <div>
           <h6 className="italic text-red-900">Since 1996</h6>
           <h1 className="text-4xl font-semibold">Desire Meets A New Taste</h1>
