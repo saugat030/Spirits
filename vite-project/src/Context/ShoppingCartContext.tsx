@@ -1,10 +1,6 @@
 import { createContext, ReactNode, useContext } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 
-type ShoppingCartProviderProp = {
-  children: ReactNode;
-  //children ko type always ReactNode hunxa.
-};
 type CartItem = {
   id: number;
   quantity: number;
@@ -25,7 +21,7 @@ const ShoppingCartContext = createContext({} as ShoppingCartContext);
 export function useShoppingCart() {
   return useContext(ShoppingCartContext);
 }
-export function ShoppingCartProvider({ children }: ShoppingCartProviderProp) {
+export function ShoppingCartProvider({ children }: {children : ReactNode}) {
   const [cartItems, setCartItems] = useLocalStorage<CartItem[]>(
     "shopping-cart",
     []
