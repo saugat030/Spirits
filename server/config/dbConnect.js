@@ -21,7 +21,6 @@ export const dbConnect = async () => {
     );
     console.log(`Database: ${res.rows[0].current_database}`);
     console.log(` User: ${res.rows[0].current_user}`);
-    console.log(`Version: ${res.rows[0].version.split("\n")[0]}`);
     //Debug:
     // //  List all tables in the "public" schema
     // const tables = await db.query(`

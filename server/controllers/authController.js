@@ -24,7 +24,6 @@ function generateRefreshToken(payload) {
 export const signup = async (req, res) => {
   //Form bata submited xa vaney it works normally tara if Postman bata xa ani you have selected the body-> raw-> JSON then you need to use a middleware for it. express.json
   const { name, email, password } = req.body;
-  console.log(name, email, password);
   //check if name, email, and password exists :
   if (!name || !email || !password) {
     return res.status(401).json({

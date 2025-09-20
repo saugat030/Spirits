@@ -1,28 +1,17 @@
 import rateLimit from "express-rate-limit";
 //Rate limiter internally calls the next() function. It basically returns a proper middleware that can be used. It only hides it from the developer to look clean.
 
-// General auth rate limiter - for login/signup
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts per window per IP
+  windowMs: 15 * 60 * 1000,
+  max: 5,
   message: {
     success: false,
     message:
       "Too many authentication attempts. Please try again in 15 minutes.",
-    retryAfter: 15 * 60, // seconds
   },
-  standardHeaders: true, // Return rate limit info in headers
+  standardHeaders: true,
   legacyHeaders: false,
-  // Skip successful requests - only count failed ones
   skipSuccessfulRequests: true,
-  // Custom key generator - can be IP + email for more granular control
-  keyGenerator: (req) => {
-    // For login, use IP + email if available
-    if (req.body?.email) {
-      return `${req.ip}-${req.body.email}`;
-    }
-    return req.ip;
-  },
 });
 
 // Stricter limiter for failed login attempts
