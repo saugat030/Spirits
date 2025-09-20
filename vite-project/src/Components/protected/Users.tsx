@@ -23,7 +23,7 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/admin/get-users`
+        `${import.meta.env.VITE_API_BASE_URL}/admin/get-users`
       );
       if (response.data.statistics) {
         setUsersData(response.data.statistics);

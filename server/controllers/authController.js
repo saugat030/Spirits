@@ -1,9 +1,25 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { dbConnect } from "../config/dbConnect.js";
-const saltRounds = 10;
 
+const saltRounds = 10;
 const isProduction = process.env.NODE_ENV === "production";
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+const ACCESS_TOKEN_EXPIRES_IN = "15m";
+const REFRESH_TOKEN_EXPIRES_DAYS = "7d";
+
+//functions to generate tokens:
+function generateAccessToken(payload) {
+  return jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+    expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+  });
+}
+function generateRefreshToken(payload) {
+  return jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+    expiresIn: REFRESH_TOKEN_EXPIRES_DAYS,
+  });
+}
 //Signup
 export const signup = async (req, res) => {
   //Form bata submited xa vaney it works normally tara if Postman bata xa ani you have selected the body-> raw-> JSON then you need to use a middleware for it. express.json
@@ -42,22 +58,31 @@ export const signup = async (req, res) => {
             [name, email, hash]
           );
           console.log("user successfully registered.");
+          const userId = insertionQuery.rows[0].id;
           //After user registered generate a token for them. And put them in the cookie. the "token" is the cookie name with value as token.
-          const token = jwt.sign(
-            {
-              id: insertionQuery.rows[0].id,
-              role: "user",
-            },
-            process.env.JWT_SECRET,
-            {
-              expiresIn: "7d",
-            }
+          // generate tokens
+          const accessToken = generateAccessToken({ id: userId, role: "user" });
+          const refreshToken = generateRefreshToken({
+            id: userId,
+            role: "user",
+          });
+          //Add the refresh tokens into the databse:
+          await db.query(
+            "INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, NOW() + interval '7 days')",
+            [userId, refreshToken]
           );
-          res.cookie("token", token, {
+          //cookies ma haldera both tokens pathaune. Refresh tokens pathauna ko reason chai paxi /refresh tokens garda we check if that token exists in the database.
+          res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: isProduction,
             sameSite: isProduction ? "None" : "Lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            maxAge: 15 * 60 * 1000, // 15 minutes
+          });
+          res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? "None" : "Lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
           });
           return res.status(201).json({
             success: true,
@@ -74,7 +99,6 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   console.log("Login Route Hit");
   console.log("Request body:", req.body);
-  console.log("JWT_SECRET value:", process.env.JWT_SECRET); // Remove in production!
 
   const { email, password } = req.body;
 
@@ -116,11 +140,13 @@ export const login = async (req, res) => {
       role: user.role,
       hasPassword: user.password ? "Yes" : "No",
     });
+    const userId = user.id;
+    const role = user.role;
 
     try {
       //Check if the password is valid
       const isPasswordValid = await bcrypt.compare(password, user.password);
-      console.log("🔐 Password comparison result:", isPasswordValid);
+      console.log("Password comparison result:", isPasswordValid);
       if (!isPasswordValid) {
         console.log("Invalid password");
         return res.status(401).json({
@@ -129,43 +155,41 @@ export const login = async (req, res) => {
         });
       }
       // Password is valid, generate token
-      console.log("✅ Password valid, generating token...");
-
-      const token = jwt.sign(
-        {
-          id: user.id,
-          role: user.role,
-        },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: "7d",
-        }
+      console.log("Password valid, generating token...");
+      const accessToken = generateAccessToken({ id: userId, role: role });
+      const refreshToken = generateRefreshToken({ id: userId, role: role });
+      //Add the refresh tokens into the databse:
+      await db.query(
+        "INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, NOW() + interval '7 days')",
+        [userId, refreshToken]
       );
-
-      console.log("✅ Token generated successfully");
-
-      // Set cookie
-      const cookieOptions = {
+      res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? "None" : "Lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      };
-      res.cookie("token", token, cookieOptions);
+        maxAge: 15 * 60 * 1000, // 15 minutes
+      });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "None" : "Lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
       console.log("✅ Login successful");
       return res.status(200).json({
         success: true,
         message: "User successfully logged in",
       });
     } catch (bcryptError) {
-      console.error("❌ Bcrypt comparison error:", bcryptError);
+      console.error("Bcrypt comparison error:", bcryptError);
       return res.status(500).json({
         success: false,
         message: "Password verification failed",
       });
     }
   } catch (error) {
-    console.error("❌ Database/Server error:", error);
+    console.error(" Database/Server error:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -175,17 +199,21 @@ export const login = async (req, res) => {
 //Logout:
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    const db = await dbConnect();
+    const refreshToken = req.cookies.refreshToken;
+    if (refreshToken) {
+      await db.query("DELETE FROM refresh_tokens WHERE token = $1", [
+        refreshToken,
+      ]);
+    }
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
     return res.status(200).json({ success: true, message: "Logged Out." });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
 //Check if user loggedIn:
 //also add the userAuth middleware that checks if the user is loggedin.
 export const isAuth = async (req, res) => {
@@ -203,16 +231,14 @@ export const isAuth = async (req, res) => {
 //Get all user data. To access this the user must be logged in.
 export const userData = async (req, res) => {
   try {
-    //userId and role will come from the isAuthenticated middleware.
-    const { userId } = req.body;
-    const { role } = req.body;
+    // userId and role now come from req.user (set in userAuth middleware)
+    const { userId, role } = req.user;
     console.log("user data route hit", req.url);
     console.log("user data", userId, role);
     const db = await dbConnect();
     const result = await db.query("select * from users where id = ($1)", [
       userId,
     ]);
-    db.release();
     if (result.rows.length > 0) {
       res.status(200).json({
         success: true,
@@ -231,6 +257,99 @@ export const userData = async (req, res) => {
     }
   } catch (error) {
     console.error("ERROR IN GET USER DATA ROUTE", error.message);
+    db.release();
     res.status(500).json({ success: false, message: error.message });
+  } finally {
+    db.release();
+  }
+};
+
+export const refresh = async (req, res) => {
+  const { refreshToken } = req.cookies;
+  if (!refreshToken) {
+    return res
+      .status(401)
+      .json({ success: false, message: "No refresh token" });
+  }
+
+  let db;
+  try {
+    db = await dbConnect();
+
+    // 1. Check if token exists in DB
+    const result = await db.query(
+      "SELECT * FROM refresh_tokens WHERE token = $1",
+      [refreshToken]
+    );
+
+    if (result.rows.length === 0) {
+      db.release();
+      return res
+        .status(403)
+        .json({ success: false, message: "Invalid refresh token" });
+    }
+    //Check if the token has expired. Even though jwt automaticcaly chesks the expired tokens, this is to cleanup the database for old tokens so that the db doesnot bloat.
+    const tokenData = result.rows[0];
+    if (new Date() > new Date(tokenData.expires_at)) {
+      await db.query("DELETE FROM refresh_tokens WHERE token = $1", [
+        refreshToken,
+      ]);
+      return res
+        .status(403)
+        .json({ success: false, message: "Refresh token expired" });
+    }
+
+    // 2. Verify signature
+    jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, async (err, decoded) => {
+      if (err) {
+        db.release();
+        return res.status(403).json({
+          success: false,
+          message: "Invalid refresh token. Decoding failed.",
+        });
+      }
+
+      // 3. Generate new tokens
+      const accessToken = generateAccessToken({
+        id: decoded.id,
+        role: decoded.role,
+      });
+      const newRefreshToken = generateRefreshToken({
+        id: decoded.id,
+        role: decoded.role,
+      });
+
+      // 4. Replace old refresh token with new one (rotation)
+      await db.query("UPDATE refresh_tokens SET token = $1 WHERE token = $2", [
+        newRefreshToken,
+        refreshToken,
+      ]);
+
+      // 5. Send new tokens back
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "None" : "Lax",
+        maxAge: 15 * 60 * 1000, // 15 mins
+      });
+
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "None" : "Lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      db.release();
+      return res.json({
+        success: true,
+        message: "Access token refreshed",
+        accessToken,
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    if (db) db.release();
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

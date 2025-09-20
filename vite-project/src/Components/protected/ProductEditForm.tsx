@@ -33,7 +33,7 @@ const ProductEditForm = ({ selectedProduct, closeModal }: ProductEditType) => {
     axios.defaults.withCredentials = true;
     try {
       const response = await axios.put(
-        `http://localhost:3000/api/products/${selectedProduct?.id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/products/${selectedProduct?.id}`,
         {
           name: productName,
           type_name: type_name,

@@ -15,6 +15,7 @@ import Dashboard from "./Components/protected/Dashboard";
 import AddProducts from "./Components/protected/AddProducts";
 import ProtectedRoute from "./Components/protected/protectedRoute";
 import { AuthContextProvider } from "./Context/AuthContext";
+import OrdersPage from "./pages/OrdersPage";
 
 function App() {
   return (
@@ -26,8 +27,17 @@ function App() {
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/products/:id" element={<ProductFullView />} />
             <Route path="/login" element={<Authentication />} />
-            {/* Protected routes that require login */}
+
             <Route path="/cart" element={<CartPage />} />
+            {/* Protected routes that require login */}
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute>
+                  <OrdersPage />
+                </ProtectedRoute>
+              }
+            />
             {/* Admin Routes - Role-based protection */}
             <Route
               path="/admin"

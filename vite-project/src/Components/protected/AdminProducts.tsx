@@ -36,7 +36,7 @@ const AdminProducts = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/products?page=${page}`
+        `${import.meta.env.VITE_API_BASE_URL}/products?page=${page}`
       );
       if (response.data.statistics && response.data.statistics.length > 0) {
         setProducts(response.data.statistics);
@@ -71,7 +71,7 @@ const AdminProducts = () => {
   const handleDelete = async (id: number) => {
     console.log("Deleting product...", id);
     try {
-      await axios.delete(`http://localhost:3000/api/products/${id}`);
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/products/${id}`);
       setRefresh(!refresh);
     } catch (error) {
       console.error("Failed to delete product:", error);

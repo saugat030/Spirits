@@ -38,9 +38,8 @@ app.use("/api/stats", statsRoutes);
 app.use("/api/admin", adminRoutes);
 // app.use("/api/users", userRoutes);
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
   res.send("Server Running succesfully at PORT: " + port);
-  // await createAdmin();
 });
 
 app.listen(port, () => {

@@ -21,7 +21,9 @@ const EditForm = ({ selectedUser, closeModal }: EditFormType) => {
     axios.defaults.withCredentials = true;
     try {
       const response = await axios.post(
-        `http://localhost:3000/api/admin/update-user/${selectedUser?.id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/admin/update-user/${
+          selectedUser?.id
+        }`,
         {
           name: username,
           email: email,

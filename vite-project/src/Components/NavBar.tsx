@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IoMenuSharp, IoClose } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import axios from "axios";
 import { useShoppingCart } from "../Context/ShoppingCartContext";
@@ -18,7 +18,9 @@ const NavBar = (props: NavType) => {
   const navigate = useNavigate();
   const { cartQuantity } = useShoppingCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [profileDropDown, setProfileDropDown] = useState(false);
   const [isSpiritsDropdownOpen, setIsSpiritsDropdownOpen] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   const authContext = useContext(AuthContext);
   if (!authContext) {
@@ -44,6 +46,23 @@ const NavBar = (props: NavType) => {
       document.body.style.overflow = "unset";
     };
   }, [isMobileMenuOpen]);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node)
+      ) {
+        setProfileDropDown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const logout = async () => {
     try {
@@ -73,6 +92,24 @@ const NavBar = (props: NavType) => {
 
   const toggleSpiritsDropdown = () => {
     setIsSpiritsDropdownOpen(!isSpiritsDropdownOpen);
+  };
+
+  const toggleProfileDropdown = () => {
+    setProfileDropDown(!profileDropDown);
+  };
+
+  const closeProfileDropdown = () => {
+    setProfileDropDown(false);
+  };
+
+  const handleProfileNavigation = (path: string) => {
+    navigate(path);
+    closeProfileDropdown();
+  };
+
+  const handleLogout = () => {
+    logout();
+    closeProfileDropdown();
   };
 
   const isHomePage = props.page === "home";
@@ -142,20 +179,53 @@ const NavBar = (props: NavType) => {
         {/* Desktop Right Section */}
         <div className="hidden md:flex items-center gap-8">
           {userData ? (
-            <div className="flex gap-5 items-center">
+            <div className="relative" ref={profileDropdownRef}>
               <div
-                className={`rounded-full ${
-                  isHomePage ? "bg-white text-black " : "bg-black text-white "
-                } flex justify-center items-center font-bold text-lg hover:scale-95 duration-150 cursor-pointer h-[45px] w-[45px] p-2`}
+                className="flex gap-1 items-center cursor-pointer"
+                onClick={toggleProfileDropdown}
               >
-                {userData.name.slice(0, 2)}
+                <div
+                  className={`rounded-full ${
+                    isHomePage ? "bg-white text-black " : "bg-black text-white "
+                  } flex justify-center items-center font-bold text-lg hover:scale-95 duration-150 cursor-pointer h-[45px] w-[45px] p-2`}
+                >
+                  {userData.name.slice(0, 2)}
+                </div>
+                <FaAngleDown
+                  className={`transition-transform duration-200 ${
+                    profileDropDown ? "rotate-180" : ""
+                  }`}
+                />
               </div>
-              <button
-                className="text-xl font-semibold hover:underline hover:scale-105 duration-200"
-                onClick={logout}
-              >
-                Logout
-              </button>
+
+              {/* Profile Dropdown */}
+              {profileDropDown && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg border z-50">
+                  <div className="py-2">
+                    <div className="px-4 py-2 border-b text-sm text-gray-600 font-medium">
+                      {userData.name}
+                    </div>
+                    <button
+                      onClick={() => handleProfileNavigation("/orders")}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
+                    >
+                      My Orders
+                    </button>
+                    <button
+                      onClick={() => handleProfileNavigation("/cart")}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
+                    >
+                      Cart
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-red-600"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <Link
@@ -260,6 +330,7 @@ const NavBar = (props: NavType) => {
                         key={item.label}
                         to={item.link}
                         className="w-full text-left p-4 pl-8 hover:bg-gray-100 transition-colors block"
+                        onClick={closeMobileMenu}
                       >
                         {item.label}
                       </Link>
@@ -269,12 +340,13 @@ const NavBar = (props: NavType) => {
               </li>
 
               <li className="border-b">
-                <button
-                  onClick={() => closeMobileMenu()}
-                  className="w-full text-left p-6 hover:bg-gray-50 transition-colors"
+                <Link
+                  to="/products"
+                  onClick={closeMobileMenu}
+                  className="w-full text-left p-6 hover:bg-gray-50 transition-colors block"
                 >
                   Shop
-                </button>
+                </Link>
               </li>
 
               <li className="border-b">
@@ -316,20 +388,40 @@ const NavBar = (props: NavType) => {
                     {userData.name}
                   </div>
                 </div>
-                <button
-                  className="w-full text-left text-lg font-semibold text-red-600 hover:text-red-700"
-                  onClick={() => {
-                    logout();
-                    closeMobileMenu();
-                  }}
-                >
-                  Logout
-                </button>
+                <div className="space-y-2">
+                  <button
+                    className="w-full text-left text-lg font-semibold text-blue-600 hover:text-blue-700"
+                    onClick={() => {
+                      navigate("/orders");
+                      closeMobileMenu();
+                    }}
+                  >
+                    My Orders
+                  </button>
+                  <button
+                    className="w-full text-left text-lg font-semibold text-blue-600 hover:text-blue-700"
+                    onClick={() => {
+                      navigate("/cart");
+                      closeMobileMenu();
+                    }}
+                  >
+                    Cart
+                  </button>
+                  <button
+                    className="w-full text-left text-lg font-semibold text-red-600 hover:text-red-700"
+                    onClick={() => {
+                      logout();
+                      closeMobileMenu();
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             ) : (
               <Link
                 to="/login"
-                onClick={() => closeMobileMenu()}
+                onClick={closeMobileMenu}
                 className="w-full text-left text-lg font-semibold text-blue-600 hover:text-blue-700"
               >
                 Login

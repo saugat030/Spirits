@@ -1,6 +1,8 @@
-import { useContext, ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { useContext, ReactNode, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Context/AuthContext";
+import { toast } from "react-toastify";
+
 type ProtectedRouteProps = {
   children: ReactNode;
   requiredRole?: string; // Optional role-based protection
@@ -13,6 +15,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requireVerified = false,
 }) => {
   const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [isChecking, setIsChecking] = useState(true); // to prevent flashing
 
   if (!authContext) {
     throw new Error("ProtectedRoute must be used within AuthContextProvider");
@@ -20,25 +24,36 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   const { isLoggedin, userData } = authContext;
 
-  // Check if user is logged in
-  if (!isLoggedin) {
-    return <Navigate to="/login" replace />;
-  }
+  useEffect(() => {
+    // If not logged in
+    if (!isLoggedin) {
+      toast.error("You must be logged in to perform that action");
+      navigate("/login", { replace: true });
+      return;
+    }
 
-  // Check if user data is loaded
-  if (!userData) {
-    return <div>Loading...</div>; // Or your loading component
-  }
+    // Wait until user data is loaded
+    if (!userData) return;
 
-  // Check if account verification is required
-  if (requireVerified && !userData.isAccountVerified) {
-    return <Navigate to="/verify-account" replace />;
-  }
+    // If verification is required and user is not verified
+    if (requireVerified && !userData.isAccountVerified) {
+      toast.error("You must be verified to perform that action");
+      navigate("/verify-account", { replace: true });
+      return;
+    }
 
-  // Check role-based access
-  if (requiredRole && userData.role !== requiredRole) {
-    return <Navigate to="/unauthorized" replace />;
-  }
+    // If role doesn't match
+    if (requiredRole && userData.role !== requiredRole) {
+      toast.error("You are unauthorized to perform that action");
+      navigate("/unauthorized", { replace: true });
+      return;
+    }
+
+    // All checks passed
+    setIsChecking(false);
+  }, [isLoggedin, userData, requiredRole, requireVerified, navigate]);
+
+  if (isChecking) return null; // prevent children from flashing during redirect
 
   return <>{children}</>;
 };
