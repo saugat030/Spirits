@@ -15,7 +15,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.json({limit: "10mb"}));
 
 const isProduction = process.env.NODE_ENV === "production";
 const allowedOrigins = isProduction
@@ -35,7 +35,7 @@ app.use(
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
-app.use("/api", productRoutes);
+app.use("/api/products", productRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/admin", adminRoutes);

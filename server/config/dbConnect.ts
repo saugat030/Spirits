@@ -26,6 +26,7 @@
 //     process.exit(1);
 //   }
 // };
+
 import pg from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 const { Pool } = pg;

@@ -15,13 +15,13 @@ import retrieveTypeId from "../middlewares/retrieveTypeId.js";
 const router = express.Router();
 
 //Get all products taking params as /api/products?type=Vodka&name=Chivas&page=1&limit=8
-router.get("/products", getAllSpirits);
+router.get("/", getAllSpirits);
 //Get a particular product by Id:
-router.get("/products/:id", getSpiritsById);
+router.get("/:id", getSpiritsById);
 //Get by price:
 //Only accessible to admin. Admin le form ma type ko name halxa ex:"Whiskey" ani tesko equivalent type_id table ma insert garnu parxa this middleware function does that job.
-router.post("/products", userAuth, isAdmin, retrieveTypeId, addProduct);
+router.post("/", userAuth, isAdmin, retrieveTypeId, addProduct);
 //Post use garda ni hunxa tara standard is using a put req while sending params in the endpoint.
-router.put("/products/:id", userAuth, isAdmin, retrieveTypeId, updateProduct);
-router.delete("/products/:id", userAuth, isAdmin, deleteProduct);
+router.put("/:id", userAuth, isAdmin, retrieveTypeId, updateProduct);
+router.delete("/:id", userAuth, isAdmin, deleteProduct);
 export default router;
