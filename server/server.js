@@ -11,7 +11,6 @@ import adminRoutes from "./routes/adminRoutes.js";
 // import createAdmin from "./createAdmin.js";
 const app = express();
 const port = process.env.PORT || 3001;
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 //VVI for running projs in different port react ko arkai port ra express ko arkai port huda kam lagne.
