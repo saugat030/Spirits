@@ -4,7 +4,7 @@ import {
   totalProducts,
   getProductSalesDetails,
 } from "../controllers/statsController.js";
-import userAuth from "../middlewares/userAuth.js";
+import userAuth from "../middlewares/auth.middleware.js";
 import isAdmin from "../middlewares/isAdmin.js";
 const router = express.Router();
 

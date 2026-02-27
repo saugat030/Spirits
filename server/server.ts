@@ -3,13 +3,13 @@ import type { Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-// Because your tsconfig uses "module": "nodenext", TypeScript strictly requires 
-// the .js extension for local imports, even if the actual file is .ts or .js.
+// tsconfig uses "module": "nodenext", ts strictly requires the .js extension for local imports, even if the actual file is .ts or .js.
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import ordersRoutes from "./routes/ordersRoute.js";
 import statsRoutes from "./routes/statsRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import { verifyConnection } from "./config/dbConnect.js";
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -40,10 +40,17 @@ app.use("/api/orders", ordersRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/admin", adminRoutes);
 
-app.get("/", async (req: Request, res: Response) => {
-  res.send("Server Running succesfully at PORT: " + port);
-});
+const startServer = async () => {
+  try {
+    await verifyConnection();
+    // only start listening if DB is confirmed
+    app.listen(port, () => {
+      console.log(`Server verified and running at http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server due to DB connection issues:", error);
+    process.exit(1); 
+  }
+};
 
-app.listen(port, () => {
-  console.log(`API is running at http://localhost:${port}`);
-});
+startServer();

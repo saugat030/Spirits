@@ -9,7 +9,7 @@ import {
   deleteProduct,
 } from "../controllers/adminController.js";
 //middleware imports:
-import userAuth from "../middlewares/userAuth.js";
+import userAuth from "../middlewares/auth.middleware.js";
 import isAdmin from "../middlewares/isAdmin.js";
 import retrieveTypeId from "../middlewares/retrieveTypeId.js";
 const router = express.Router();

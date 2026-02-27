@@ -39,13 +39,6 @@ const pool = new Pool({
 });
 
 export const db = drizzle(pool);
-
-if (pool) {
-    console.log('Connected to the database');
-} else {
-    console.log('Failed to connect to the database');
-}
-
 // helper to verify stuffs
 export const verifyConnection = async () => {
   try {
