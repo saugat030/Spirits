@@ -130,8 +130,6 @@ export const isAuth = async (req: Request, res: Response): Promise<void> => {
 };
 
 // get all user data. To access this the user must be logged in.
-
-
 export const userData = async (req: Request, res: Response): Promise<void> => {
   try {
     // safety check (although requireAuth middleware guarantees this exists)
