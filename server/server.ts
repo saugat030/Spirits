@@ -6,8 +6,7 @@ import cookieParser from "cookie-parser";
 // tsconfig uses "module": "nodenext", ts strictly requires the .js extension for local imports, even if the actual file is .ts or .js.
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
-import ordersRoutes from "./routes/ordersRoute.js";
-import statsRoutes from "./routes/statsRoutes.js";
+import ordersRoutes from "./routes/ordersRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import { verifyConnection } from "./config/dbConnect.js";
 
@@ -15,7 +14,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json({limit: "10mb"}));
+app.use(express.json({ limit: "10mb" }));
 
 const isProduction = process.env.NODE_ENV === "production";
 const allowedOrigins = isProduction
@@ -37,7 +36,6 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", ordersRoutes);
-app.use("/api/stats", statsRoutes);
 app.use("/api/admin", adminRoutes);
 
 const startServer = async () => {
@@ -49,7 +47,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error("Failed to start server due to DB connection issues:", error);
-    process.exit(1); 
+    process.exit(1);
   }
 };
 

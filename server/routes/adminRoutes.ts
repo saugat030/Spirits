@@ -1,16 +1,26 @@
 import express from "express";
 import {
-  greetAdmin,
+  // greetAdmin,
   getUsers,
   updateUsers,
-} from "../controllers/adminController.js";
+} from "../controllers/userController.js";
 import { requireAuth, requireRole } from "../middlewares/auth.middleware.js";
+import { getNetSales, getProductSalesDetails, totalProducts } from "../controllers/statsController.js";
 
 const router = express.Router();
-// /api/admin/dashboard
-router.get("/dashboard", requireAuth, requireRole(["admin"]), greetAdmin);
-router.get("/get-users", requireAuth, requireRole(["admin"]), getUsers);
+// /api/admin
+router.use(requireAuth, requireRole(["admin"]));
+
+router.get("/users", getUsers);
 //example body: {"name":"example","email":"example@example","userRole":"admin","isVerified":true}
-router.post("/update-user/:id", requireAuth, requireRole(["admin"]), updateUsers);
+router.patch("/update/:id", updateUsers);
+// router.get("/stats", greetAdmin); // this requires change. Send some actual stats.
+// every product ko sale details in a list. Bar graph ko lagi
+// sales?product_id=1.
+//How much total capital earned:
+router.get("/stats/sales/net", getNetSales);
+//how many total products sold. Sum of quantity
+router.get("/stats/sales/total", totalProducts);
+router.get("/stats/sales/products", getProductSalesDetails);
 
 export default router;
