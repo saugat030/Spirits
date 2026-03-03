@@ -10,8 +10,8 @@ export const liquors = pgTable("liquors", {
 	}),
 	imageLink: text("image_link"),
 	description: text(),
-	quantity: integer(),
-	price: integer(),
+	quantity: integer().notNull(),
+	price: integer().notNull(),
 });
 
 export type Liquor = InferSelectModel<typeof liquors>;

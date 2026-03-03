@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, varchar, timestamp, decimal, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, varchar, timestamp, decimal, pgEnum, uuid } from "drizzle-orm/pg-core";
 import { users } from "./index.js";
 
 export const orderStatusEnum = pgEnum("order_status", [
@@ -9,11 +9,10 @@ export const orderStatusEnum = pgEnum("order_status", [
     "cancelled"
 ]);
 
-// the orders table (The "Receipt")
+// the orders table for recipt
 export const orders = pgTable("orders", {
-    id: serial("id").primaryKey(),
-    userId: integer("user_id").references(() => users.id).notNull(), // Who bought it
-    // decimal is perfect for currency (10 digits total, 2 after the decimal)
+    id: uuid("id").defaultRandom().primaryKey().notNull(),
+    userId: uuid("user_id").references(() => users.id).notNull(),
     totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
     status: orderStatusEnum("status").default("pending").notNull(),
     shippingAddress: varchar("shipping_address", { length: 500 }),
