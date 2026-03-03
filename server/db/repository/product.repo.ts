@@ -112,7 +112,7 @@ export const insertProduct = async (productData: NewLiquor, tx: DbClient = db) =
 
 export const updateLiquorById = async (
     id: string,
-    productData: NewLiquor,
+    productData: Partial<NewLiquor>,
     tx: DbClient = db
 ) => {
     const result = await tx.update(liquors)

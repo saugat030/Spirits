@@ -56,7 +56,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    const { accessToken, refreshToken } = await loginUserService(email, password);
+    const { accessToken, refreshToken, role } = await loginUserService(email, password);
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
@@ -71,10 +71,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       sameSite: isProduction ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-
+    console.log(`${role} logged in`);
     res.status(200).json({
       success: true,
-      message: "User successfully logged in",
+      message: `${role} successfully logged in`,
     });
 
   } catch (err: any) {
@@ -97,7 +97,6 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
     const refreshToken = req.cookies?.refreshToken;
     await logoutUserService(refreshToken);
-
     // define the exact options used to create the cookies coz ajkal ko browser too strict
     const cookieOptions = {
       httpOnly: true,
@@ -106,6 +105,7 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     };
     res.clearCookie("accessToken", cookieOptions);
     res.clearCookie("refreshToken", cookieOptions);
+    console.info("Logged out");
     res.status(200).json({
       success: true,
       message: "Logged Out."
@@ -129,26 +129,23 @@ export const isAuth = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-// get all user data. To access this the user must be logged in.
 export const userData = async (req: Request, res: Response): Promise<void> => {
   try {
-    // safety check (although requireAuth middleware guarantees this exists)
+    // safety check (requireAuth le guarantee garxa tei pani ts lai khusi parna)
     if (!req.user) {
       res.status(401).json({ success: false, message: "Unauthorized" });
       return;
     }
     const { id, role } = req.user;
-    // call the service
-    const formattedUserData = await getUserDataService(id, role);
-    // send success response
+    const user = await getUserDataService(id, role);
+    console.log("User data found, sending the response.")
     res.status(200).json({
       success: true,
-      userData: formattedUserData,
+      data: user,
     });
 
   } catch (error: any) {
     if (error.message === "USER_NOT_FOUND") {
-      // 404 Not Found is more accurate here than 401
       res.status(404).json({ success: false, message: "User with that ID not found." });
       return;
     }

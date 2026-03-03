@@ -36,6 +36,7 @@ export const getAllSpirits = async (req: Request, res: Response): Promise<void> 
       offset,
     }, page);
 
+    console.log("All products fetched");
     res.status(200).json({
       success: true,
       message: result.data.length > 0
@@ -97,7 +98,7 @@ export const addProduct = async (req: Request, res: Response): Promise<void> => 
       quantity: Number(quantity),
       price: Number(price),
     });
-
+    console.log("Product added successfully.")
     res.status(201).json({
       success: true,
       message: "Entry created successfully.",
@@ -118,19 +119,14 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
   if (!id) {
     throw new Error("INVALID_ID_FORMAT")
   }
-  // same 2 in one shit as the add product
   const { name, type_name, image_link, description, quantity, price } = req.body;
-  if (!name || name.trim() == "") {
-    throw new Error("NAME_IS_REQUIRED")
-  }
 
   try {
-    // only include quantiy and number if present
     const updatedProduct = await updateProductService(id as string, {
-      name,
-      typeName: type_name,
-      imageLink: image_link,
-      description,
+      ...(name !== undefined ? { name } : {}),
+      ...(type_name !== undefined ? { typeName: type_name } : {}),
+      ...(image_link !== undefined ? { imageLink: image_link } : {}),
+      ...(description !== undefined ? { description } : {}),
       ...(quantity !== undefined ? { quantity: Number(quantity) } : {}),
       ...(price !== undefined ? { price: Number(price) } : {}),
     });
@@ -177,6 +173,7 @@ export const deleteProduct = async (req: Request, res: Response): Promise<void> 
 
   try {
     const deletedProduct = await deleteProductService(id as string);
+    console.log("Product deleted")
     res.status(200).json({
       success: true,
       message: "Product deleted successfully.",

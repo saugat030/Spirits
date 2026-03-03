@@ -97,10 +97,5 @@ export const getUserDataService = async (userId: string, role: string) => {
     throw new Error("USER_NOT_FOUND");
   }
   // only return the safe data to the frontend
-  return {
-    name: user.name,
-    role: role,
-    isAccountVerified: user.isverified,
-    email: user.email,
-  };
+  return user;
 };

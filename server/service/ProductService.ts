@@ -1,5 +1,6 @@
 import db from "../config/dbConnect.js";
 import { createCategory, deleteLiquorById, fetchProductsWithFilters, getCategoryByName, getProductById, insertProduct, updateLiquorById, type ProductFilters } from "../db/repository/product.repo.js";
+import type { NewLiquor } from "../db/schema/index.js";
 type AddProductDTO = {
     name: string;
     typeName: string;
@@ -8,8 +9,7 @@ type AddProductDTO = {
     quantity: number;
     price: number;
 };
-type UpdateProductDTO = Pick<AddProductDTO, "name"> &
-    Partial<Omit<AddProductDTO, "name">>;
+type UpdateProductDTO = Partial<AddProductDTO>;
 
 export const getSpiritsService = async (filters: ProductFilters, page: number) => {
     const { data, total } = await fetchProductsWithFilters(filters);
@@ -41,8 +41,10 @@ export const addProductService = async (data: AddProductDTO) => {
         const existingCategory = await getCategoryByName(data.typeName, tx);
         // if categ doesnot exist then create it
         if (existingCategory) {
+            console.log("Category already exists. Skipping creation")
             typeId = existingCategory.typeId;
         } else {
+            console.log("New category Detected. Creating category first.")
             typeId = await createCategory(data.typeName, tx);
         }
 
@@ -67,21 +69,23 @@ export const updateProductService = async (id: string, data: UpdateProductDTO) =
         if (data.typeName) {
             const existingCategory = await getCategoryByName(data.typeName, tx);
             if (existingCategory) {
+                console.log("Category already exists. Skipping creation")
                 resolvedTypeId = existingCategory.typeId;
             } else {
+                console.log("New category Detected. Creating category first.")
                 resolvedTypeId = await createCategory(data.typeName, tx);
             }
         }
-        // drizzle le all undefined fields ignore hanxa so saef
-        const updatedProduct = await updateLiquorById(id, {
-            name: data.name,
-            typeId: resolvedTypeId,
-            imageLink: data.imageLink,
-            description: data.description,
-            quantity: data.quantity,
-            price: data.price,
-        }, tx);
 
+        const updateData: Partial<NewLiquor> = {
+            ...(data.name !== undefined && { name: data.name }),
+            ...(resolvedTypeId !== undefined && { typeId: resolvedTypeId }),
+            ...(data.imageLink !== undefined && { imageLink: data.imageLink }),
+            ...(data.description !== undefined && { description: data.description }),
+            ...(data.quantity !== undefined && { quantity: data.quantity }),
+            ...(data.price !== undefined && { price: data.price }),
+        };
+        const updatedProduct = await updateLiquorById(id, updateData, tx);
         if (!updatedProduct) {
             throw new Error("PRODUCT_NOT_FOUND");
         }

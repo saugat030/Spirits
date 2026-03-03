@@ -17,15 +17,38 @@ export const deleteExpiredTokens = async (userId: string, tx: DbClient = db) => 
       )
     );
 };
-
+// This is only used by the login service to internally access the password to compare it and never gets sent to the client so no probs in including the password here. I think
 export const getUserByEmail = async (email: string, tx: DbClient = db) => {
-  const result = await tx.select().from(users).where(eq(users.email, email));
+  // keep password for authentication, but exclude OTP-related fields
+  const result = await tx
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      password: users.password,
+      role: users.role,
+      is_verified: users.is_verified,
+      is_active: users.is_active,
+    })
+    .from(users)
+    .where(eq(users.email, email));
   return result[0];
 };
 
+// this excludes the password since it is sent to the fe
 export const getUserById = async (id: string, tx: DbClient = db) => {
-  const result = await tx.select().from(users).where(eq(users.id, id));
-  return result[0]; // return undefined if no user
+  const result = await tx
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      role: users.role,
+      is_verified: users.is_verified,
+      is_active: users.is_active,
+    })
+    .from(users)
+    .where(eq(users.id, id));
+  return result[0];
 };
 
 export const createUser = async (userData: NewUser, tx: DbClient = db) => {
