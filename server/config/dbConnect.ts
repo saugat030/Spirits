@@ -26,7 +26,7 @@
 //     process.exit(1);
 //   }
 // };
-
+import "dotenv/config";
 import pg from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 const { Pool } = pg;
@@ -44,11 +44,11 @@ export const verifyConnection = async () => {
   try {
     const client = await pool.connect();
     console.log("Database connected successfully.");
-    
+
     const res = await client.query("SELECT current_database(), current_user, version();");
     console.log(`Database: ${res.rows[0].current_database}`);
     console.log(`User: ${res.rows[0].current_user}`);
-    
+
     client.release();
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : String(err);

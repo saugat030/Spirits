@@ -1,5 +1,5 @@
 import { pgTable, serial, integer, varchar, timestamp, decimal, pgEnum, uuid } from "drizzle-orm/pg-core";
-import { users } from "./index.js";
+import { users } from "./index";
 
 export const orderStatusEnum = pgEnum("order_status", [
     "pending",

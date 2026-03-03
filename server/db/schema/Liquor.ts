@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, integer, text } from "drizzle-orm/pg-core";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
-import { categories } from "./Category.js";
+import { categories } from "./Category";
 
 export const liquors = pgTable("liquors", {
 	id: uuid("id").defaultRandom().primaryKey().notNull(),

@@ -1,14 +1,14 @@
 import express from "express";
-import type { Request, Response } from "express";
+import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
 // tsconfig uses "module": "nodenext", ts strictly requires the .js extension for local imports, even if the actual file is .ts or .js.
-import authRoutes from "./routes/authRoutes.js";
-import productRoutes from "./routes/productRoutes.js";
-import ordersRoutes from "./routes/ordersRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import { verifyConnection } from "./config/dbConnect.js";
+import authRoutes from "./routes/authRoutes";
+import productRoutes from "./routes/productRoutes";
+import ordersRoutes from "./routes/ordersRoutes";
+import adminRoutes from "./routes/adminRoutes";
+import { verifyConnection } from "./config/dbConnect";
 
 const app = express();
 const port = process.env.PORT || 3001;
