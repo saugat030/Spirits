@@ -28,7 +28,7 @@ const ProductCard = (product: Product) => {
   return (
     <section
       onClick={handleClick}
-      className="group w-[256px] flex flex-col bg-amber-100/30 rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 cursor-pointer"
+      className="group w-[256px] flex flex-col bg-amber-50 rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 cursor-pointer"
     >
       <figure className="relative h-[240px] w-full rounded-xl overflow-hidden bg-slate-50 flex justify-center items-center">
         <div className="absolute top-2 left-2 z-10 bg-white/90 backdrop-blur-sm text-[#0D1B39] text-[11px] font-bold px-2 py-1 rounded-md shadow-sm">

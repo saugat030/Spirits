@@ -5,7 +5,7 @@ const Clients = (props: ClientsType) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const shouldTruncate = (text: string) => {
-    return text.length > 250; // Slightly shorter limit looks better on cards
+    return text.length > 250;
   };
 
   const truncateText = (text: string) => {
@@ -22,26 +22,29 @@ const Clients = (props: ClientsType) => {
   const needsTruncation = shouldTruncate(props.review);
 
   return (
-    // Replaced the broken widths with standard w-full h-full so Swiper can size it.
-    // Added flex-col & justify-between to push the user profile to the bottom cleanly.
-    <div className="bg-white/10 backdrop-blur-md p-8 h-full w-full flex flex-col justify-between rounded-2xl border border-white/20 shadow-xl transition-all duration-300">
-
-      <div className="flex-grow mb-8">
-        {/* Quote Icon (Optional but looks great for testimonials) */}
+    <div className="relative bg-white/10 backdrop-blur-md p-8 min-h-[500px] min-w-[350px] max-w-sm mx-auto flex flex-col justify-between rounded-2xl border border-white/20 shadow-xl transition-all duration-300">
+      <div className="flex-1 mb-6 flex flex-col min-h-0">
         <span className="text-amber-500/50 text-5xl font-serif absolute top-4 right-6">"</span>
 
-        <p className="text-lg text-slate-200 text-pretty italic leading-relaxed relative z-10">
-          {displayText}
-        </p>
+        <div
+          className={`mt-2 pr-1 flex-1 min-h-0 ${isExpanded ? "overflow-y-auto" : "overflow-hidden"
+            }`}
+        >
+          <p className="text-lg text-slate-200 text-pretty italic leading-relaxed relative z-10">
+            {displayText}
+          </p>
+        </div>
 
-        {needsTruncation && (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-4 text-amber-400 hover:text-amber-300 transition-colors duration-200 text-sm font-semibold tracking-wide uppercase"
-          >
-            {isExpanded ? "Read Less" : "Read More"}
-          </button>
-        )}
+        <div className="mt-4 h-6">
+          {needsTruncation && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-amber-400 hover:text-amber-300 transition-colors duration-200 text-sm font-semibold tracking-wide uppercase"
+            >
+              {isExpanded ? "Read Less" : "Read More"}
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="flex gap-4 items-center pt-6 border-t border-white/10">

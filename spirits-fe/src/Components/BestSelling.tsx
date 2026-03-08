@@ -21,7 +21,16 @@ const BestSelling = () => {
     type: activeCategory,
   });
 
-  const products = data?.data ?? [];
+  const productsToShow = data?.data.slice(0, 5) ?? [];
+  let initialSlide: number;
+  if (productsToShow.length === 3 || productsToShow.length === 4) {
+    initialSlide = 1
+  } else if (productsToShow.length === 5) {
+    initialSlide = 2
+  } else {
+    // if 1 or 2 products
+    initialSlide = 0
+  }
 
   return (
     <section className="w-full flex flex-col items-center gap-8 mt-20 pb-16">
@@ -46,15 +55,15 @@ const BestSelling = () => {
             errorMessage={error?.message ?? "Something went wrong"}
           />
         )}
-
-        {!isLoading && !isError && products.length > 0 && (
+        initial slide {initialSlide}
+        {!isLoading && !isError && productsToShow.length > 0 && (
           <Swiper
             modules={[Navigation, Pagination, EffectCoverflow]}
             effect="coverflow"
             grabCursor
             centeredSlides
             slidesPerView="auto"
-            initialSlide={2}
+            initialSlide={initialSlide}
             loop={false}
             coverflowEffect={{
               rotate: 0,
@@ -64,14 +73,14 @@ const BestSelling = () => {
             }}
             className="w-full !pb-12"
           >
-            {products.slice(0, 5).map((item: Product, index) => (
+            {productsToShow.map((item: Product, index) => (
               <SwiperSlide key={item.id ?? index} className="rounded-2xl">
                 <ProductCard {...item} />
               </SwiperSlide>
             ))}
           </Swiper>
         )}
-        {!isLoading && !isError && products.length === 0 && (
+        {!isLoading && !isError && productsToShow.length === 0 && (
           <NoProducts />
         )}
       </div>
