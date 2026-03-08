@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { ApiResponse, ProductData } from "../../types/api.types";
+import { ApiResponse, Product } from "../../types/api.types";
 import API from "../axiosInstance";
 
-//If no type or name provided , it returns all the products
 export const useGetProducts = ({
   type,
   name,
@@ -18,9 +17,9 @@ export const useGetProducts = ({
   page?: number | null;
   limit?: number | null;
 }) => {
-  return useQuery<ApiResponse<ProductData[]>, Error>({
+  return useQuery<ApiResponse<Product[]>, Error>({
     queryKey: ["products", { name, type, minPrice, maxPrice, page, limit }],
-    queryFn: async (): Promise<ApiResponse<ProductData[]>> => {
+    queryFn: async (): Promise<ApiResponse<Product[]>> => {
       const params = new URLSearchParams();
 
       // Handle type parameter (single or multiple)
@@ -77,7 +76,7 @@ export const useGetProducts = ({
 };
 
 export const useGetProductById = (id: string | null) => {
-  return useQuery<ApiResponse<ProductData>, Error>({
+  return useQuery<ApiResponse<Product>, Error>({
     queryKey: ["product", id],
     queryFn: () => getProductById(id as string),
     enabled: !!id, // Only run query if id is provided
@@ -92,7 +91,7 @@ export const useGetProductById = (id: string | null) => {
 //utility function for fetching by ID since this needs to be used in the cart page to fetch multiple IDs.
 export const getProductById = async (
   id: string
-): Promise<ApiResponse<ProductData>> => {
+): Promise<ApiResponse<Product>> => {
   if (!id) {
     throw new Error("Product ID is required");
   }

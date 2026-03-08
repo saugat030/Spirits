@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-//Rate limiter internally calls the next() function. It basically returns a proper middleware that can be used. It only hides it from the developer to look clean.
+// rate limiter internally calls the next() function. It basically returns a proper middleware that can be used. It only hides it from the developer to look clean.
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

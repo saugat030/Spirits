@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import Products from "../Products";
+import Products from "../ProductCard";
 import { useState } from "react";
 import axios from "axios";
 

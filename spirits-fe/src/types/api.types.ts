@@ -8,15 +8,24 @@ export type ApiResponse<T> = {
   totalPages?: number;
   hasNext?: boolean;
   hasPrev?: boolean;
+  filters?: Filters
 };
 
-export type ProductData = {
-  id: number;
+export type Filters = {
+  type: string | null;
+  name: string | null;
+  minPrice: number | null;
+  maxPrice: number | null;
+}
+
+export type Product = {
+  id: string;
   name: string;
-  image_link: string;
+  sku?: string;
+  imageLink: string;
   description: string;
   quantity: number;
-  type_id: number;
-  type_name: string;
+  typeId: number;
+  typeName: string;
   price: number;
 };
