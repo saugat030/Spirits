@@ -1,6 +1,6 @@
 "use client";
 
-import Products from "./Products";
+import Products from "./ProductCard";
 import FilterSection from "./FilterSection";
 import type { MostPopularProps } from "../types/home.types";
 
@@ -51,11 +51,10 @@ const MostPopular = ({
         <button
           disabled={currentPage === 1 || isLoading}
           onClick={() => onPageChange(currentPage - 1)}
-          className={`px-3 py-1.5 text-sm rounded-md border border-slate-800 ${
-            currentPage === 1 || isLoading
+          className={`px-3 py-1.5 text-sm rounded-md border border-slate-800 ${currentPage === 1 || isLoading
               ? "bg-gray-200 text-gray-400 cursor-not-allowed"
               : "bg-white text-gray-700 hover:bg-gray-100"
-          }`}
+            }`}
         >
           Previous
         </button>
@@ -64,13 +63,12 @@ const MostPopular = ({
             key={`${item}-${index}`}
             disabled={item === "..." || isLoading}
             onClick={() => typeof item === "number" && onPageChange(item)}
-            className={`px-3 py-1.5 text-sm rounded-md border border-slate-800 ${
-              item === currentPage
+            className={`px-3 py-1.5 text-sm rounded-md border border-slate-800 ${item === currentPage
                 ? "bg-amber-600 text-white font-semibold"
                 : item === "..."
-                ? "text-gray-500 cursor-default"
-                : "bg-white text-gray-700 hover:bg-gray-100"
-            }`}
+                  ? "text-gray-500 cursor-default"
+                  : "bg-white text-gray-700 hover:bg-gray-100"
+              }`}
           >
             {item}
           </button>
@@ -78,11 +76,10 @@ const MostPopular = ({
         <button
           disabled={currentPage === totalPages || isLoading}
           onClick={() => onPageChange(currentPage + 1)}
-          className={`px-3 py-1.5 text-sm rounded-md border border-slate-800 ${
-            currentPage === totalPages || isLoading
+          className={`px-3 py-1.5 text-sm rounded-md border border-slate-800 ${currentPage === totalPages || isLoading
               ? "bg-gray-200 text-gray-400 cursor-not-allowed"
               : "bg-white text-gray-700 hover:bg-gray-100"
-          }`}
+            }`}
         >
           Next
         </button>

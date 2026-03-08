@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 
-const Landing = () => {
+const Hero = () => {
   const [searchKey, setSearchkey] = useState<string>("");
   const navigate = useNavigate();
   function handleClick() {
@@ -48,4 +48,4 @@ const Landing = () => {
     </>
   );
 };
-export default Landing;
+export default Hero;

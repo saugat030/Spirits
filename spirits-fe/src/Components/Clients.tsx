@@ -3,21 +3,16 @@ import { ClientsType } from "../types/home.types";
 
 const Clients = (props: ClientsType) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const arr = ["/static/Biste.png", "/static/Chigga.jpg", "/static/Madu.jpg"];
 
-  // Function to check if text needs truncation (roughly 7 lines)
   const shouldTruncate = (text: string) => {
-    return text.length > 350; // Approximate character count for 7 lines
+    return text.length > 250; // Slightly shorter limit looks better on cards
   };
 
   const truncateText = (text: string) => {
     if (!shouldTruncate(text)) return text;
-
-    // Find a good breaking point near the character limit
-    const limit = 350;
+    const limit = 250;
     const truncated = text.substring(0, limit);
     const lastSpace = truncated.lastIndexOf(" ");
-
     return lastSpace > 0
       ? truncated.substring(0, lastSpace) + "..."
       : truncated + "...";
@@ -27,31 +22,39 @@ const Clients = (props: ClientsType) => {
   const needsTruncation = shouldTruncate(props.review);
 
   return (
-    <div className="bg-transparent py-6 px-3 min-h-[385px] text-slate-200 border-2 lg:w-3/4 w-full flex gap-5 flex-col justify-center items-center rounded-xl">
-      <div className="w-full">
-        <p className="text-xl text-pretty italic leading-relaxed">
+    // Replaced the broken widths with standard w-full h-full so Swiper can size it.
+    // Added flex-col & justify-between to push the user profile to the bottom cleanly.
+    <div className="bg-white/10 backdrop-blur-md p-8 h-full w-full flex flex-col justify-between rounded-2xl border border-white/20 shadow-xl transition-all duration-300">
+
+      <div className="flex-grow mb-8">
+        {/* Quote Icon (Optional but looks great for testimonials) */}
+        <span className="text-amber-500/50 text-5xl font-serif absolute top-4 right-6">"</span>
+
+        <p className="text-lg text-slate-200 text-pretty italic leading-relaxed relative z-10">
           {displayText}
         </p>
+
         {needsTruncation && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-3 text-blue-400 hover:text-blue-300 transition-colors duration-200 text-sm font-medium underline decoration-dotted underline-offset-2"
+            className="mt-4 text-amber-400 hover:text-amber-300 transition-colors duration-200 text-sm font-semibold tracking-wide uppercase"
           >
             {isExpanded ? "Read Less" : "Read More"}
           </button>
         )}
       </div>
-      <div className="flex py-3 gap-3 justify-start w-full items-center">
-        <figure className="w-20 rounded-full aspect-square overflow-hidden justify-between">
+
+      <div className="flex gap-4 items-center pt-6 border-t border-white/10">
+        <figure className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 border-2 border-amber-500/50">
           <img
-            src={arr[props.imgid]}
-            alt="photo"
-            className="object-cover h-full w-full "
+            src={props.profileImageSrc}
+            alt={`${props.name} profile`}
+            className="object-cover h-full w-full"
           />
         </figure>
-        <div className="flex flex-col gap-1 text-white">
-          <h2 className="text-2xl">{props.name}</h2>
-          <h4 className="text-lg text-slate-300">{props.role}</h4>
+        <div className="flex flex-col">
+          <h2 className="text-lg font-bold text-white leading-tight">{props.name}</h2>
+          <h4 className="text-sm text-slate-300 font-medium">{props.role}</h4>
         </div>
       </div>
     </div>
