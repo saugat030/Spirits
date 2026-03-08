@@ -55,7 +55,6 @@ const BestSelling = () => {
             errorMessage={error?.message ?? "Something went wrong"}
           />
         )}
-        initial slide {initialSlide}
         {!isLoading && !isError && productsToShow.length > 0 && (
           <Swiper
             modules={[Navigation, Pagination, EffectCoverflow]}
