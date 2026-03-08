@@ -89,25 +89,31 @@ const OurClients = () => {
 
           <div className="w-full pb-16 overflow-hidden">
             <div
-              className="flex gap-6 transition-transform duration-500 ease-out"
+              className="flex transition-transform duration-500 ease-out"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
               {slides.map((slideClients, slideIndex) => (
                 <div
                   key={slideIndex}
-                  className="w-full flex-shrink-0 flex gap-6"
+                  className="w-full flex-shrink-0 grid"
+                  style={{
+                    gridTemplateColumns: `repeat(${cardsPerView}, minmax(0, 1fr))`,
+                    gap: "1.5rem"
+                  }}
                 >
                   {slideClients.map((client, index) => (
                     <div
                       key={`${client.name}-${index}`}
-                      className="flex-1 min-w-0"
+                      className="min-w-0 flex justify-center w-full"
                     >
-                      <Clients
-                        name={client.name}
-                        profileImageSrc={client.profileImageSrc}
-                        review={client.review}
-                        role={client.role}
-                      />
+                      <div className="w-full">
+                        <Clients
+                          name={client.name}
+                          profileImageSrc={client.profileImageSrc}
+                          review={client.review}
+                          role={client.role}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>

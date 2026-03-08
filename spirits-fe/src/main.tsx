@@ -17,7 +17,7 @@ createRoot(document.getElementById("root")!).render(
           autoClose={1000}
           draggable={true}
           toastClassName="font-Poppins"
-          limit={4}
+          limit={3}
         />
         <App />
       </AuthContextProvider>
