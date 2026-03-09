@@ -64,20 +64,23 @@ async function ensureCategoryAndProduct() {
   const existingCategories = await db
     .select()
     .from(categories)
-    .where(eq(categories.typeName, CATEGORY_NAME));
+    .where(eq(categories.category_name, CATEGORY_NAME));
 
   let categoryId: string;
 
   if (existingCategories.length === 0) {
     const inserted = await db
       .insert(categories)
-      .values({ typeName: CATEGORY_NAME })
+      .values({
+        category_name: CATEGORY_NAME,
+        category_image_url: "",
+      })
       .returning();
 
-    categoryId = inserted[0].typeId;
+    categoryId = inserted[0].id;
     console.log(`Created category: ${CATEGORY_NAME}`);
   } else {
-    categoryId = existingCategories[0].typeId;
+    categoryId = existingCategories[0].id;
     console.log(`Category already exists: ${CATEGORY_NAME}`);
   }
 
@@ -89,7 +92,7 @@ async function ensureCategoryAndProduct() {
   if (existingProducts.length === 0) {
     await db.insert(liquors).values({
       name: PRODUCT_NAME,
-      typeId: categoryId,
+      categoryId,
       description: "Seeded sample whiskey product.",
       quantity: 100,
       price: 5000,

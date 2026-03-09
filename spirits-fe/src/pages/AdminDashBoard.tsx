@@ -1,10 +1,10 @@
 // import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../Context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { Navigate, Outlet } from "react-router-dom";
-import SideBar from "../Components/protected/SideBar";
-import NavBar from "../Components/NavBar";
+import SideBar from "../components/protected/SideBar";
+import NavBar from "../components/NavBar";
 import { ClipLoader } from "react-spinners";
 
 const AdminDashBoard = () => {

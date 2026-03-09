@@ -1,5 +1,5 @@
 import { Package, ShoppingCart } from "lucide-react";
-import { useShoppingCart } from "../Context/ShoppingCartContext";
+import { useShoppingCart } from "../context/ShoppingCartContext";
 import CartProductCard from "./CartProductCard";
 import { useQueries } from "@tanstack/react-query";
 import { getProductById } from "../services/api/productsApi";
@@ -65,9 +65,8 @@ const Cart = () => {
               return (
                 <div
                   key={item.id}
-                  className={`transition-colors duration-200 hover:bg-gray-50 ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
-                  }`}
+                  className={`transition-colors duration-200 hover:bg-gray-50 ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                    }`}
                 >
                   <CartProductCard
                     id={item.id}

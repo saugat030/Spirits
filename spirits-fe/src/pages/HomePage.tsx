@@ -1,10 +1,10 @@
-import NavBar from "../Components/NavBar";
-import Hero from "../Components/Landing";
-import BestSelling from "../Components/BestSelling";
-import Years from "../Components/Years";
-import Footer from "../Components/Footer";
-import OurClients from "../Components/OurClients";
-import WhyUs from "../Components/WhyUS";
+import NavBar from "../components/NavBar";
+import Hero from "../components/Landing";
+import BestSelling from "../components/BestSelling";
+import Years from "../components/Years";
+import Footer from "../components/Footer";
+import OurClients from "../components/OurClients";
+import WhyUs from "../components/WhyUS";
 
 const HomePage = () => {
   return (

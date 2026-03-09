@@ -1,6 +1,6 @@
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { Trash2, Loader2 } from "lucide-react";
-import { useShoppingCart } from "../Context/ShoppingCartContext";
+import { useShoppingCart } from "../context/ShoppingCartContext";
 import { ProductData } from "../types/api.types";
 
 type CartProductCardProps = {

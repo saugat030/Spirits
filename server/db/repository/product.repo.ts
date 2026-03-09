@@ -4,6 +4,7 @@ import { liquors, categories, type NewLiquor } from "../schema/index.js";
 import type { DbClient } from "../../types/types.js";
 
 export type ProductFilters = {
+    // category names used for filtering; corresponds to `categories.category_name`
     types: string[] | null;
     name: string | null;
     minPrice: number | null;
@@ -11,21 +12,14 @@ export type ProductFilters = {
     limit: number;
     offset: number;
 };
-export type NewProductInput = {
-    name: string;
-    typeId: number;
-    imageLink?: string;
-    description?: string;
-    quantity: number;
-    price: number;
-};
 
 export const fetchProductsWithFilters = async (filters: ProductFilters, tx: DbClient = db) => {
     const conditions = [];
 
     // build dynamic where clause
     if (filters.types && filters.types.length > 0) {
-        conditions.push(inArray(categories.typeName, filters.types));
+        // filter by category name
+        conditions.push(inArray(categories.category_name, filters.types));
     }
     if (filters.name) {
         conditions.push(ilike(liquors.name, `%${filters.name}%`));
@@ -36,23 +30,24 @@ export const fetchProductsWithFilters = async (filters: ProductFilters, tx: DbCl
     if (filters.maxPrice !== null) {
         conditions.push(lte(liquors.price, filters.maxPrice));
     }
+
     // if we have conditions, combine with and else pass undefined (no filter)
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     const [data, totalCountResult] = await Promise.all([
-        // data query
+        // data query - shape results to match frontend expectations
         tx.select({
             id: liquors.id,
             name: liquors.name,
-            imageLink: liquors.imageLink,
+            imageLink: liquors.thumbnail_url,
             description: liquors.description,
             quantity: liquors.quantity,
-            typeId: categories.typeId,
-            typeName: categories.typeName,
+            typeId: categories.id,
+            typeName: categories.category_name,
             price: liquors.price,
         })
             .from(liquors)
-            .innerJoin(categories, eq(liquors.typeId, categories.typeId))
+            .innerJoin(categories, eq(liquors.categoryId, categories.id))
             .where(whereClause)
             .limit(filters.limit)
             .offset(filters.offset)
@@ -61,7 +56,7 @@ export const fetchProductsWithFilters = async (filters: ProductFilters, tx: DbCl
         // count
         tx.select({ total: count() })
             .from(liquors)
-            .innerJoin(categories, eq(liquors.typeId, categories.typeId))
+            .innerJoin(categories, eq(liquors.categoryId, categories.id))
             .where(whereClause)
     ]);
 
@@ -75,32 +70,39 @@ export const getProductById = async (id: string, tx: DbClient = db) => {
     const result = await tx.select({
         id: liquors.id,
         name: liquors.name,
-        imageLink: liquors.imageLink,
+        imageLink: liquors.thumbnail_url,
         description: liquors.description,
         quantity: liquors.quantity,
-        typeId: categories.typeId,
-        typeName: categories.typeName,
+        typeId: categories.id,
+        typeName: categories.category_name,
         price: liquors.price,
     })
         .from(liquors)
-        .innerJoin(categories, eq(liquors.typeId, categories.typeId))
+        .innerJoin(categories, eq(liquors.categoryId, categories.id))
         .where(eq(liquors.id, id));
 
     return result[0];
 };
 
 export const getCategoryByName = async (name: string, tx: DbClient = db) => {
-    const result = await tx.select().from(categories).where(ilike(categories.typeName, name));
+    const result = await tx
+        .select()
+        .from(categories)
+        .where(ilike(categories.category_name, name));
     return result[0];
 };
 
-export const createCategory = async (name: string, tx: DbClient = db) => {
+export const createCategory = async (
+    name: string,
+    categoryImageUrl: string,
+    tx: DbClient = db
+) => {
     const result = await tx.insert(categories)
-        .values({ typeName: name })
-        .returning({ typeId: categories.typeId });
+        .values({ category_name: name, category_image_url: categoryImageUrl })
+        .returning({ id: categories.id });
 
     if (!result[0]) throw new Error("CATEGORY_NOT_CREATED");
-    return result[0].typeId;
+    return result[0].id;
 };
 
 export const insertProduct = async (productData: NewLiquor, tx: DbClient = db) => {

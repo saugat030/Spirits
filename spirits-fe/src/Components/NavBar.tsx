@@ -4,9 +4,9 @@ import { IoMenuSharp, IoClose } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useContext, useState, useEffect, useRef } from "react";
-import { AuthContext } from "../Context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
-import { useShoppingCart } from "../Context/ShoppingCartContext";
+import { useShoppingCart } from "../context/ShoppingCartContext";
 import { NavType } from "../types/home.types";
 import API from "../services/axiosInstance";
 import { toast } from "react-toastify";
@@ -117,9 +117,8 @@ const NavBar = (props: NavType) => {
   return (
     <>
       <nav
-        className={`${
-          isHomePage ? "absolute text-white" : "static text-black"
-        } flex justify-between md:px-12 px-6 items-center z-30 w-full bg-transparent`}
+        className={`${isHomePage ? "absolute text-white" : "static text-black"
+          } flex justify-between md:px-12 px-6 items-center z-30 w-full bg-transparent`}
       >
         {/* Logo */}
         <div className="font-bold md:text-3xl text-2xl flex items-center h-24">
@@ -185,16 +184,14 @@ const NavBar = (props: NavType) => {
                 onClick={toggleProfileDropdown}
               >
                 <div
-                  className={`rounded-full ${
-                    isHomePage ? "bg-white text-black " : "bg-black text-white "
-                  } flex justify-center items-center font-bold text-lg hover:scale-95 duration-150 cursor-pointer h-[45px] w-[45px] p-2`}
+                  className={`rounded-full ${isHomePage ? "bg-white text-black " : "bg-black text-white "
+                    } flex justify-center items-center font-bold text-lg hover:scale-95 duration-150 cursor-pointer h-[45px] w-[45px] p-2`}
                 >
                   {userData.name.slice(0, 2)}
                 </div>
                 <FaAngleDown
-                  className={`transition-transform duration-200 ${
-                    profileDropDown ? "rotate-180" : ""
-                  }`}
+                  className={`transition-transform duration-200 ${profileDropDown ? "rotate-180" : ""
+                    }`}
                 />
               </div>
 
@@ -230,9 +227,8 @@ const NavBar = (props: NavType) => {
           ) : (
             <Link
               to="/login"
-              className={`text-xl font-semibold hover:underline hover:scale-105 duration-200 ${
-                isHomePage ? "text-white" : "text-black"
-              }`}
+              className={`text-xl font-semibold hover:underline hover:scale-105 duration-200 ${isHomePage ? "text-white" : "text-black"
+                }`}
             >
               Login
             </Link>
@@ -287,9 +283,8 @@ const NavBar = (props: NavType) => {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`md:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex flex-col h-full">
           {/* Mobile Menu Header */}
@@ -318,9 +313,8 @@ const NavBar = (props: NavType) => {
                 >
                   <span>Spirits</span>
                   <FaAngleDown
-                    className={`transition-transform duration-200 ${
-                      isSpiritsDropdownOpen ? "rotate-180" : ""
-                    }`}
+                    className={`transition-transform duration-200 ${isSpiritsDropdownOpen ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
                 {isSpiritsDropdownOpen && (

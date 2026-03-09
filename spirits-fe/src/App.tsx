@@ -5,16 +5,16 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Authentication from "./pages/Authentication";
 import ProductFullView from "./pages/ProductFullView";
 import CartPage from "./pages/CartPage";
-import { ShoppingCartProvider } from "./Context/ShoppingCartContext";
+import { ShoppingCartProvider } from "./context/ShoppingCartContext";
 import AdminDashBoard from "./pages/AdminDashBoard";
-import Users from "./Components/protected/Users";
-import AdminProducts from "./Components/protected/AdminProducts";
-import Settings from "./Components/protected/Settings";
-import Orders from "./Components/protected/Orders";
-import Dashboard from "./Components/protected/Dashboard";
-import AddProducts from "./Components/protected/AddProducts";
-import ProtectedRoute from "./Components/protected/protectedRoute";
-import { AuthContextProvider } from "./Context/AuthContext";
+import Users from "./components/protected/Users";
+import AdminProducts from "./components/protected/AdminProducts";
+import Settings from "./components/protected/Settings";
+import Orders from "./components/protected/Orders";
+import Dashboard from "./components/protected/Dashboard";
+import AddProducts from "./components/protected/AddProducts";
+import ProtectedRoute from "./components/protected/protectedRoute";
+import { AuthContextProvider } from "./context/AuthContext";
 import OrdersPage from "./pages/OrdersPage";
 
 function App() {

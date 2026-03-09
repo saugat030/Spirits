@@ -8,6 +8,7 @@ import authRoutes from "./routes/authRoutes";
 import productRoutes from "./routes/productRoutes";
 import ordersRoutes from "./routes/ordersRoutes";
 import adminRoutes from "./routes/adminRoutes";
+import categoryRoutes from "./routes/categoryRoutes";
 import { verifyConnection } from "./config/dbConnect";
 
 const app = express();
@@ -37,6 +38,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/category", categoryRoutes);
 
 const startServer = async () => {
   try {

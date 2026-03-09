@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 // import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../Context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import { useLogin, useSignup } from "../services/api/authApi";
 import { toast } from "react-toastify";
 

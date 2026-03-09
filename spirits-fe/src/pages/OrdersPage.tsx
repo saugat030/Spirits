@@ -6,8 +6,8 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react";
-import NavBar from "../Components/NavBar";
-import Footer from "../Components/Footer";
+import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
 
 const OrdersPage = () => {
   // Dummy data for orders

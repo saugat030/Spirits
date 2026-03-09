@@ -1,6 +1,6 @@
 "use client";
 
-import Products from "./ProductCard";
+import ProductCard from "./ProductCard";
 import FilterSection from "./FilterSection";
 import type { MostPopularProps } from "../types/home.types";
 
@@ -52,8 +52,8 @@ const MostPopular = ({
           disabled={currentPage === 1 || isLoading}
           onClick={() => onPageChange(currentPage - 1)}
           className={`px-3 py-1.5 text-sm rounded-md border border-slate-800 ${currentPage === 1 || isLoading
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-              : "bg-white text-gray-700 hover:bg-gray-100"
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-white text-gray-700 hover:bg-gray-100"
             }`}
         >
           Previous
@@ -64,10 +64,10 @@ const MostPopular = ({
             disabled={item === "..." || isLoading}
             onClick={() => typeof item === "number" && onPageChange(item)}
             className={`px-3 py-1.5 text-sm rounded-md border border-slate-800 ${item === currentPage
-                ? "bg-amber-600 text-white font-semibold"
-                : item === "..."
-                  ? "text-gray-500 cursor-default"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
+              ? "bg-amber-600 text-white font-semibold"
+              : item === "..."
+                ? "text-gray-500 cursor-default"
+                : "bg-white text-gray-700 hover:bg-gray-100"
               }`}
           >
             {item}
@@ -77,8 +77,8 @@ const MostPopular = ({
           disabled={currentPage === totalPages || isLoading}
           onClick={() => onPageChange(currentPage + 1)}
           className={`px-3 py-1.5 text-sm rounded-md border border-slate-800 ${currentPage === totalPages || isLoading
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-              : "bg-white text-gray-700 hover:bg-gray-100"
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-white text-gray-700 hover:bg-gray-100"
             }`}
         >
           Next
@@ -141,13 +141,9 @@ const MostPopular = ({
               <div className="flex flex-wrap gap-[48px] items-center justify-center lg:justify-normal px-5 min-h-[400px]">
                 {products.data.length > 0 ? (
                   products.data.map((item) => (
-                    <Products
+                    <ProductCard
                       key={item.id}
-                      imgSrc={item.image_link}
-                      name={item.name || "Unknown Product"}
-                      price={item.price}
-                      type={item.type_name}
-                      id={item.id}
+                      {...item}
                     />
                   ))
                 ) : (
@@ -162,7 +158,7 @@ const MostPopular = ({
                 )}
               </div>
 
-              {/* Pagination Controls */}
+              {/* pagination controls */}
               {products.data.length > 0 &&
                 products.totalPages &&
                 products.totalPages > 1 && (

@@ -80,8 +80,17 @@ export const getSpiritsById = async (req: Request, res: Response): Promise<void>
 };
 
 export const addProduct = async (req: Request, res: Response): Promise<void> => {
-  const { name, type_name, image_link, description, quantity, price } = req.body;
-  if (!name || !price || !type_name || quantity === undefined) {
+  const {
+    name,
+    categoryId,
+    thumbnail_url,
+    images,
+    description,
+    quantity,
+    price,
+  } = req.body;
+
+  if (!name || !price || !categoryId || quantity === undefined) {
     res.status(400).json({
       success: false,
       message: "You are missing some required details."
@@ -92,8 +101,9 @@ export const addProduct = async (req: Request, res: Response): Promise<void> => 
   try {
     const newProduct = await addProductService({
       name,
-      typeName: type_name,
-      imageLink: image_link,
+      categoryId,
+      thumbnail_url,
+      images,
       description,
       quantity: Number(quantity),
       price: Number(price),
@@ -119,13 +129,22 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
   if (!id) {
     throw new Error("INVALID_ID_FORMAT")
   }
-  const { name, type_name, image_link, description, quantity, price } = req.body;
+  const {
+    name,
+    categoryId,
+    thumbnail_url,
+    images,
+    description,
+    quantity,
+    price,
+  } = req.body;
 
   try {
     const updatedProduct = await updateProductService(id as string, {
       ...(name !== undefined ? { name } : {}),
-      ...(type_name !== undefined ? { typeName: type_name } : {}),
-      ...(image_link !== undefined ? { imageLink: image_link } : {}),
+      ...(categoryId !== undefined ? { categoryId } : {}),
+      ...(thumbnail_url !== undefined ? { thumbnail_url } : {}),
+      ...(images !== undefined ? { images } : {}),
       ...(description !== undefined ? { description } : {}),
       ...(quantity !== undefined ? { quantity: Number(quantity) } : {}),
       ...(price !== undefined ? { price: Number(price) } : {}),
