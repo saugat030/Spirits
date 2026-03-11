@@ -30,16 +30,15 @@ export const fetchProductsWithFilters = async (filters: ProductFilters, tx: DbCl
     if (filters.maxPrice !== null) {
         conditions.push(lte(liquors.price, filters.maxPrice));
     }
-
     // if we have conditions, combine with and else pass undefined (no filter)
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     const [data, totalCountResult] = await Promise.all([
-        // data query - shape results to match frontend expectations
         tx.select({
             id: liquors.id,
             name: liquors.name,
-            imageLink: liquors.thumbnail_url,
+            thumbnail_url: liquors.thumbnail_url,
+            images: liquors.images,
             description: liquors.description,
             quantity: liquors.quantity,
             typeId: categories.id,
@@ -70,7 +69,8 @@ export const getProductById = async (id: string, tx: DbClient = db) => {
     const result = await tx.select({
         id: liquors.id,
         name: liquors.name,
-        imageLink: liquors.thumbnail_url,
+        thumbnail_url: liquors.thumbnail_url,
+        images: liquors.images,
         description: liquors.description,
         quantity: liquors.quantity,
         typeId: categories.id,
@@ -80,7 +80,6 @@ export const getProductById = async (id: string, tx: DbClient = db) => {
         .from(liquors)
         .innerJoin(categories, eq(liquors.categoryId, categories.id))
         .where(eq(liquors.id, id));
-
     return result[0];
 };
 

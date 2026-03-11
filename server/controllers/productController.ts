@@ -1,9 +1,11 @@
 import { type Request, type Response } from "express";
 import { addProductService, deleteProductService, getSpiritByIdService, getSpiritsService, updateProductService } from "../service/ProductService.js";
+import { uploadToB2, deleteFromB2 } from "../utils/s3bucket.js";
+import type { Image } from "../types/types.js";
 
 export const getAllSpirits = async (req: Request, res: Response): Promise<void> => {
   try {
-    const page = Number(req.query.page) || 1;
+    const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Number(req.query.limit) || 12;
     const offset = (page - 1) * limit;
     let { type, name, minPrice, maxPrice } = req.query;
@@ -80,17 +82,9 @@ export const getSpiritsById = async (req: Request, res: Response): Promise<void>
 };
 
 export const addProduct = async (req: Request, res: Response): Promise<void> => {
-  const {
-    name,
-    categoryId,
-    thumbnail_url,
-    images,
-    description,
-    quantity,
-    price,
-  } = req.body;
 
-  if (!name || !price || !categoryId || quantity === undefined) {
+  const { name, categoryId, description, quantity, price } = req.body;
+  if (!name || price === undefined || price === null || !categoryId || quantity === undefined || quantity === null) {
     res.status(400).json({
       success: false,
       message: "You are missing some required details."
@@ -98,16 +92,62 @@ export const addProduct = async (req: Request, res: Response): Promise<void> => 
     return;
   }
 
+  const parsedPrice = Number(price);
+  const parsedQuantity = Number(quantity);
+
+  if (isNaN(parsedPrice) || isNaN(parsedQuantity)) {
+    res.status(400).json({
+      success: false,
+      message: "Price and quantity must be valid numbers."
+    });
+    return;
+  }
+
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+  const thumbnailFile = files?.['thumbnail']?.[0];
+  const imageFiles = files?.['images'] || [];
+  if (!thumbnailFile) {
+    res.status(400).json({
+      success: false,
+      message: "A thumbnail image is required."
+    });
+    return;
+  }
+
+  let uploadedThumbnail: string | null = null;
+  let uploadedImages: Image[] = [];
+
   try {
+    uploadedThumbnail = await uploadToB2(thumbnailFile);
+    
+    const uploadResults = await Promise.allSettled(
+      imageFiles.map(async (file) => {
+        const fileKey = await uploadToB2(file);
+        return {
+          url: fileKey,
+          alt_text: `${name} - ${file.originalname}`,
+        } as Image;
+      })
+    );
+
+    for (const result of uploadResults) {
+      if (result.status === "fulfilled") {
+        uploadedImages.push(result.value);
+      } else {
+        console.error("Failed to upload an image:", result.reason);
+      }
+    }
+
     const newProduct = await addProductService({
       name,
       categoryId,
-      thumbnail_url,
-      images,
+      thumbnail_url: uploadedThumbnail,
+      images: uploadedImages,
       description,
-      quantity: Number(quantity),
-      price: Number(price),
+      quantity: parsedQuantity,
+      price: parsedPrice,
     });
+
     console.log("Product added successfully.")
     res.status(201).json({
       success: true,
@@ -117,6 +157,15 @@ export const addProduct = async (req: Request, res: Response): Promise<void> => 
 
   } catch (error: any) {
     console.error("Add Product Error:", error);
+    
+    // Rollback logic
+    if (uploadedThumbnail) {
+      await deleteFromB2(uploadedThumbnail).catch(e => console.error("Rollback failed for thumbnail", e));
+    }
+    for (const img of uploadedImages) {
+      await deleteFromB2(img.url).catch(e => console.error("Rollback failed for", img.url, e));
+    }
+
     res.status(500).json({
       success: false,
       message: "Server error while trying to add the product",
@@ -125,29 +174,94 @@ export const addProduct = async (req: Request, res: Response): Promise<void> => 
 };
 
 export const updateProduct = async (req: Request, res: Response): Promise<void> => {
-  const id = req.params.id
+  const idParam = req.params.id;
+  const id = Array.isArray(idParam) ? idParam[0] : idParam;
+  
   if (!id) {
-    throw new Error("INVALID_ID_FORMAT")
+    res.status(400).json({ success: false, message: "Invalid product ID format." });
+    return;
   }
   const {
     name,
     categoryId,
-    thumbnail_url,
-    images,
     description,
     quantity,
     price,
   } = req.body;
 
+  let parsedPrice: number | undefined;
+  let parsedQuantity: number | undefined;
+
+  if (price !== undefined && price !== null && price !== "") {
+    parsedPrice = Number(price);
+    if (isNaN(parsedPrice)) {
+      res.status(400).json({ success: false, message: "Price must be a valid number." });
+      return;
+    }
+  }
+
+  if (quantity !== undefined && quantity !== null && quantity !== "") {
+    parsedQuantity = Number(quantity);
+    if (isNaN(parsedQuantity)) {
+      res.status(400).json({ success: false, message: "Quantity must be a valid number." });
+      return;
+    }
+  }
+
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+  const thumbnailFile = files?.['thumbnail']?.[0];
+  const imageFiles = files?.['images'] || [];
+
+  let uploadedThumbnail: string | undefined;
+  let uploadedImages: Image[] | undefined;
+
+  // Track the old product state so we can delete old images from B2
+  let existingProduct;
   try {
-    const updatedProduct = await updateProductService(id as string, {
+    existingProduct = await getSpiritByIdService(id);
+  } catch (err: any) {
+    if (err.message === "PRODUCT_NOT_FOUND") {
+      res.status(404).json({ success: false, message: `Unable to find such product with the ID: ${id}` });
+    } else {
+      res.status(500).json({ success: false, message: "Internal server error reading existing product." });
+    }
+    return;
+  }
+
+  try {
+    if (thumbnailFile) {
+      uploadedThumbnail = await uploadToB2(thumbnailFile);
+    }
+
+    if (imageFiles.length > 0) {
+      uploadedImages = [];
+      const uploadResults = await Promise.allSettled(
+        imageFiles.map(async (file) => {
+          const fileKey = await uploadToB2(file);
+          return {
+            url: fileKey,
+            alt_text: `${name || existingProduct.name} - ${file.originalname}`,
+          } as Image;
+        })
+      );
+
+      for (const result of uploadResults) {
+        if (result.status === "fulfilled") {
+          uploadedImages.push(result.value);
+        } else {
+          console.error("Failed to upload an image during update:", result.reason);
+        }
+      }
+    }
+
+    const updatedProduct = await updateProductService(id, {
       ...(name !== undefined ? { name } : {}),
       ...(categoryId !== undefined ? { categoryId } : {}),
-      ...(thumbnail_url !== undefined ? { thumbnail_url } : {}),
-      ...(images !== undefined ? { images } : {}),
+      ...(uploadedThumbnail ? { thumbnail_url: uploadedThumbnail } : {}),
+      ...(uploadedImages ? { images: uploadedImages } : {}),
       ...(description !== undefined ? { description } : {}),
-      ...(quantity !== undefined ? { quantity: Number(quantity) } : {}),
-      ...(price !== undefined ? { price: Number(price) } : {}),
+      ...(parsedQuantity !== undefined ? { quantity: parsedQuantity } : {}),
+      ...(parsedPrice !== undefined ? { price: parsedPrice } : {}),
     });
 
     res.status(200).json({
@@ -173,6 +287,17 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
     }
 
     console.error("Update Product Error:", error);
+    
+    // Rollback new uploads
+    if (uploadedThumbnail) {
+      await deleteFromB2(uploadedThumbnail).catch(e => console.error(e));
+    }
+    if (uploadedImages) {
+      for (const img of uploadedImages) {
+        await deleteFromB2(img.url).catch(e => console.error(e));
+      }
+    }
+
     res.status(500).json({
       success: false,
       message: "Server error while trying to update the product",
@@ -181,7 +306,9 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
 };
 
 export const deleteProduct = async (req: Request, res: Response): Promise<void> => {
-  const id = req.params.id;
+  const idParam = req.params.id;
+  const id = Array.isArray(idParam) ? idParam[0] : idParam;
+  
   if (!id) {
     res.status(400).json({
       success: false,
@@ -191,8 +318,24 @@ export const deleteProduct = async (req: Request, res: Response): Promise<void> 
   }
 
   try {
-    const deletedProduct = await deleteProductService(id as string);
-    console.log("Product deleted")
+    const deletedProduct = await deleteProductService(id);
+    console.log("Product deleted");
+
+    if (deletedProduct) {
+      if (deletedProduct.thumbnail_url) {
+        await deleteFromB2(deletedProduct.thumbnail_url).catch(e => console.error("Failed to delete thumbnail from B2", e));
+      }
+      if (Array.isArray(deletedProduct.images)) {
+        await Promise.allSettled(
+          (deletedProduct.images as Image[]).map(async (img) => {
+            if (img && img.url) {
+              await deleteFromB2(img.url);
+            }
+          })
+        ).catch(e => console.error("Failed to delete some images from B2", e));
+      }
+    }
+    
     res.status(200).json({
       success: true,
       message: "Product deleted successfully.",

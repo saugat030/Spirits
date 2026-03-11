@@ -9,6 +9,7 @@ import {
 } from "../db/repository/product.repo.js";
 import type { NewLiquor } from "../db/schema/index.js";
 import type { Image } from "../types/types.js";
+import { getPresignedImageUrl } from "../utils/s3bucket.js";
 
 type AddProductDTO = {
     name: string;
@@ -24,10 +25,31 @@ type UpdateProductDTO = Partial<AddProductDTO>;
 
 export const getSpiritsService = async (filters: ProductFilters, page: number) => {
     const { data, total } = await fetchProductsWithFilters(filters);
-    // calculate pagination logic
+    // transform the keys into presigned URLs for both the thumbnail and the gallery
+    const dataWithUrls = await Promise.all(
+        data.map(async (product) => {
+            const [signedThumbnailUrl, signedImages] = await Promise.all([
+                getPresignedImageUrl(product.thumbnail_url),
+                Promise.all(
+                    (product.images || []).map(async (img) => ({
+                        ...img,
+                        url: await getPresignedImageUrl(img.url)
+                    }))
+                )
+            ]);
+
+            return {
+                ...product,
+                thumbnail_url: signedThumbnailUrl,
+                images: signedImages,
+            };
+        })
+    );
+
     const totalPages = Math.ceil(total / filters.limit);
+
     return {
-        data,
+        data: dataWithUrls,
         page,
         limit: filters.limit,
         total,
@@ -42,7 +64,20 @@ export const getSpiritByIdService = async (id: string) => {
     if (!product) {
         throw new Error("PRODUCT_NOT_FOUND");
     }
-    return product;
+    const [signedThumbnailUrl, signedImages] = await Promise.all([
+        getPresignedImageUrl(product.thumbnail_url),
+        Promise.all(
+            (product.images || []).map(async (img) => ({
+                ...img,
+                url: await getPresignedImageUrl(img.url)
+            }))
+        )
+    ]);
+    return {
+        ...product,
+        thumbnail_url: signedThumbnailUrl,
+        images: signedImages
+    };
 };
 
 export const addProductService = async (data: AddProductDTO) => {
