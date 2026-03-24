@@ -11,10 +11,12 @@ import {
     softDeleteVariantById,
     checkProductExists,
 } from "../db/repository/product.repo.js";
+import { promotions } from "../db/schema/index.js";
 import type { NewLiquor, NewLiquorVariant } from "../db/schema/index.js";
 import type { Image, ProductFilters, AddProductDTO, UpdateProductDTO, AddVariantDTO, UpdateVariantDTO } from "../types/types.js";
-import { getPresignedImageUrl, uploadToB2 } from "../utils/s3bucket.js";
+import { getPresignedImageUrl } from "../utils/s3bucket.js";
 import { generateSKU } from "../utils/sku.js";
+import { eq, and, lte, gte } from "drizzle-orm";
 
 const transformVariantUrls = async (variant: any) => {
     let signedVariantImage = null;
@@ -122,7 +124,55 @@ export const getVariantsService = async (productId: string) => {
     }
 
     const variants = await getVariantsByProductId(productId);
-    const transformedVariants = await Promise.all(variants.map(transformVariantUrls));
+    const now = new Date();
+
+    const allPromotions = await db
+        .select({
+            id: promotions.id,
+            name: promotions.name,
+            discountType: promotions.discountType,
+            discountValue: promotions.discountValue,
+            startDate: promotions.startDate,
+            endDate: promotions.endDate,
+            categoryId: promotions.categoryId,
+            liquorId: promotions.liquorId,
+            variantId: promotions.variantId,
+        })
+        .from(promotions)
+        .where(and(eq(promotions.isActive, true), lte(promotions.startDate, now), gte(promotions.endDate, now)));
+
+    const variantsWithPromotions = variants.map((variant) => {
+        const variantPromos = allPromotions.filter(
+            (p) => p.variantId === variant.id || p.liquorId === productId
+        );
+
+        let discountedPrice = variant.price;
+        if (variantPromos.length > 0) {
+            const highestDiscount = variantPromos.reduce((max, promo) =>
+                promo.discountValue > max.discountValue ? promo : max
+            );
+
+            if (highestDiscount.discountType === "percentage") {
+                discountedPrice = Math.round(variant.price * (1 - highestDiscount.discountValue / 100));
+            } else {
+                discountedPrice = Math.max(0, variant.price - highestDiscount.discountValue);
+            }
+        }
+
+        return {
+            ...variant,
+            discountedPrice,
+            promotions: variantPromos.map((p) => ({
+                id: p.id,
+                name: p.name,
+                discountType: p.discountType,
+                discountValue: p.discountValue,
+                endDate: p.endDate,
+            })),
+        };
+    });
+
+    const transformedVariants = await Promise.all(variantsWithPromotions.map(transformVariantUrls));
     return transformedVariants;
 };
 

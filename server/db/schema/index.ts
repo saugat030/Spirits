@@ -3,4 +3,4 @@ export * from "./Category";
 export * from "./Liquor";
 export * from "./RefreshToken";
 export * from "./Order";
-export * from "./OrderItem";
+export * from "./Promotions";
