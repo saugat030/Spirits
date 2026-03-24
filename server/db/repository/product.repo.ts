@@ -1,6 +1,6 @@
 import { eq, and, ilike, inArray, gte, lte, count } from "drizzle-orm";
 import { db } from "../../config/dbConnect.js";
-import { liquors, categories, type NewLiquor } from "../schema/index.js";
+import { liquors, categories, type NewLiquor, liquorVariants, type NewLiquorVariant } from "../schema/index.js";
 import type { DbClient } from "../../types/types.js";
 
 export type ProductFilters = {
@@ -109,6 +109,13 @@ export const insertProduct = async (productData: NewLiquor, tx: DbClient = db) =
         .values(productData)
         .returning();
     return result[0];
+};
+
+export const insertVariants = async (variantsData: NewLiquorVariant[], tx: DbClient = db) => {
+    const result = await tx.insert(liquorVariants)
+        .values(variantsData)
+        .returning();
+    return result;
 };
 
 export const updateLiquorById = async (
