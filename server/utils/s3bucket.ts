@@ -17,11 +17,24 @@ const b2Client = new S3Client({
     },
 });
 
-// helper function to upload a buffer and return the file key
-export const uploadToB2 = async (file: Express.Multer.File): Promise<string> => {
-    // create a unique filename to prevent overwriting and bad characters
+const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error("Invalid file type. Only JPEG, PNG, and WebP images are allowed."));
+    }
+};
+
+const commonMulterOptions = {
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 20 * 1024 * 1024 },
+    fileFilter,
+};
+
+export const uploadToB2 = async (file: Express.Multer.File, folder: "gallery" | "variants" = "gallery"): Promise<string> => {
     const extension = file.mimetype.split("/")[1] || "jpeg";
-    const fileKey = `products/${crypto.randomUUID()}.${extension}`;
+    const fileKey = `products/${folder}/${crypto.randomUUID()}.${extension}`;
 
     const command = new PutObjectCommand({
         Bucket: process.env.B2_BUCKET_NAME!,
@@ -31,7 +44,6 @@ export const uploadToB2 = async (file: Express.Multer.File): Promise<string> => 
     });
 
     await b2Client.send(command);
-    // since it's a private bucket return the key. basically file path ani db ma store garne 
     return fileKey;
 };
 
@@ -51,21 +63,18 @@ export const getPresignedImageUrl = async (key: string): Promise<string> => {
         Bucket: process.env.B2_BUCKET_NAME!,
         Key: key,
     });
-    // generates a URL that is valid for 1 hour this is a purely local cryptographic hashing and does not perform an actual HTTP request to B2
     return await getSignedUrl(b2Client, command, { expiresIn: 3600 });
 };
 
-const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
-    if (allowedMimeTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new Error("Invalid file type. Only JPEG, PNG, and WebP images are allowed."));
-    }
-};
+export const uploadProductFields = multer({
+    ...commonMulterOptions,
+}).fields([
+    { name: "thumbnail", maxCount: 1 },
+    { name: "images", maxCount: 6 },
+]);
 
-export const upload = multer({ 
-    storage: multer.memoryStorage(), 
-    limits: { fileSize: 20 * 1024 * 1024 },
-    fileFilter
-});
+export const uploadVariantFields = multer({
+    ...commonMulterOptions,
+}).fields([
+    { name: "variantImage", maxCount: 1 },
+]);
