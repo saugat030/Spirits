@@ -10,6 +10,7 @@ import {
 export const getCategories = async (req: Request, res: Response): Promise<void> => {
     try {
         const data = await getCategoriesService();
+        console.log("categories fetched");
         res.status(200).json({
             success: true,
             message: data.length > 0 ? "Categories fetched successfully." : "No categories found.",

@@ -42,7 +42,7 @@ export const getAllSpirits = async (req: Request, res: Response): Promise<void> 
             { types, name: normalizedName, minPrice: parsedMin, maxPrice: parsedMax, limit, offset },
             page
         );
-
+        console.log("products fetched successfully.");
         res.status(200).json({
             success: true,
             message: result.data.length > 0 ? "Products fetched successfully" : "No products found with the applied filters",
@@ -123,7 +123,7 @@ export const addProduct = async (req: Request, res: Response): Promise<void> => 
             images: uploadedImages,
             description,
         });
-
+        console.log("Product added successfully.", newProduct);
         res.status(201).json({
             success: true,
             message: "Product created successfully.",
