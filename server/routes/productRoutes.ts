@@ -23,6 +23,7 @@ router.put("/:id", requireAuth, requireRole(["admin"]), uploadProductFields, upd
 router.delete("/:id", requireAuth, requireRole(["admin"]), deleteProduct);
 
 router.get("/:productId/variants", getProductVariants);
+// multipart form data use is better here even though you update only one field like size that doesnot involve image to be uploaded.
 router.post("/:productId/variants", requireAuth, requireRole(["admin"]), uploadVariantFields, addVariant);
 router.put("/:productId/variants/:variantId", requireAuth, requireRole(["admin"]), uploadVariantFields, updateVariant);
 router.delete("/:productId/variants/:variantId", requireAuth, requireRole(["admin"]), deleteVariant);

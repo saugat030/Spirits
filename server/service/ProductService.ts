@@ -10,6 +10,7 @@ import {
     updateVariantById,
     softDeleteVariantById,
     checkProductExists,
+    getVariantById,
 } from "../db/repository/product.repo.js";
 import { promotions } from "../db/schema/index.js";
 import type { NewLiquor, NewLiquorVariant } from "../db/schema/index.js";
@@ -202,7 +203,21 @@ export const addVariantService = async (productId: string, productName: string, 
 
 export const updateVariantService = async (variantId: string, data: UpdateVariantDTO) => {
     return await db.transaction(async (tx) => {
-        const updatedVariant = await updateVariantById(variantId, data, tx);
+        let updateData = { ...data } as any;
+
+        if (data.size) {
+            const variant = await getVariantById(variantId, tx);
+            if (!variant) {
+                throw new Error("VARIANT_NOT_FOUND");
+            }
+            const product = await getProductById(variant.liquorId, tx);
+            if (!product) {
+                throw new Error("PRODUCT_NOT_FOUND");
+            }
+            updateData.sku = generateSKU(product.name, data.size);
+        }
+
+        const updatedVariant = await updateVariantById(variantId, updateData, tx);
         if (!updatedVariant) {
             throw new Error("VARIANT_NOT_FOUND");
         }
