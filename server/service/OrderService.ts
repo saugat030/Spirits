@@ -1,6 +1,7 @@
 import { db } from "../config/dbConnect.js";
-import { getProductById, getVariantById, decrementVariantInventory, incrementVariantInventory } from "../db/repository/product.repo.js";
-import { insertOrder, insertOrderItems, fetchOrdersByUserId, fetchOrderById, fetchOrderItemsByOrderId, updateOrderStatusInDb } from "../db/repository/order.repo.js";
+import { getVariantById, decrementVariantInventory, incrementVariantInventory } from "../db/repository/product.repo.js";
+import { insertOrder, insertOrderItems, fetchOrdersByUserId, fetchOrderById, fetchOrderItemsByOrderId, updateOrderStatusInDb, fetchAllOrders } from "../db/repository/order.repo.js";
+import { fetchActivePromotionsForVariant } from "../db/repository/promotion.repo.js";
 
 type CheckoutItemDTO = {
     variantId: string;
@@ -34,8 +35,34 @@ export const createOrderService = async (params: CreateOrderParams) => {
             if (variant.inventoryQuantity < item.quantity) throw new Error(`INSUFFICIENT_STOCK_${item.variantId}`);
 
             const originalPrice = variant.price;
-            const priceAtPurchase = originalPrice;
-            const discountAmount = 0;
+
+            let priceAtPurchase = originalPrice;
+            let discountAmount = 0;
+            let appliedPromotionId: string | undefined;
+
+            if (variant.liquorId && variant.categoryId) {
+                const activePromotions = await fetchActivePromotionsForVariant(
+                    item.variantId,
+                    variant.liquorId,
+                    variant.categoryId,
+                    tx
+                );
+
+                if (activePromotions.length > 0) {
+                    const highestDiscount = activePromotions.reduce((max, promo) =>
+                        promo.discountValue > max.discountValue ? promo : max
+                    );
+
+                    if (highestDiscount.discountType === "percentage") {
+                        discountAmount = Math.round(originalPrice * highestDiscount.discountValue / 100);
+                    } else {
+                        discountAmount = Math.min(highestDiscount.discountValue, originalPrice);
+                    }
+
+                    priceAtPurchase = Math.max(0, originalPrice - discountAmount);
+                    appliedPromotionId = highestDiscount.id;
+                }
+            }
 
             const itemTotal = priceAtPurchase * item.quantity;
             calculatedTotal += itemTotal;
@@ -46,6 +73,7 @@ export const createOrderService = async (params: CreateOrderParams) => {
                 originalPrice,
                 priceAtPurchase,
                 discountAmount,
+                ...(appliedPromotionId && { appliedPromotionId }),
             });
         }
 
@@ -101,4 +129,13 @@ export const updateOrderStatusService = async (orderId: string, status: string) 
     }
 
     return updatedOrder;
+};
+
+export const getAllOrdersService = async (options: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    userId?: string;
+}) => {
+    return await fetchAllOrders(options);
 };

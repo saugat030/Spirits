@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, count } from "drizzle-orm";
 import { db } from "../../config/dbConnect.js";
 import { orders, orderItems } from "../schema/index.js";
 import type { DbClient } from "../../types/types.js";
@@ -63,4 +63,48 @@ export const updateOrderStatusInDb = async (orderId: string, status: string, tx:
         .where(eq(orders.id, orderId))
         .returning();
     return result[0];
+};
+
+export const fetchAllOrders = async (options: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    userId?: string;
+}, tx: DbClient = db) => {
+    const page = Math.max(1, options.page || 1);
+    const limit = Math.max(1, options.limit || 20);
+    const offset = (page - 1) * limit;
+
+    const conditions = [];
+
+    if (options.status) {
+        conditions.push(eq(orders.status, options.status as any));
+    }
+    if (options.userId) {
+        conditions.push(eq(orders.userId, options.userId));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    const [ordersList, totalCountResult] = await Promise.all([
+        tx.select()
+            .from(orders)
+            .where(whereClause)
+            .orderBy(desc(orders.createdAt))
+            .limit(limit)
+            .offset(offset),
+        tx.select({ total: count() })
+            .from(orders)
+            .where(whereClause),
+    ]);
+
+    const total = totalCountResult[0]?.total || 0;
+
+    return {
+        data: ordersList,
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+    };
 };

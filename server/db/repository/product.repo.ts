@@ -309,8 +309,10 @@ export const getVariantById = async (id: string, tx: DbClient = db) => {
             price: liquorVariants.price,
             inventoryQuantity: liquorVariants.inventoryQuantity,
             variantImage: liquorVariants.variantImage,
+            categoryId: liquors.categoryId,
         })
         .from(liquorVariants)
+        .innerJoin(liquors, eq(liquors.id, liquorVariants.liquorId))
         .where(and(eq(liquorVariants.id, id), eq(liquorVariants.isActive, true)));
     return result[0];
 };

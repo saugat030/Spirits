@@ -1,5 +1,5 @@
 import { type Request, type Response } from "express";
-import { createOrderService, getMyOrdersService, getOrderByIdService, updateOrderStatusService } from "../service/OrderService.js";
+import { createOrderService, getMyOrdersService, getOrderByIdService, updateOrderStatusService, getAllOrdersService } from "../service/OrderService.js";
 
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -66,6 +66,32 @@ export const getOrderById = async (req: Request, res: Response): Promise<void> =
             return;
         }
         const order = await getOrderByIdService(orderId);
+
+        if (order.userId !== req.user!.id) {
+            res.status(403).json({ success: false, message: "Access denied." });
+            return;
+        }
+
+        res.status(200).json({ success: true, data: order });
+    } catch (error: unknown) {
+        if (error instanceof Error && error.message === "ORDER_NOT_FOUND") {
+            res.status(404).json({ success: false, message: "Order not found." });
+            return;
+        }
+        console.error("Fetch Order Error:", error);
+        res.status(500).json({ success: false, message: "Could not fetch order." });
+    }
+};
+
+export const getAdminOrderById = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const orderIdParam = req.params.id;
+        const orderId = Array.isArray(orderIdParam) ? orderIdParam[0] : orderIdParam || "";
+        if (!orderId) {
+            res.status(400).json({ success: false, message: "Invalid order ID." });
+            return;
+        }
+        const order = await getOrderByIdService(orderId);
         res.status(200).json({ success: true, data: order });
     } catch (error: unknown) {
         if (error instanceof Error && error.message === "ORDER_NOT_FOUND") {
@@ -104,5 +130,24 @@ export const updateOrderStatus = async (req: Request, res: Response): Promise<vo
         }
         console.error("Update Status Error:", error);
         res.status(500).json({ success: false, message: "Server error while updating status." });
+    }
+};
+
+export const getAllOrders = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const page = Math.max(1, Number(req.query.page) || 1);
+        const limit = Number(req.query.limit) || 20;
+        const status = typeof req.query.status === "string" ? req.query.status : undefined;
+        const userId = typeof req.query.userId === "string" ? req.query.userId : undefined;
+
+        const result = await getAllOrdersService({ page, limit, ...(status && { status }), ...(userId && { userId }) });
+
+        res.status(200).json({
+            success: true,
+            ...result,
+        });
+    } catch (error) {
+        console.error("Fetch All Orders Error:", error);
+        res.status(500).json({ success: false, message: "Could not fetch orders." });
     }
 };
