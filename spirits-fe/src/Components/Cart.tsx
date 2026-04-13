@@ -1,28 +1,16 @@
 import { Package, ShoppingCart } from "lucide-react";
 import { useShoppingCart } from "../context/ShoppingCartContext";
 import CartProductCard from "./CartProductCard";
-import { useQueries } from "@tanstack/react-query";
-import { getProductById } from "../services/api/productsApi";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
   const { cartItems, cartQuantity } = useShoppingCart();
-  console.log("Cart Items :", cartItems);
-  const productQueries = useQueries({
-    queries: cartItems.map((item) => ({
-      queryKey: ["product", item.id],
-      queryFn: () => getProductById(item.id.toString()),
-    })),
-  });
-
-  const isLoadingAny = productQueries.some((q) => q.isLoading);
-  const hasErrorAny = productQueries.some((q) => q.isError);
-
-  const grandTotal = productQueries.reduce((accumulator, item, index) => {
-    const price = item.data?.data?.price;
-    const quantity = cartItems[index]?.quantity || 0;
-    return price ? accumulator + price * quantity : accumulator;
+  const grandTotal = cartItems.reduce((accumulator, item) => {
+    const price = item.product?.minDiscountedPrice || 0;
+    const quantity = item.quantity || 0;
+    return accumulator + price * quantity;
   }, 0);
+
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
@@ -59,21 +47,15 @@ const Cart = () => {
           {/* Table Body */}
           <div className="divide-y divide-gray-100">
             {cartItems.map((item, index) => {
-              const productQuery = productQueries[index];
-              const productData = productQuery?.data?.data;
-
               return (
                 <div
-                  key={item.id}
+                  key={item.product.id}
                   className={`transition-colors duration-200 hover:bg-gray-50 ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
                     }`}
                 >
                   <CartProductCard
-                    id={item.id}
                     quantity={item.quantity}
-                    product={productData}
-                    isLoading={productQuery?.isLoading}
-                    error={productQuery?.error}
+                    product={item.product}
                   />
                 </div>
               );
@@ -83,19 +65,13 @@ const Cart = () => {
           {/* Cart Summary Footer */}
           <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-t-2 border-gray-200">
             <div className="flex justify-between items-center">
-              {isLoadingAny ? (
-                <div className="text-gray-500">Calculating total...</div>
-              ) : hasErrorAny ? (
-                <div className="text-red-500">Error loading prices.</div>
-              ) : (
-                <div className="text-lg text-gray-600 font-semibold">
-                  Grand Total :{" "}
-                  <span className="bg-slate-200 p-1 rounded-full text-base">
-                    {" "}
-                    NPR {grandTotal.toFixed(2)}
-                  </span>
-                </div>
-              )}
+              <div className="text-lg text-gray-600 font-semibold">
+                Grand Total :{" "}
+                <span className="bg-slate-200 p-1 rounded-full text-base">
+                  {" "}
+                  NPR {grandTotal.toFixed(2)}
+                </span>
+              </div>
 
               <div className="flex gap-4">
                 <Link to={"/products"}>

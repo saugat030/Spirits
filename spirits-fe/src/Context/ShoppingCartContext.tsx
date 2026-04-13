@@ -1,19 +1,19 @@
 import { createContext, ReactNode, useContext } from "react";
 import { useLocalStorage } from "./useLocalStorage";
+import { Product } from "../types/api.types";
 
-type CartItem = {
-  id: number;
+export type CartItem = {
+  product: Product;
   quantity: number;
 };
 
 type ShoppingCartContext = {
   cartQuantity: number;
   cartItems: CartItem[];
-  getItemQuantity: (id: number) => number;
-  increaseCartQuantity: (id: number) => void;
-  //Adding an item to cart is the same increasing it by one so don't need it.
-  decreaseCartQuantity: (id: number) => void;
-  removeFromCart: (id: number) => void;
+  getItemQuantity: (id: string) => number;
+  increaseCartQuantity: (product: Product) => void;
+  decreaseCartQuantity: (id: string) => void;
+  removeFromCart: (id: string) => void;
 };
 
 const ShoppingCartContext = createContext({} as ShoppingCartContext);
@@ -21,24 +21,24 @@ const ShoppingCartContext = createContext({} as ShoppingCartContext);
 export function useShoppingCart() {
   return useContext(ShoppingCartContext);
 }
+
 export function ShoppingCartProvider({ children }: {children : ReactNode}) {
   const [cartItems, setCartItems] = useLocalStorage<CartItem[]>(
     "shopping-cart",
     []
   );
 
-  //Shopping Cart vitra ko cart ko quantity.
-  function getItemQuantity(id: number) {
-    //same as saying if the item with the said id is found , then get the item.quantity else return 0.
-    return cartItems.find((item) => item.id === id)?.quantity || 0;
+  function getItemQuantity(id: string) {
+    return cartItems.find((item) => item.product.id === id)?.quantity || 0;
   }
-  function increaseCartQuantity(id: number) {
+
+  function increaseCartQuantity(product: Product) {
     setCartItems((currItems) => {
-      if (currItems.find((item) => item.id == id) == null) {
-        return [...currItems, { id, quantity: 1 }];
+      if (currItems.find((item) => item.product.id === product.id) == null) {
+        return [...currItems, { product, quantity: 1 }];
       } else {
         return currItems.map((item) => {
-          if (item.id === id) {
+          if (item.product.id === product.id) {
             return { ...item, quantity: item.quantity + 1 };
           } else {
             return item;
@@ -47,32 +47,34 @@ export function ShoppingCartProvider({ children }: {children : ReactNode}) {
       }
     });
   }
-  function decreaseCartQuantity(id: number) {
+
+  function decreaseCartQuantity(id: string) {
     setCartItems((currItems) => {
-      const existingItem = currItems.find((item) => item.id === id);
+      const existingItem = currItems.find((item) => item.product.id === id);
 
       if (!existingItem) return currItems;
 
       if (existingItem.quantity === 1) {
-        // Remove item from cart
-        return currItems.filter((item) => item.id !== id);
+        return currItems.filter((item) => item.product.id !== id);
       } else {
-        // Decrement quantity
         return currItems.map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+          item.product.id === id ? { ...item, quantity: item.quantity - 1 } : item
         );
       }
     });
   }
-  function removeFromCart(id: number) {
+
+  function removeFromCart(id: string) {
     setCartItems((currItems) => {
-      return currItems.filter((item) => item.id !== id);
+      return currItems.filter((item) => item.product.id !== id);
     });
   }
+
   const cartQuantity = cartItems.reduce(
     (quantity, item) => item.quantity + quantity,
     0
   );
+
   return (
     <ShoppingCartContext.Provider
       value={{
@@ -88,3 +90,4 @@ export function ShoppingCartProvider({ children }: {children : ReactNode}) {
     </ShoppingCartContext.Provider>
   );
 }
+

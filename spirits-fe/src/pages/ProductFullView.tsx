@@ -16,7 +16,7 @@ const ProductFullView = () => {
 
   const { data: productResponse, isLoading, error } = useGetProductById(params.id || null);
   const product = productResponse?.data;
-  const quantity = params.id ? getItemQuantity(parseInt(params.id)) : 0;
+  const quantity = params.id ? getItemQuantity(params.id) : 0;
 
   // Loading state
   if (isLoading) {
@@ -176,7 +176,7 @@ const ProductFullView = () => {
               {quantity === 0 ? (
                 <button
                   onClick={() => {
-                    increaseCartQuantity(parseInt(params.id as string));
+                    increaseCartQuantity(product as any);
                     toast.success("Added to cart");
                   }}
                   className="flex-1 min-w-[200px] bg-yellow-500 hover:bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
@@ -187,7 +187,7 @@ const ProductFullView = () => {
                 <div className="flex-1 min-w-[200px] flex items-center justify-between bg-gray-100 p-2 rounded-full border border-gray-200">
                   <button
                     onClick={() => {
-                      decreaseCartQuantity(parseInt(params.id as string));
+                      decreaseCartQuantity(params.id as string);
                       toast.info("Removed from cart");
                     }}
                     className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-gray-600 hover:bg-red-50 hover:text-red-500 shadow-sm transition-colors"
@@ -198,7 +198,7 @@ const ProductFullView = () => {
                     {quantity}
                   </span>
                   <button
-                    onClick={() => increaseCartQuantity(parseInt(params.id as string))}
+                    onClick={() => increaseCartQuantity(product as any)}
                     className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-gray-600 hover:bg-green-50 hover:text-green-600 shadow-sm transition-colors"
                   >
                     <CiCirclePlus className="text-3xl" strokeWidth={1} />
