@@ -5,7 +5,6 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Authentication from "./pages/Authentication";
 import ProductFullView from "./pages/ProductFullView";
 import CartPage from "./pages/CartPage";
-import { ShoppingCartProvider } from "./context/ShoppingCartContext";
 import AdminDashBoard from "./pages/AdminDashBoard";
 import Users from "./components/protected/Users";
 import AdminProducts from "./components/protected/AdminProducts";
@@ -14,14 +13,18 @@ import Orders from "./components/protected/Orders";
 import Dashboard from "./components/protected/Dashboard";
 import AddProducts from "./components/protected/AddProducts";
 import ProtectedRoute from "./components/protected/protectedRoute";
-import { AuthContextProvider } from "./context/AuthContext";
 import OrdersPage from "./pages/OrdersPage";
+import { useEffect } from "react";
+import { useAuthStore } from "./store/useAuthStore";
 
 function App() {
+  const getAuthState = useAuthStore((state) => state.getAuthState);
+  useEffect(() => {
+    getAuthState();
+  }, [getAuthState]);
+
   return (
-    <AuthContextProvider>
-      <ShoppingCartProvider>
-        <BrowserRouter>
+    <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
@@ -66,8 +69,6 @@ function App() {
             />
           </Routes>
         </BrowserRouter>
-      </ShoppingCartProvider>
-    </AuthContextProvider>
   );
 }
 

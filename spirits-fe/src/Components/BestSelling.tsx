@@ -74,7 +74,7 @@ const BestSelling = () => {
           >
             {productsToShow.map((item: Product, index) => (
               <SwiperSlide key={item.id ?? index} className="rounded-2xl">
-                <ProductCard {...item} />
+                <ProductCard product={item} />
               </SwiperSlide>
             ))}
           </Swiper>

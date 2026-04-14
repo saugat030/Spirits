@@ -143,7 +143,7 @@ const MostPopular = ({
                   products.data.map((item) => (
                     <ProductCard
                       key={item.id}
-                      {...item}
+                      product={item}
                     />
                   ))
                 ) : (

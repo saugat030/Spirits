@@ -1,14 +1,17 @@
 import { Package, ShoppingCart } from "lucide-react";
-import { useShoppingCart } from "../context/ShoppingCartContext";
+import { useCartStore } from "../store/useCartStore";
 import CartProductCard from "./CartProductCard";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { cartItems, cartQuantity } = useShoppingCart();
+  const cartItems = useCartStore((state) => state.cartItems);
+  const cartQuantity = cartItems.reduce((quantity, item) => item.quantity + quantity, 0);
   const grandTotal = cartItems.reduce((accumulator, item) => {
-    const price = item.product?.minDiscountedPrice || 0;
-    const quantity = item.quantity || 0;
-    return accumulator + price * quantity;
+    const selectedVariant = item.product.variants.find(
+      (v) => v.id === item.selectedVariantId
+    );
+    const price = selectedVariant?.discountedPrice || item.product.minDiscountedPrice;
+    return accumulator + price * item.quantity;
   }, 0);
 
   return (
@@ -49,13 +52,15 @@ const Cart = () => {
             {cartItems.map((item, index) => {
               return (
                 <div
-                  key={item.product.id}
-                  className={`transition-colors duration-200 hover:bg-gray-50 ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
-                    }`}
+                  key={item.selectedVariantId}
+                  className={`transition-colors duration-200 hover:bg-gray-50 ${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                  }`}
                 >
                   <CartProductCard
                     quantity={item.quantity}
                     product={item.product}
+                    selectedVariantId={item.selectedVariantId}
                   />
                 </div>
               );

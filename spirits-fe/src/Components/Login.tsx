@@ -1,18 +1,15 @@
-import { useContext, useEffect, useState } from "react";
-// import Footer from "../Components/Footer";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { useAuthStore } from "../store/useAuthStore";
 import { useLogin, useSignup } from "../services/api/authApi";
 import { toast } from "react-toastify";
 
 const Login = () => {
   const [state, setState] = useState<"Login" | "Sign Up">("Login");
   const navigate = useNavigate();
-  const authContext = useContext(AuthContext);
-  if (!authContext) {
-    throw new Error("AuthContext must be used within AuthContextProvider");
-  }
-  const { setIsLoggedin, getUserData, userData } = authContext;
+  const userData = useAuthStore((state) => state.userData);
+  const setIsLoggedin = useAuthStore((state) => state.setIsLoggedin);
+  const getUserData = useAuthStore((state) => state.getUserData);
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");

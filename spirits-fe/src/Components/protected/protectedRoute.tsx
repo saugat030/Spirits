@@ -1,12 +1,12 @@
-import { useContext, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+import { useAuthStore } from "../../store/useAuthStore";
 import { toast } from "react-toastify";
 
 type ProtectedRouteProps = {
   children: ReactNode;
-  requiredRole?: string; // Optional role-based protection
-  requireVerified?: boolean; // Optional verification requirement
+  requiredRole?: string;
+  requireVerified?: boolean;
 };
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
@@ -14,15 +14,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requiredRole,
   requireVerified = false,
 }) => {
-  const authContext = useContext(AuthContext);
   const navigate = useNavigate();
-  const [isChecking, setIsChecking] = useState(true); // to prevent flashing
+  const [isChecking, setIsChecking] = useState(true);
 
-  if (!authContext) {
-    throw new Error("ProtectedRoute must be used within AuthContextProvider");
-  }
-
-  const { isLoggedin, userData } = authContext;
+  const isLoggedin = useAuthStore((state) => state.isLoggedin);
+  const userData = useAuthStore((state) => state.userData);
 
   useEffect(() => {
     // If not logged in

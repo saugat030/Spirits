@@ -1,6 +1,5 @@
-// import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import { useContext, useEffect, useState } from "react";
+import { useAuthStore } from "../store/useAuthStore";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Navigate, Outlet } from "react-router-dom";
 import SideBar from "../components/protected/SideBar";
@@ -11,11 +10,7 @@ const AdminDashBoard = () => {
   const [dashboardData, setDashboardData] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
   console.log(dashboardData);
-  const authContext = useContext(AuthContext);
-  if (!authContext) {
-    throw new Error("AuthContext must be used within AuthContextProvider");
-  }
-  const { userData } = authContext;
+  const userData = useAuthStore((state) => state.userData);
 
   async function getDashDetails() {
     const { data } = await axios.get(

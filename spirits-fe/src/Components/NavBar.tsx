@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { IoMenuSharp, IoClose } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useContext, useState, useEffect, useRef } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useState, useEffect, useRef } from "react";
+import { useAuthStore } from "../store/useAuthStore";
 import axios from "axios";
-import { useShoppingCart } from "../context/ShoppingCartContext";
+import { useCartStore } from "../store/useCartStore";
 import { NavType } from "../types/home.types";
 import API from "../services/axiosInstance";
 import { toast } from "react-toastify";
@@ -16,17 +16,16 @@ import { HashLink } from "react-router-hash-link";
 
 const NavBar = (props: NavType) => {
   const navigate = useNavigate();
-  const { cartQuantity } = useShoppingCart();
+  const cartItems = useCartStore((state) => state.cartItems);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [profileDropDown, setProfileDropDown] = useState(false);
   const [isSpiritsDropdownOpen, setIsSpiritsDropdownOpen] = useState(false);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
-  const authContext = useContext(AuthContext);
-  if (!authContext) {
-    throw new Error("AuthContext must be used within AuthContextProvider");
-  }
-  const { userData, setUserData, setIsLoggedin } = authContext;
+  const userData = useAuthStore((state) => state.userData);
+  const setUserData = useAuthStore((state) => state.setUserData);
+  const setIsLoggedin = useAuthStore((state) => state.setIsLoggedin);
+  const cartQuantity = cartItems.reduce((quantity, item) => item.quantity + quantity, 0);
 
   // Close mobile menu when route changes
   useEffect(() => {

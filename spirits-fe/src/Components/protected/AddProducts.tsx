@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import Products from "../ProductCard";
 import { useState } from "react";
 import axios from "axios";
 
@@ -161,13 +160,24 @@ const AddProducts = () => {
         <h1 className="2xl:text-2xl xl:text-xl font-bold mb-4 text-center">
           Card Preview
         </h1>
-        <Products
-          id={1}
-          imgSrc={imageUrl}
-          name={productName}
-          price={price}
-          type={type_name}
-        />
+        <div className="w-64 bg-amber-50 rounded-2xl p-3 border border-gray-100">
+          <div className="h-48 bg-gray-100 rounded-xl flex items-center justify-center mb-3">
+            {imageUrl ? (
+              <img src={imageUrl} alt={productName} className="w-full h-full object-cover rounded-xl" />
+            ) : (
+              <span className="text-gray-400">Image Preview</span>
+            )}
+          </div>
+          <div className="text-xs text-gray-500 bg-white/90 px-2 py-1 rounded-md w-fit mb-2">
+            {type_name || "Category"}
+          </div>
+          <h3 className="font-bold text-[#0D1B39] line-clamp-1">
+            {productName || "Product Name"}
+          </h3>
+          <p className="text-xs text-gray-400 mt-1">
+            Rs. {price || 0}
+          </p>
+        </div>
       </div>
     </div>
   );
