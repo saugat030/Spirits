@@ -27,6 +27,9 @@ export const getUserByEmail = async (email: string, tx: DbClient = db) => {
       email: users.email,
       password: users.password,
       role: users.role,
+      phone_number: users.phone_number,
+      country: users.country,
+      address: users.address,
       is_verified: users.is_verified,
       is_active: users.is_active,
     })
@@ -35,7 +38,6 @@ export const getUserByEmail = async (email: string, tx: DbClient = db) => {
   return result[0];
 };
 
-// this excludes the password since it is sent to the fe
 export const getUserById = async (id: string, tx: DbClient = db) => {
   const result = await tx
     .select({
@@ -43,6 +45,9 @@ export const getUserById = async (id: string, tx: DbClient = db) => {
       name: users.name,
       email: users.email,
       role: users.role,
+      phone_number: users.phone_number,
+      country: users.country,
+      address: users.address,
       is_verified: users.is_verified,
       is_active: users.is_active,
     })
@@ -86,4 +91,76 @@ export const updateRefreshToken = async (
       expiresAt: newExpiresAt
     })
     .where(eq(refreshTokens.token, oldToken));
+};
+
+export const updateUserOtp = async (
+  userId: string,
+  otp: string,
+  expiresAt: number,
+  tx: DbClient = db
+) => {
+  await tx.update(users)
+    .set({ verify_otp: otp, verify_otp_expire_at: expiresAt })
+    .where(eq(users.id, userId));
+};
+
+// clear verification OTP fields and mark user as verified and active.
+export const clearUserOtpAndActivateUser = async (userId: string, tx: DbClient = db) => {
+  await tx.update(users)
+    .set({ verify_otp: null, verify_otp_expire_at: null, is_verified: true, is_active: true })
+    .where(eq(users.id, userId));
+};
+
+// fetch the verification OTP data for a user otp and expiry
+export const getUserOtpData = async (userId: string, tx: DbClient = db) => {
+  const result = await tx
+    .select({
+      verify_otp: users.verify_otp,
+      verify_otp_expire_at: users.verify_otp_expire_at,
+    })
+    .from(users)
+    .where(eq(users.id, userId));
+  return result[0];
+};
+
+// store a password reset OTP and its expiry on the user record
+export const updateResetOtp = async (
+  userId: string,
+  otp: string,
+  expiresAt: number,
+  tx: DbClient = db
+) => {
+  await tx.update(users)
+    .set({ resetotp: otp, resetotpexpireat: expiresAt })
+    .where(eq(users.id, userId));
+};
+
+// clear password-reset OTP fields
+export const clearResetOtp = async (userId: string, tx: DbClient = db) => {
+  await tx.update(users)
+    .set({ resetotp: null, resetotpexpireat: null })
+    .where(eq(users.id, userId));
+};
+
+// fetch the reset OTP data for a user
+export const getResetOtpData = async (userId: string, tx: DbClient = db) => {
+  const result = await tx
+    .select({
+      resetotp: users.resetotp,
+      resetotpexpireat: users.resetotpexpireat,
+    })
+    .from(users)
+    .where(eq(users.id, userId));
+  return result[0];
+};
+
+// update the user's hashed password
+export const updateUserPassword = async (
+  userId: string,
+  hashedPassword: string,
+  tx: DbClient = db
+) => {
+  await tx.update(users)
+    .set({ password: hashedPassword })
+    .where(eq(users.id, userId));
 };

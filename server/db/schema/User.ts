@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, integer, text, boolean, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, integer, text, boolean, pgEnum, timestamp } from "drizzle-orm/pg-core";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
 export const roleEnum = pgEnum("user_role", ["admin", "user"]);
@@ -9,6 +9,9 @@ export const users = pgTable("users", {
     email: varchar({ length: 100 }).notNull().unique("users_email_key"),
     password: text().notNull(),
     role: roleEnum("role").default("user").notNull(),
+    phone_number: varchar("phone_number", { length: 20 }),
+    country: varchar("country", { length: 100 }),
+    address: text("address"),
     verify_otp: varchar({ length: 50 }),
     verify_otp_expire_at: integer(),
     is_verified: boolean().default(false),
@@ -23,5 +26,5 @@ export const users = pgTable("users", {
 export type User = InferSelectModel<typeof users>;
 export type NewUser = InferInsertModel<typeof users>;
 
-type UpdatableUserFields = Pick<NewUser, "name" | "email" | "role" | "is_verified" | "is_active">;
+type UpdatableUserFields = Pick<NewUser, "name" | "email" | "role" | "is_verified" | "is_active" | "phone_number" | "country" | "address">;
 export type UserUpdateData = Partial<UpdatableUserFields>;

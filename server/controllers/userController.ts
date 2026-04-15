@@ -39,6 +39,16 @@ interface UpdateUserRequestBody {
   role?: "admin" | "user";
   is_verified?: boolean | string | null;
   is_active?: boolean | string | null;
+  phone_number?: string;
+  country?: string;
+  address?: string;
+}
+
+interface UpdateProfileRequestBody {
+  name?: string;
+  phone_number?: string;
+  country?: string;
+  address?: string;
 }
 
 type UpdateUserRequest = Request<{ id: string }, any, UpdateUserRequestBody>;
@@ -54,7 +64,7 @@ export const updateUsers = async (req: UpdateUserRequest, res: Response): Promis
     return;
   }
 
-  const { name, email, role, is_verified, is_active } = req.body;
+  const { name, email, role, is_verified, is_active, phone_number, country, address } = req.body;
   const payload: UserUpdateData = {};
 
   if (name !== undefined) {
@@ -79,6 +89,18 @@ export const updateUsers = async (req: UpdateUserRequest, res: Response): Promis
       typeof is_active === "string" ? is_active === "true" : Boolean(is_active);
   }
 
+  if (phone_number !== undefined) {
+    payload.phone_number = phone_number.trim();
+  }
+
+  if (country !== undefined) {
+    payload.country = country.trim();
+  }
+
+  if (address !== undefined) {
+    payload.address = address.trim();
+  }
+
   try {
     const updatedUser = await updateUserService(userId as string, payload);
     res.status(200).json({
@@ -99,6 +121,69 @@ export const updateUsers = async (req: UpdateUserRequest, res: Response): Promis
     res.status(500).json({
       success: false,
       message: "Server error while trying to update the user."
+    });
+  }
+};
+
+type UpdateProfileRequest = Request<any, any, UpdateProfileRequestBody>;
+
+export const updateProfile = async (req: UpdateProfileRequest, res: Response): Promise<void> => {
+  const userId = req.user?.id;
+
+  if (!userId) {
+    res.status(401).json({
+      success: false,
+      message: "Unauthorized. User not found."
+    });
+    return;
+  }
+
+  const { name, phone_number, country, address } = req.body;
+  const payload: UserUpdateData = {};
+
+  if (name !== undefined) {
+    payload.name = name.trim();
+  }
+
+  if (phone_number !== undefined) {
+    payload.phone_number = phone_number.trim();
+  }
+
+  if (country !== undefined) {
+    payload.country = country.trim();
+  }
+
+  if (address !== undefined) {
+    payload.address = address.trim();
+  }
+
+  if (Object.keys(payload).length === 0) {
+    res.status(400).json({
+      success: false,
+      message: "No valid fields to update."
+    });
+    return;
+  }
+
+  try {
+    const updatedUser = await updateUserService(userId, payload);
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully.",
+      data: updatedUser
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === "USER_NOT_FOUND") {
+      res.status(404).json({
+        success: false,
+        message: "User not found."
+      });
+      return;
+    }
+    console.error("Update Profile Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while updating profile."
     });
   }
 };

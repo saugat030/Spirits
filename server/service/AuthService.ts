@@ -3,9 +3,27 @@ import jwt from "jsonwebtoken";
 import { db } from "../config/dbConnect.js";
 import { type NewUser } from "../db/schema/index.js";
 // insertRefreshToken chai crazy function ho that takes both db and tx objects so suuuuuper flexible.
-import { getUserByEmail, createUser, insertRefreshToken, deleteExpiredTokens, deleteRefreshToken, getRefreshToken, updateRefreshToken, getUserById } from "../db/repository/auth.repo.js";
+import {
+  getUserByEmail,
+  createUser,
+  insertRefreshToken,
+  deleteExpiredTokens,
+  deleteRefreshToken,
+  getRefreshToken,
+  updateRefreshToken,
+  getUserById,
+  updateUserOtp,
+  clearUserOtpAndActivateUser,
+  getUserOtpData,
+  updateResetOtp,
+  clearResetOtp,
+  getResetOtpData,
+  updateUserPassword,
+} from "../db/repository/auth.repo.js";
 import { REFRESH_TOKEN_SECRET, saltRounds } from "../constants/auth.constants.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/auth.utils.js";
+import { generateOtp, otpExpiresAt } from "../utils/otp.utils.js";
+import { sendOtpEmail } from "../utils/email.utils.js";
 import type { RefreshTokenPayload } from "../types/types.js";
 
 export const registerUserService = async (userData: NewUser) => {
@@ -21,6 +39,16 @@ export const registerUserService = async (userData: NewUser) => {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
     await insertRefreshToken(userId, refreshToken, expiresAt.toISOString(), tx);
+
+    // auto send verification OTP on signup
+    const otp = generateOtp();
+    const otpExpiry = otpExpiresAt(10);
+    await updateUserOtp(userId, otp, otpExpiry, tx);
+    // send email outside the transaction (fire and forget with error logging)
+    sendOtpEmail(userData.email, otp, "verify").catch((err) => {
+      console.error("Failed to send verification email on signup:", err);
+    });
+
     return { accessToken, refreshToken };
   });
 };
@@ -98,4 +126,88 @@ export const getUserDataService = async (userId: string, role: string) => {
   }
   // only return the safe data to the frontend
   return user;
+};
+
+
+// generates a verification OTP, stores it, and sends it to the user's email
+// mainly for users who want to verify later
+export const sendVerificationOtpService = async (userId: string) => {
+  const user = await getUserById(userId);
+  if (!user) throw new Error("USER_NOT_FOUND");
+  if (user.is_verified) throw new Error("ALREADY_VERIFIED");
+
+  const otp = generateOtp();
+  const expiry = otpExpiresAt(10);
+  await updateUserOtp(userId, otp, expiry);
+  await sendOtpEmail(user.email, otp, "verify");
+};
+
+// verifies the user's email using the provided OTP. compares OTP checks expiry then marks the account as verified
+export const verifyEmailOtpService = async (userId: string, otp: string) => {
+  const otpData = await getUserOtpData(userId);
+  if (!otpData || !otpData.verify_otp) throw new Error("NO_OTP_FOUND");
+
+  const now = Math.floor(Date.now() / 1000);
+  if (otpData.verify_otp_expire_at && now > otpData.verify_otp_expire_at) {
+    throw new Error("OTP_EXPIRED");
+  }
+  if (otpData.verify_otp !== otp) {
+    throw new Error("INVALID_OTP");
+  }
+  await clearUserOtpAndActivateUser(userId);
+};
+
+// sends a password reset OTP to the given email address.
+export const sendResetOtpService = async (email: string) => {
+  const user = await getUserByEmail(email);
+  if (!user) return; // silent fail to prevent email enumeration
+
+  const otp = generateOtp();
+  const expiry = otpExpiresAt(10);
+  await updateResetOtp(user.id, otp, expiry);
+  await sendOtpEmail(email, otp, "reset");
+};
+
+ // verifies OTP then hashes new password then updates DB then clears OTP fields.
+export const resetPasswordService = async (email: string, otp: string, newPassword: string) => {
+  const user = await getUserByEmail(email);
+  if (!user) throw new Error("INVALID_CREDENTIALS");
+
+  const otpData = await getResetOtpData(user.id);
+  if (!otpData || !otpData.resetotp) throw new Error("NO_OTP_FOUND");
+
+  const now = Math.floor(Date.now() / 1000);
+  if (otpData.resetotpexpireat && now > otpData.resetotpexpireat) {
+    throw new Error("OTP_EXPIRED");
+  }
+
+  if (otpData.resetotp !== otp) {
+    throw new Error("INVALID_OTP");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+  await db.transaction(async (tx) => {
+    await updateUserPassword(user.id, hashedPassword, tx);
+    await clearResetOtp(user.id, tx);
+  });
+};
+
+export const changePasswordService = async (
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+) => {
+  // getUserById doesn't include password, so we get user data first then look up via email
+  const userData = await getUserById(userId);
+  if (!userData) throw new Error("USER_NOT_FOUND");
+
+  // getUserByEmail includes the password hash for comparison
+  const fullUser = await getUserByEmail(userData.email);
+  if (!fullUser) throw new Error("USER_NOT_FOUND");
+
+  const isPasswordValid = await bcrypt.compare(currentPassword, fullUser.password);
+  if (!isPasswordValid) throw new Error("INVALID_CURRENT_PASSWORD");
+
+  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+  await updateUserPassword(userId, hashedPassword);
 };
