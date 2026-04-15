@@ -12,7 +12,7 @@ const router = Router();
 
 // user profile routes
 router.get("/profile", apiLimiter, requireAuth, userData);
-router.post("/profile", apiLimiter, requireAuth, updateProfile);
+router.patch("/profile", apiLimiter, requireAuth, updateProfile);
 
 // admin user management routes
 router.get("/admin/users", apiLimiter, requireAuth, requireRole(["admin"]), getUsers);
