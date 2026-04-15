@@ -10,6 +10,9 @@ export const fetchAllUsers = async (tx: DbClient = db) => {
         name: users.name,
         email: users.email,
         role: users.role,
+        phone_number: users.phone_number,
+        country: users.country,
+        address: users.address,
         is_verified: users.is_verified,
         is_active: users.is_active
     }).from(users);
@@ -23,6 +26,9 @@ export const updateUserById = async (id: string, data: UserUpdateData, tx: DbCli
             name: users.name,
             email: users.email,
             role: users.role,
+            phone_number: users.phone_number,
+            country: users.country,
+            address: users.address,
             is_verified: users.is_verified,
             is_active: users.is_active
         });

@@ -9,6 +9,8 @@ import ordersRoutes from "./routes/ordersRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import promotionRoutes from "./routes/promotionRoutes.js";
+import countryRoutes from "./routes/countryRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import { verifyConnection } from "./config/dbConnect.js";
 
 const app = express();
@@ -40,6 +42,8 @@ app.use("/api/orders", ordersRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/promotions", promotionRoutes);
+app.use("/api/countries", countryRoutes);
+app.use("/api/user", userRoutes);
 
 const startServer = async () => {
   try {

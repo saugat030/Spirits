@@ -28,6 +28,15 @@ export const updateUserService = async (id: string, data: UserUpdateData) => {
     if (data.is_active !== undefined) {
         payload.is_active = data.is_active;
     }
+    if (data.phone_number !== undefined) {
+        payload.phone_number = data.phone_number;
+    }
+    if (data.country !== undefined) {
+        payload.country = data.country;
+    }
+    if (data.address !== undefined) {
+        payload.address = data.address;
+    }
 
     const updatedUser = await updateUserById(id, payload);
 

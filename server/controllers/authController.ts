@@ -1,6 +1,16 @@
 import { db } from "../config/dbConnect.js";
 import { type Request, type Response } from "express";
-import { loginUserService, logoutUserService, refreshTokensService, registerUserService } from "../service/AuthService.js";
+import {
+  loginUserService,
+  logoutUserService,
+  refreshTokensService,
+  registerUserService,
+  sendVerificationOtpService,
+  verifyEmailOtpService,
+  sendResetOtpService,
+  resetPasswordService,
+  changePasswordService,
+} from "../service/AuthService.js";
 import { isProduction } from "../constants/auth.constants.js";
 import { getUserDataService } from "../service/AuthService.js";
 
@@ -33,8 +43,8 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(201).json({ success: true, message: "User successfully registered" });
-  } catch (err: any) {
+    res.status(201).json({ success: true, message: "User successfully registered. Verification OTP sent to email." });
+  } catch (err:any) {
     if (err.message === "USER_EXISTS") {
       res.status(409).json({ success: false, message: "User already exists." });
       return;
@@ -193,6 +203,146 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
       return;
     }
     console.error("Refresh Error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// sends a verification OTP to the logged-in user's email.
+// useful for existing unverified accounts to manually trigger verification.
+export const sendVerificationOtp = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+    await sendVerificationOtpService(req.user.id);
+    res.status(200).json({ success: true, message: "Verification OTP sent to your email." });
+
+  } catch (err: any) {
+    if (err.message === "USER_NOT_FOUND") {
+      res.status(404).json({ success: false, message: "User not found." });
+      return;
+    }
+    if (err.message === "ALREADY_VERIFIED") {
+      res.status(400).json({ success: false, message: "Email is already verified." });
+      return;
+    }
+    console.error("Send Verification OTP Error:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// verifies the user's email using the OTP from the request body.
+export const verifyEmail = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+
+    const { otp } = req.body;
+    if (!otp) {
+      res.status(400).json({ success: false, message: "OTP is required." });
+      return;
+    }
+
+    await verifyEmailOtpService(req.user.id, otp);
+    console.log("Email verified successfully.");
+    
+    res.status(200).json({ success: true, message: "Email verified successfully." });
+
+  } catch (err: any) {
+    const otpErrors: Record<string, string> = {
+      "NO_OTP_FOUND": "No verification OTP found. Please request a new one.",
+      "OTP_EXPIRED": "OTP has expired. Please request a new one.",
+      "INVALID_OTP": "Invalid OTP. Please try again.",
+    };
+    if (otpErrors[err.message]) {
+      res.status(400).json({ success: false, message: otpErrors[err.message] });
+      return;
+    }
+    console.error("Verify Email Error:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// sends a password reset OTP to the given email.
+// always returns 200 to prevent email enumeration for hackers
+export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      res.status(400).json({ success: false, message: "Email is required." });
+      return;
+    }
+    await sendResetOtpService(email);
+    // always return 200 regardless of whether user exists 
+    res.status(200).json({
+      success: true,
+      message: "If an account with that email exists, a reset OTP has been sent.",
+    });
+
+  } catch (err: any) {
+    console.error("Forgot Password Error:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// resets the password using the email, OTP, and new password.
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      res.status(400).json({ success: false, message: "Email, OTP, and new password are required." });
+      return;
+    }
+    await resetPasswordService(email, otp, newPassword);
+    res.status(200).json({ success: true, message: "Password reset successfully." });
+
+  } catch (err: any) {
+    const errorMap: Record<string, { status: number; message: string }> = {
+      "INVALID_CREDENTIALS": { status: 401, message: "Invalid email." },
+      "NO_OTP_FOUND": { status: 400, message: "No reset OTP found. Please request a new one." },
+      "OTP_EXPIRED": { status: 400, message: "OTP has expired. Please request a new one." },
+      "INVALID_OTP": { status: 400, message: "Invalid OTP. Please try again." },
+    };
+    const mapped = errorMap[err.message];
+    if (mapped) {
+      res.status(mapped.status).json({ success: false, message: mapped.message });
+      return;
+    }
+    console.error("Reset Password Error:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// changes the password for the authenticated user
+export const changePassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({ success: false, message: "Current password and new password are required." });
+      return;
+    }
+
+    await changePasswordService(req.user.id, currentPassword, newPassword);
+    res.status(200).json({ success: true, message: "Password changed successfully." });
+
+  } catch (err: any) {
+    if (err.message === "USER_NOT_FOUND") {
+      res.status(404).json({ success: false, message: "User not found." });
+      return;
+    }
+    if (err.message === "INVALID_CURRENT_PASSWORD") {
+      res.status(401).json({ success: false, message: "Current password is incorrect." });
+      return;
+    }
+    console.error("Change Password Error:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
