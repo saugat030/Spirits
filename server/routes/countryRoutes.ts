@@ -3,7 +3,6 @@ import { getAllCountries, getCountryPhoneCode } from "../controllers/countryCont
 
 const router = Router();
 
-// /api/countries
 router.get("/", getAllCountries);
 router.get("/:name", getCountryPhoneCode);
 

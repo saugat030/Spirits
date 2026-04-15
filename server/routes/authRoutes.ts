@@ -4,7 +4,6 @@ import {
   login,
   logout,
   isAuth,
-  userData,
   refresh,
   sendVerificationOtp,
   verifyEmail,
@@ -12,7 +11,6 @@ import {
   resetPassword,
   changePassword,
 } from "../controllers/authController.js";
-import { updateProfile } from "../controllers/userController.js";
 import {
   authLimiter,
   apiLimiter,
@@ -21,7 +19,6 @@ import {
 import { requireAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
-
 // auth routes with rate limiting
 router.post("/signup", authLimiter, signup);
 router.post("/login", authLimiter, login);
@@ -29,8 +26,6 @@ router.post("/logout", logout);
 router.post("/refresh", refreshLimiter, refresh);
 // true or false return garxa if auth
 router.get("/isAuth", apiLimiter, requireAuth, isAuth);
-router.get("/user/data", apiLimiter, requireAuth, userData);
-router.post("/update-profile", apiLimiter, requireAuth, updateProfile);
 
 // for user who want to verify accounts later 
 router.post("/send-verification-otp", apiLimiter, requireAuth, sendVerificationOtp);

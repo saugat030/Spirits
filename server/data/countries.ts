@@ -1,7 +1,3 @@
-/**
- * Static country-to-phone-code mapping.
- * Derived at runtime — no DB table needed.
- */
 export const countryPhoneCodes: Record<string, string> = {
   "Afghanistan": "+93",
   "Albania": "+355",
@@ -74,17 +70,12 @@ export const countryPhoneCodes: Record<string, string> = {
   "Vietnam": "+84",
 };
 
-/**
- * Get the phone code for a given country name.
- * Returns null if the country is not found.
- */
+
 export const getPhoneCode = (country: string): string | null => {
   return countryPhoneCodes[country] ?? null;
 };
 
-/**
- * Returns the full list of countries with their phone codes.
- */
+// Returns the full list of countries with their phone codes
 export const getCountryList = (): { name: string; phoneCode: string }[] => {
   return Object.entries(countryPhoneCodes).map(([name, phoneCode]) => ({
     name,
