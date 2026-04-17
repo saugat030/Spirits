@@ -1,39 +1,33 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { create } from "zustand";
 import { toast } from "react-toastify";
+import { UserProfile } from "../types/api.types";
 
 axios.defaults.withCredentials = true;
 
-export type UserData = {
-  name: string;
-  role: string;
-  isAccountVerified: boolean;
-  email: string;
-};
-
-type AuthState = {
+type AuthStoreState = {
   isLoggedin: boolean;
-  userData: UserData | null;
+  userData: UserProfile | null;
   setIsLoggedin: (value: boolean) => void;
-  setUserData: (data: UserData | null) => void;
-  getUserData: () => Promise<void>;
+  setProfileData: (data: UserProfile | null) => void;
+  getProfileData: () => Promise<void>;
   getAuthState: () => Promise<void>;
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthStoreState>((set) => ({
   isLoggedin: false,
   userData: null,
   setIsLoggedin: (value: boolean) => set({ isLoggedin: value }),
-  setUserData: (data: UserData | null) => set({ userData: data }),
+  setProfileData: (data: UserProfile | null) => set({ userData: data }),
+
   getAuthState: async () => {
     try {
       const { data } = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}/auth/isAuth`
       );
-      console.log(data);
       if (data.success) {
         set({ isLoggedin: true });
-        useAuthStore.getState().getUserData();
+        useAuthStore.getState().getProfileData();
       } else {
         console.log(
           "Error happened while trying to check the auth state. ",
@@ -41,19 +35,23 @@ export const useAuthStore = create<AuthState>((set) => ({
         );
         toast.error("Error while checking the auth state: " + data.message);
       }
-    } catch (err: any) {
-      console.log(err.message);
+    } catch (err) {
+      const errorMessage = (err as AxiosError<{ message?: string }>).response?.data.message;
+      console.log(err);
+      toast.error(errorMessage || "Unknown error while checking auth state");
     }
   },
-  getUserData: async () => {
+
+  getProfileData: async () => {
     try {
       const { data } = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/user/data`
+        `${import.meta.env.VITE_API_BASE_URL}/user/profile`
       );
       data.success ? set({ userData: data.userData }) : toast.error(data.message);
-    } catch (err: any) {
-      console.error(err.message);
-      toast.error(err.message);
+    } catch (err) {
+      const errorMessage = (err as AxiosError<{ message?: string }>).response?.data.message;
+      console.log(errorMessage);
+      toast.error(errorMessage || "Unknown error while fetching profile data");
     }
   },
 }));

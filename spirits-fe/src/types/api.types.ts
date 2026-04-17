@@ -1,3 +1,28 @@
+export type AuthResponse = {
+  success: boolean;
+  message: string;
+}
+export type UserRole = 'user' | 'admin';
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  phone_number: string | null;
+  country: string | null;
+  address: string | null;
+  is_verified: boolean;
+  is_active: boolean;
+}
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+export interface SignupPayload extends LoginPayload {
+  username: string;
+}
+
 export type ApiResponse<T> = {
   success: boolean;
   message: string;
@@ -10,6 +35,11 @@ export type ApiResponse<T> = {
   hasPrev?: boolean;
   filters?: Filters
 };
+export interface Category {
+  id: string;
+  category_name: string;
+  category_image_url: string;
+}
 
 export type Filters = {
   type: string | null;
