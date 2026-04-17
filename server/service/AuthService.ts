@@ -160,7 +160,10 @@ export const verifyEmailOtpService = async (userId: string, otp: string) => {
 // sends a password reset OTP to the given email address.
 export const sendResetOtpService = async (email: string) => {
   const user = await getUserByEmail(email);
-  if (!user) return; // silent fail to prevent email enumeration
+  if (!user) {
+    console.log("User not found returning.");
+    return;
+  }  // silent fail to prevent email enumeration
 
   const otp = generateOtp();
   const expiry = otpExpiresAt(10);

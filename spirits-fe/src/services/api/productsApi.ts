@@ -4,14 +4,14 @@ import API from "../axiosInstance";
 import { AxiosError } from "axios";
 
 export const useGetProducts = ({
-  type,
+  category,
   name,
   minPrice,
   maxPrice,
   page = 1,
   limit = 12,
 }: {
-  type?: string | string[] | null;
+  category?: string | string[] | null;
   name?: string | null;
   minPrice?: number | null;
   maxPrice?: number | null;
@@ -19,15 +19,15 @@ export const useGetProducts = ({
   limit?: number | null;
 }) => {
   return useQuery<ApiResponse<Product[]>, AxiosError<{ message?: string }>>({
-    queryKey: ["products", { name, type, minPrice, maxPrice, page, limit }],
+    queryKey: ["products", { name, category, minPrice, maxPrice, page, limit }],
     queryFn: async (): Promise<ApiResponse<Product[]>> => {
       const params = new URLSearchParams();
-      //handle type parameter (single or multiple)
-      if (type) {
-        if (Array.isArray(type)) {
-          type.forEach((t) => params.append("type", t));
+      //handle category parameter (single or multiple)
+      if (category) {
+        if (Array.isArray(category)) {
+          category.forEach((c) => params.append("category", c));
         } else {
-          params.append("type", type);
+          params.append("category", category);
         }
       }
       if (name) params.append("name", name);

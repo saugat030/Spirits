@@ -277,6 +277,7 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
     }
     await sendResetOtpService(email);
     // always return 200 regardless of whether user exists 
+    console.log("Password reset OTP sent successfully.");
     res.status(200).json({
       success: true,
       message: "If an account with that email exists, a reset OTP has been sent.",
