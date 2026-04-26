@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../axiosInstance";
-import { ApiResponse, AuthResponse, LoginPayload, SignupPayload, UserProfile } from "../../types/api.types";
+import { AuthResponse, LoginPayload, SignupPayload } from "../../types/api.types";
 import { AxiosError } from "axios";
 
 
@@ -35,19 +35,6 @@ export const useVerifyEmail = () => {
       const response = await axiosInstance.post(`/auth/verify-email`, {
         otp: data.otp,
       });
-      return response.data;
-    },
-  });
-};
-
-export const useUpdateProfile = () => {
-  return useMutation<
-    ApiResponse<UserProfile>,
-    AxiosError<{ message?: string }>,
-    { name: string; phone_number: string; country: string; address: string }
-  >({
-    mutationFn: async (data): Promise<ApiResponse<UserProfile>> => {
-      const response = await axiosInstance.patch(`/user/profile`, data);
       return response.data;
     },
   });
