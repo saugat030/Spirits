@@ -23,7 +23,7 @@ const NavBar = (props: NavType) => {
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   const userData = useAuthStore((state) => state.userData);
-  const setUserData = useAuthStore((state) => state.setUserData);
+  const setProfileData = useAuthStore((state) => state.setProfileData);
   const setIsLoggedin = useAuthStore((state) => state.setIsLoggedin);
   const cartQuantity = cartItems.reduce((quantity, item) => item.quantity + quantity, 0);
 
@@ -69,7 +69,7 @@ const NavBar = (props: NavType) => {
       const response = await API.post<ApiResponse<undefined>>(`/auth/logout`);
       if (response.data.success) {
         setIsLoggedin(false);
-        setUserData(null);
+        setProfileData(null);
         navigate("/");
         toast.success("Logged out successfully");
       }
@@ -201,6 +201,12 @@ const NavBar = (props: NavType) => {
                     <div className="px-4 py-2 border-b text-sm text-gray-600 font-medium">
                       {userData.name}
                     </div>
+                    <button
+                      onClick={() => handleProfileNavigation("/profile")}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
+                    >
+                      My Profile
+                    </button>
                     <button
                       onClick={() => handleProfileNavigation("/orders")}
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
@@ -382,6 +388,15 @@ const NavBar = (props: NavType) => {
                   </div>
                 </div>
                 <div className="space-y-2">
+                  <button
+                    className="w-full text-left text-lg font-semibold text-blue-600 hover:text-blue-700"
+                    onClick={() => {
+                      navigate("/profile");
+                      closeMobileMenu();
+                    }}
+                  >
+                    My Profile
+                  </button>
                   <button
                     className="w-full text-left text-lg font-semibold text-blue-600 hover:text-blue-700"
                     onClick={() => {

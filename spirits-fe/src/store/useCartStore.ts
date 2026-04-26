@@ -14,6 +14,7 @@ type CartState = {
   increaseCartQuantity: (product: Product, variantId: string) => void;
   decreaseCartQuantity: (variantId: string) => void;
   removeFromCart: (variantId: string) => void;
+  clearCart: () => void;
 };
 
 export const useCartStore = create<CartState>()(
@@ -81,6 +82,9 @@ export const useCartStore = create<CartState>()(
             (item) => item.selectedVariantId !== variantId
           ),
         }));
+      },
+      clearCart: () => {
+        set({ cartItems: [] });
       },
     }),
     {

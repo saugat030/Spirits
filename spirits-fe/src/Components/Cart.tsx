@@ -84,9 +84,11 @@ const Cart = () => {
                     Continue Shopping
                   </button>
                 </Link>
-                <button className="px-8 py-2 bg-gradient-to-r from-amber-600 to-red-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                  Proceed to Checkout
-                </button>
+                <Link to={"/checkout"}>
+                  <button className="px-8 py-2 bg-gradient-to-r from-amber-600 to-red-600 text-white rounded-lg hover:from-amber-700 hover:to-red-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    Proceed to Checkout
+                  </button>
+                </Link>
               </div>
             </div>
           </div>

@@ -18,7 +18,7 @@ const BestSelling = () => {
   const [activeCategory, setActiveCategory] = useState<string>("Whiskey");
 
   const { data, error, isLoading, isError } = useGetProducts({
-    type: activeCategory,
+    category: activeCategory,
   });
 
   const productsToShow = data?.data.slice(0, 5) ?? [];
