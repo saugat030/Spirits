@@ -85,3 +85,44 @@ export interface Product {
   variants: ProductVariant[];
   minDiscountedPrice: number;
 }
+
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+export type PaymentMethod = 'cod' | 'stripe' | 'esewa' | 'paypal';
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
+
+export interface OrderItem {
+  id: string;
+  orderId: string;
+  variantId: string;
+  quantity: number;
+  originalPrice: number;
+  priceAtPurchase: number;
+  discountAmount: number;
+  appliedPromotionId?: string;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  totalAmount: number;
+  status: OrderStatus;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
+  shippingAddress: string;
+  createdAt: string;
+  updatedAt: string;
+  items?: OrderItem[];
+}
+
+export interface CreateOrderRequest {
+  items: { variantId: string; quantity: number }[];
+  shippingAddress: string;
+  paymentMethod: PaymentMethod;
+}
+
+export interface UpdateProfileRequest {
+  name?: string;
+  phone_number?: string;
+  country?: string;
+  address?: string;
+}
