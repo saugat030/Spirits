@@ -32,7 +32,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (!userData) return;
 
     // If verification is required and user is not verified
-    if (requireVerified && !userData.isAccountVerified) {
+    if (requireVerified && !userData.is_verified) {
       toast.error("You must be verified to perform that action");
       navigate("/verify-account", { replace: true });
       return;
