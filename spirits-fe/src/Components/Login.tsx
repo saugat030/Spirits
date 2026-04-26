@@ -9,7 +9,7 @@ const Login = () => {
   const navigate = useNavigate();
   const userData = useAuthStore((state) => state.userData);
   const setIsLoggedin = useAuthStore((state) => state.setIsLoggedin);
-  const getUserData = useAuthStore((state) => state.getUserData);
+  const getProfileData = useAuthStore((state) => state.getProfileData);
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -26,7 +26,7 @@ const Login = () => {
           console.log("Login successful:", data.message);
           setIsLoggedin(true);
           toast.success("Logged in Successfuly.");
-          await getUserData();
+          await getProfileData();
           // Navigation will be handled by useEffect when userData updates
         },
         onError: (error) => {
@@ -45,7 +45,7 @@ const Login = () => {
         onSuccess: async (data) => {
           console.log("Signup successful:", data.message);
           setIsLoggedin(true);
-          await getUserData();
+          await getProfileData();
           toast.success("Sign in successful");
           // Navigation will be handled by useEffect when userData updates
         },
