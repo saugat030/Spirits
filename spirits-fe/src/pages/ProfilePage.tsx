@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe, FaSave, FaCheck } from "react-icons/fa";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
 import { useAuthStore } from "../store/useAuthStore";
 import { useUpdateProfile } from "../services/api/userApi";
 import { toast } from "react-toastify";
@@ -81,19 +79,16 @@ const ProfilePage = () => {
 
   if (!userData) {
     return (
-      <div className="overflow-hidden font-Poppins">
-        <NavBar page="notHome" />
+      <div className="font-Poppins">
         <div className="flex justify-center items-center h-[calc(100vh-80px)]">
           <ClipLoader color="#0D1B39" size={50} />
         </div>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden font-Poppins">
-      <NavBar page="notHome" />
+    <div className="font-Poppins">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
@@ -270,7 +265,6 @@ const ProfilePage = () => {
           </form>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

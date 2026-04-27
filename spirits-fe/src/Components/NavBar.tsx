@@ -1,5 +1,5 @@
 import { HiShoppingCart } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { IoMenuSharp, IoClose } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -7,15 +7,15 @@ import { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import axios from "axios";
 import { useCartStore } from "../store/useCartStore";
-import { NavType } from "../types/home.types";
 import API from "../services/axiosInstance";
 import { toast } from "react-toastify";
 import { ApiResponse } from "../types/api.types";
 import { DROPDOWN_CONSTANTS } from "../constants/homepage.constants";
 import { HashLink } from "react-router-hash-link";
 
-const NavBar = (props: NavType) => {
+const NavBar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const cartItems = useCartStore((state) => state.cartItems);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [profileDropDown, setProfileDropDown] = useState(false);
@@ -26,6 +26,9 @@ const NavBar = (props: NavType) => {
   const setProfileData = useAuthStore((state) => state.setProfileData);
   const setIsLoggedin = useAuthStore((state) => state.setIsLoggedin);
   const cartQuantity = cartItems.reduce((quantity, item) => item.quantity + quantity, 0);
+
+  // Determine if we are on the home page based on URL
+  const isHomePage = location.pathname === "/";
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -106,12 +109,29 @@ const NavBar = (props: NavType) => {
     closeProfileDropdown();
   };
 
-  const handleLogout = () => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    const handleLogout = () => {
     logout();
     closeProfileDropdown();
   };
-
-  const isHomePage = props.page === "home";
 
   return (
     <>

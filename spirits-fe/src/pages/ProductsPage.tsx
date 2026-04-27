@@ -1,7 +1,5 @@
-import NavBar from "../components/NavBar";
 import ShopByCategs from "../components/ShopByCategs";
 import MostPopular from "../components/MostPopular";
-import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGetProducts } from "../services/api/productsApi";
@@ -66,9 +64,8 @@ const ProductsPage = () => {
     setCurrentPage(1);
   }, [alcName, searchTerm, types.join(","), minPrice, maxPrice]);
 
-  return (
-    <div className="font-Poppins overflow-hidden">
-      <NavBar page="products" />
+    return (
+    <div>
       <ShopByCategs category={category} setCateg={handleCategoryChange} />
       <MostPopular
         title={alcName ? `Showing results for " ${alcName} "` : "Most Popular"}
@@ -78,7 +75,6 @@ const ProductsPage = () => {
         currentPage={currentPage}
         onPageChange={handlePageChange}
       />
-      <Footer />
     </div>
   );
 };

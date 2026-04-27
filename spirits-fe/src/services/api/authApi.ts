@@ -16,6 +16,7 @@ export const useLogin = () => {
   });
 };
 
+// sends verification email to the user and creates a new user in the database with isVerified set to false. The user will be able to login but will have limited access until they verify their email
 export const useSignup = () => {
   return useMutation<AuthResponse, AxiosError<{ message?: string }>, SignupPayload>({
     mutationFn: async (data: SignupPayload): Promise<AuthResponse> => {
@@ -29,12 +30,23 @@ export const useSignup = () => {
   });
 };
 
+// route to verify the email.
 export const useVerifyEmail = () => {
   return useMutation<AuthResponse, AxiosError<{ message?: string }>, { otp: string }>({
     mutationFn: async (data: { otp: string }): Promise<AuthResponse> => {
       const response = await axiosInstance.post(`/auth/verify-email`, {
         otp: data.otp,
       });
+      return response.data;
+    },
+  });
+};
+
+// route to request a new verification OTP manually
+export const useSendVerificationOtp = () => {
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, void>({
+    mutationFn: async (): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/send-verification-otp`);
       return response.data;
     },
   });

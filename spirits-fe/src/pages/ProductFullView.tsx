@@ -57,10 +57,9 @@ const ProductFullView = () => {
     }
   };
 
-  if (isLoading) {
+    if (isLoading) {
     return (
       <div className="font-Poppins min-h-screen bg-gray-50">
-        <NavBar page="ProductsFullView" />
         <div className="flex justify-center items-center h-[calc(100vh-80px)]">
           <ClipLoader color="#0D1B39" size={50} />
         </div>
@@ -71,7 +70,6 @@ const ProductFullView = () => {
   if (error) {
     return (
       <div className="font-Poppins min-h-screen bg-gray-50">
-        <NavBar page="ProductsFullView" />
         <div className="flex justify-center items-center h-[calc(100vh-80px)]">
           <div className="text-xl font-medium text-red-500 bg-red-50 px-6 py-4 rounded-xl border border-red-100">
             {error.message}
@@ -81,10 +79,9 @@ const ProductFullView = () => {
     );
   }
 
-  if (!product) {
+    if (!product) {
     return (
       <div className="font-Poppins min-h-screen bg-gray-50">
-        <NavBar page="ProductsFullView" />
         <div className="flex justify-center items-center h-[calc(100vh-80px)]">
           <div className="text-xl font-medium text-gray-500">
             Product not found
@@ -104,7 +101,6 @@ const ProductFullView = () => {
 
   return (
     <div className="font-Poppins min-h-screen bg-white">
-      <NavBar page="ProductsFullView" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <nav className="flex items-center gap-2 text-sm font-medium text-gray-500 mb-8">

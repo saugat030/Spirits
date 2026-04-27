@@ -65,37 +65,27 @@ const OrdersPage = () => {
 
   if (isLoading) {
     return (
-      <div className="overflow-hidden font-Poppins">
-        <NavBar page="notHome" />
-        <div className="flex justify-center items-center h-[calc(100vh-80px)]">
-          <ClipLoader color="#0D1B39" size={50} />
-        </div>
-        <Footer />
+      <div className="flex justify-center items-center h-[calc(100vh-80px)]">
+        <ClipLoader color="#0D1B39" size={50} />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="overflow-hidden font-Poppins">
-        <NavBar page="notHome" />
-        <div className="container mx-auto px-4 py-8">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <XCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-            <h2 className="text-xl font-bold text-red-800 mb-2">
-              Unable to Load Orders
-            </h2>
-            <p className="text-red-600">{error.message}</p>
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <XCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+          <h2 className="text-xl font-bold text-red-800 mb-2">
+            Unable to Load Orders
+          </h2>
+          <p className="text-red-600">{error.message}</p>
         </div>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden font-Poppins">
-      <NavBar page="notHome" />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Orders</h1>
@@ -257,8 +247,6 @@ const OrdersPage = () => {
           </>
         )}
       </div>
-      <Footer />
-    </div>
   );
 };
 

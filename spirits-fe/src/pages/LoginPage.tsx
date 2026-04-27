@@ -58,13 +58,9 @@ const Login = () => {
     );
   };
 
-  useEffect(() => {
+    useEffect(() => {
     if (!userData) return;
-    if (userData.role === "admin") {
-      navigate("/admin");
-    } else {
-      navigate("/");
-    }
+    navigate("/");
   }, [userData, navigate]);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -287,11 +283,6 @@ const Login = () => {
             </button>
           </div>
         </form>
-
-        {/* Footer */}
-        {/* <div className="mt-8 pt-6 border-t border-white/10">
-          <Footer />
-        </div> */}
       </div>
     </div>
   );
