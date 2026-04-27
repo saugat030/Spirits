@@ -75,3 +75,12 @@ export const useResetPassword = () => {
     },
   });
 };
+
+export const useChangePassword = () => {
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, { currentPassword: string; newPassword: string }>({
+    mutationFn: async (data): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/change-password`, data);
+      return response.data;
+    },
+  });
+};

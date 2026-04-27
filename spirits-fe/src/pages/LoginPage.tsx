@@ -34,7 +34,7 @@ const Login = () => {
           toast.error("Login Failed");
           setValidationError(error.message);
         },
-      }
+      },
     );
   };
 
@@ -54,13 +54,18 @@ const Login = () => {
           toast.error("Signup Failed");
           setValidationError(error.message);
         },
-      }
+      },
     );
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (!userData) return;
-    navigate("/");
+
+    if (userData.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/");
+    }
   }, [userData, navigate]);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -72,7 +77,7 @@ const Login = () => {
     if (state === "Login") {
       if (!email || !password) {
         setValidationError(
-          "Please fill all the credentials before submitting."
+          "Please fill all the credentials before submitting.",
         );
         return;
       }
@@ -80,7 +85,7 @@ const Login = () => {
     } else {
       if (!email || !password || !username) {
         setValidationError(
-          "Please fill all the credentials before submitting."
+          "Please fill all the credentials before submitting.",
         );
         return;
       }
@@ -268,19 +273,30 @@ const Login = () => {
           </button>
 
           {/* Switch State */}
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={handleState}
-              className="text-gray-300 hover:text-white text-sm transition-colors duration-200"
-            >
-              {state === "Login"
-                ? "Don't have an account? "
-                : "Already have an account? "}
-              <span className="text-yellow-400 hover:text-yellow-300 font-medium">
-                {state === "Login" ? "Sign Up here" : "Login here"}
-              </span>
-            </button>
+          <div className="text-center space-y-3">
+            <div>
+              <button
+                type="button"
+                onClick={() => navigate("/forgot-password")}
+                className="text-yellow-400 hover:text-yellow-300 text-sm transition-colors duration-200"
+              >
+                Forgot Password?
+              </button>
+            </div>
+            <div>
+              <button
+                type="button"
+                onClick={handleState}
+                className="text-gray-300 hover:text-white text-sm transition-colors duration-200"
+              >
+                {state === "Login"
+                  ? "Don't have an account? "
+                  : "Already have an account? "}
+                <span className="text-yellow-400 hover:text-yellow-300 font-medium">
+                  {state === "Login" ? "Sign Up here" : "Login here"}
+                </span>
+              </button>
+            </div>
           </div>
         </form>
       </div>

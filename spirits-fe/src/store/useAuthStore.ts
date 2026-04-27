@@ -12,6 +12,7 @@ type AuthStoreState = {
   setProfileData: (data: UserProfile | null) => void;
   getProfileData: () => Promise<void>;
   getAuthState: () => Promise<void>;
+  logout: () => void;
 };
 
 export const useAuthStore = create<AuthStoreState>((set) => ({
@@ -19,6 +20,7 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
   userData: null,
   setIsLoggedin: (value: boolean) => set({ isLoggedin: value }),
   setProfileData: (data: UserProfile | null) => set({ userData: data }),
+  logout: () => set({ isLoggedin: false, userData: null }),
 
   getAuthState: async () => {
     try {

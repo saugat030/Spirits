@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe, FaSave, FaCheck } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe, FaSave, FaCheck, FaLock } from "react-icons/fa";
 import { useAuthStore } from "../store/useAuthStore";
 import { useUpdateProfile } from "../services/api/userApi";
+import { useChangePassword } from "../services/api/authApi";
 import { toast } from "react-toastify";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const userData = useAuthStore((state) => state.userData);
   const setProfileData = useAuthStore((state) => state.setProfileData);
   const getProfileData = useAuthStore((state) => state.getProfileData);
@@ -16,8 +19,14 @@ const ProfilePage = () => {
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const { mutate: updateProfile } = useUpdateProfile();
+  const { mutate: changePassword } = useChangePassword();
 
   useEffect(() => {
     if (userData) {
@@ -77,6 +86,37 @@ const ProfilePage = () => {
     });
   };
 
+  const handlePasswordChange = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      toast.error("Please fill in all password fields");
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    setIsChangingPassword(true);
+
+    changePassword({ currentPassword, newPassword }, {
+      onSuccess: () => {
+        toast.success("Password changed successfully!");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmNewPassword("");
+        setIsChangingPassword(false);
+      },
+      onError: (error) => {
+        const message = error.message || "Failed to change password";
+        toast.error(message);
+        setIsChangingPassword(false);
+      }
+    });
+  };
+
   if (!userData) {
     return (
       <div className="font-Poppins">
@@ -89,6 +129,17 @@ const ProfilePage = () => {
 
   return (
     <div className="font-Poppins">
+      {!userData.is_verified && (
+        <div className="bg-red-500 text-white px-4 py-3 flex items-center justify-between">
+          <span>Your account is not fully verified. Some features may be restricted.</span>
+          <button 
+            onClick={() => navigate('/verify-account')}
+            className="bg-white text-red-500 px-4 py-1 rounded-md font-semibold text-sm hover:bg-gray-100 transition"
+          >
+            Verify Now
+          </button>
+        </div>
+      )}
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
@@ -258,6 +309,88 @@ const ProfilePage = () => {
                   <>
                     <FaSave className="w-4 h-4" />
                     Save Changes
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div className="mt-8 bg-white rounded-xl shadow-sm border overflow-hidden">
+          <div className="bg-gray-50 px-6 py-4 border-b">
+            <h3 className="text-xl font-semibold flex items-center gap-2 text-gray-800">
+              <FaLock className="text-gray-500" />
+              Change Password
+            </h3>
+          </div>
+          
+          <form onSubmit={handlePasswordChange} className="p-6 space-y-6">
+            <div>
+              <label
+                htmlFor="currentPassword"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Current Password
+              </label>
+              <input
+                type="password"
+                id="currentPassword"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                placeholder="Enter current password"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="newPassword"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                New Password
+              </label>
+              <input
+                type="password"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                placeholder="Enter new password"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="confirmNewPassword"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                id="confirmNewPassword"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                placeholder="Confirm new password"
+              />
+            </div>
+
+            <div className="flex items-center justify-end pt-4 border-t">
+              <button
+                type="submit"
+                disabled={isChangingPassword || !currentPassword || !newPassword || !confirmNewPassword}
+                className="flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-gray-900 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors shadow-md"
+              >
+                {isChangingPassword ? (
+                  <>
+                    <ClipLoader color="#ffffff" size={16} />
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <FaLock className="w-4 h-4" />
+                    Update Password
                   </>
                 )}
               </button>

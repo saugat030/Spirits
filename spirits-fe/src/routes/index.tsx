@@ -8,6 +8,11 @@ import ProtectedRoute from "../components/protected/protectedRoute";
 import OrdersPage from "../pages/OrdersPage";
 import CheckoutPage from "../pages/CheckoutPage";
 import ProfilePage from "../pages/ProfilePage";
+import VerifyAccountPage from "../pages/VerifyAccountPage";
+import ForgotPasswordPage from "../pages/ForgotPasswordPage";
+import ResetPasswordPage from "../pages/ResetPasswordPage";
+import UnauthorizedPage from "../pages/UnauthorizedPage";
+import AdminDashboardPage from "../pages/AdminDashboardPage";
 import { MainLayout } from "../layouts/MainLayout";
 
 export const router = createBrowserRouter([
@@ -31,11 +36,11 @@ export const router = createBrowserRouter([
         path: "/cart",
         element: <CartPage />,
       },
-      {
+            {
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requireVerified={true} blockRole="admin">
             {/* since protected route component expects children, we feed it the outlet so it gets the children from the route */}
-            <Outlet /> 
+            <Outlet />
           </ProtectedRoute>
         ),
         children: [
@@ -53,6 +58,22 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: "/verify-account",
+        element: <VerifyAccountPage />,
+      },
+      {
+        path: "/forgot-password",
+        element: <ForgotPasswordPage />,
+      },
+      {
+        path: "/reset-password",
+        element: <ResetPasswordPage />,
+      },
+            {
+        path: "/unauthorized",
+        element: <UnauthorizedPage />,
+      },
     ],
   },
   {
@@ -60,11 +81,11 @@ export const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
-    path: "/unauthorized",
-    element: <div>Unauthorized Access</div>,
-  },
-  {
-    path: "/verify-account",
-    element: <div>Please verify your account</div>,
+    path: "/admin",
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminDashboardPage />
+      </ProtectedRoute>
+    ),
   },
 ]);
