@@ -25,7 +25,10 @@ const NavBar = () => {
   const userData = useAuthStore((state) => state.userData);
   const setProfileData = useAuthStore((state) => state.setProfileData);
   const setIsLoggedin = useAuthStore((state) => state.setIsLoggedin);
-  const cartQuantity = cartItems.reduce((quantity, item) => item.quantity + quantity, 0);
+  const cartQuantity = cartItems.reduce(
+    (quantity, item) => item.quantity + quantity,
+    0,
+  );
 
   // Determine if we are on the home page based on URL
   const isHomePage = location.pathname === "/";
@@ -78,7 +81,7 @@ const NavBar = () => {
       }
     } catch (err: any) {
       toast.error(
-        err?.response?.data?.message || err.message || "Logout failed"
+        err?.response?.data?.message || err.message || "Logout failed",
       );
     }
   };
@@ -109,26 +112,7 @@ const NavBar = () => {
     closeProfileDropdown();
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const handleLogout = () => {
+  const handleLogout = () => {
     logout();
     closeProfileDropdown();
   };
@@ -136,8 +120,9 @@ const NavBar = () => {
   return (
     <>
       <nav
-        className={`${isHomePage ? "absolute text-white" : "static text-black"
-          } flex justify-between md:px-12 px-6 items-center z-30 w-full bg-transparent`}
+        className={`${
+          isHomePage ? "absolute text-white" : "static text-black"
+        } flex justify-between md:px-12 px-6 items-center z-30 w-full bg-transparent`}
       >
         {/* Logo */}
         <div className="font-bold md:text-3xl text-2xl flex items-center h-24">
@@ -203,14 +188,16 @@ const NavBar = () => {
                 onClick={toggleProfileDropdown}
               >
                 <div
-                  className={`rounded-full ${isHomePage ? "bg-white text-black " : "bg-black text-white "
-                    } flex justify-center items-center font-bold text-lg hover:scale-95 duration-150 cursor-pointer h-[45px] w-[45px] p-2`}
+                  className={`rounded-full ${
+                    isHomePage ? "bg-white text-black " : "bg-black text-white "
+                  } flex justify-center items-center font-bold text-lg hover:scale-95 duration-150 cursor-pointer h-[45px] w-[45px] p-2`}
                 >
                   {userData.name.slice(0, 2)}
                 </div>
                 <FaAngleDown
-                  className={`transition-transform duration-200 ${profileDropDown ? "rotate-180" : ""
-                    }`}
+                  className={`transition-transform duration-200 ${
+                    profileDropDown ? "rotate-180" : ""
+                  }`}
                 />
               </div>
 
@@ -221,12 +208,21 @@ const NavBar = () => {
                     <div className="px-4 py-2 border-b text-sm text-gray-600 font-medium">
                       {userData.name}
                     </div>
-                    <button
-                      onClick={() => handleProfileNavigation("/profile")}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
-                    >
-                      My Profile
-                    </button>
+                    {userData.role === "admin" ? (
+                      <button
+                        onClick={() => handleProfileNavigation("/admin")}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-yellow-600 font-semibold"
+                      >
+                        Admin Dashboard
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleProfileNavigation("/profile")}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
+                      >
+                        My Profile
+                      </button>
+                    )}
                     <button
                       onClick={() => handleProfileNavigation("/orders")}
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
@@ -252,8 +248,9 @@ const NavBar = () => {
           ) : (
             <Link
               to="/login"
-              className={`text-xl font-semibold hover:underline hover:scale-105 duration-200 ${isHomePage ? "text-white" : "text-black"
-                }`}
+              className={`text-xl font-semibold hover:underline hover:scale-105 duration-200 ${
+                isHomePage ? "text-white" : "text-black"
+              }`}
             >
               Login
             </Link>
@@ -308,8 +305,9 @@ const NavBar = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`md:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
         <div className="flex flex-col h-full">
           {/* Mobile Menu Header */}
@@ -338,8 +336,9 @@ const NavBar = () => {
                 >
                   <span>Spirits</span>
                   <FaAngleDown
-                    className={`transition-transform duration-200 ${isSpiritsDropdownOpen ? "rotate-180" : ""
-                      }`}
+                    className={`transition-transform duration-200 ${
+                      isSpiritsDropdownOpen ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
                 {isSpiritsDropdownOpen && (
@@ -408,15 +407,27 @@ const NavBar = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <button
-                    className="w-full text-left text-lg font-semibold text-blue-600 hover:text-blue-700"
-                    onClick={() => {
-                      navigate("/profile");
-                      closeMobileMenu();
-                    }}
-                  >
-                    My Profile
-                  </button>
+                  {userData.role === "admin" ? (
+                    <button
+                      className="w-full text-left text-lg font-semibold text-yellow-600 hover:text-yellow-700"
+                      onClick={() => {
+                        navigate("/admin");
+                        closeMobileMenu();
+                      }}
+                    >
+                      Admin Dashboard
+                    </button>
+                  ) : (
+                    <button
+                      className="w-full text-left text-lg font-semibold text-blue-600 hover:text-blue-700"
+                      onClick={() => {
+                        navigate("/profile");
+                        closeMobileMenu();
+                      }}
+                    >
+                      My Profile
+                    </button>
+                  )}
                   <button
                     className="w-full text-left text-lg font-semibold text-blue-600 hover:text-blue-700"
                     onClick={() => {

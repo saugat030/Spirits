@@ -7,12 +7,14 @@ type ProtectedRouteProps = {
   children: ReactNode;
   requiredRole?: string;
   requireVerified?: boolean;
+  blockRole?: string;
 };
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requiredRole,
   requireVerified = false,
+  blockRole,
 }) => {
   const navigate = useNavigate();
   const [isChecking, setIsChecking] = useState(true);
@@ -45,9 +47,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       return;
     }
 
+        // If user has a blocked role
+    if (blockRole && userData.role === blockRole) {
+      navigate("/unauthorized", { replace: true });
+      return;
+    }
+
     // All checks passed
     setIsChecking(false);
-  }, [isLoggedin, userData, requiredRole, requireVerified, navigate]);
+  }, [isLoggedin, userData, requiredRole, requireVerified, blockRole, navigate]);
 
   if (isChecking) return null; // prevent children from flashing during redirect
 
