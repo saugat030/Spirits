@@ -45,23 +45,25 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json({ success: true, message: "User successfully registered. Verification OTP sent to email." });
   } catch (err:any) {
+     console.error("Signup Error:", err);
     if (err.message === "USER_EXISTS") {
       res.status(409).json({ success: false, message: "User already exists." });
       return;
     }
-    console.error("Signup Error:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
 // login
 export const login = async (req: Request, res: Response): Promise<void> => {
+  console.log("login controller reached");
   const { email, password } = req.body;
   if (!email || !password) {
     res.status(400).json({
       success: false,
       message: "Missing details with either email or password"
     });
+    console.error("Missing details on login")
     return;
   }
 
@@ -93,9 +95,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         success: false,
         message: "Invalid email or password."
       });
+      console.log("Invalid login credentials");
       return;
     }
-    console.error("Login Server Error:", err);
+    console.log("Login Server Error:", err);
     res.status(500).json({
       success: false,
       message: "Internal server error"
@@ -245,13 +248,12 @@ export const verifyEmail = async (req: Request, res: Response): Promise<void> =>
       res.status(400).json({ success: false, message: "OTP is required." });
       return;
     }
-
     await verifyEmailOtpService(req.user.id, otp);
-    console.log("Email verified successfully.");
-    
+    console.log("Email verified successfully.");  
     res.status(200).json({ success: true, message: "Email verified successfully." });
 
   } catch (err: any) {
+    console.log("Verify Email Error:", err);
     const otpErrors: Record<string, string> = {
       "NO_OTP_FOUND": "No verification OTP found. Please request a new one.",
       "OTP_EXPIRED": "OTP has expired. Please request a new one.",
@@ -261,7 +263,6 @@ export const verifyEmail = async (req: Request, res: Response): Promise<void> =>
       res.status(400).json({ success: false, message: otpErrors[err.message] });
       return;
     }
-    console.error("Verify Email Error:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

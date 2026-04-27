@@ -16,9 +16,7 @@ const Footer = () => {
         {/* Brand Section */}
         <div className="flex flex-col items-center lg:items-start gap-6 lg:w-[25%] w-full">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-              <MdLiquor className="text-2xl text-white" />
-            </div>
+            <img src="/static/Logo.png" alt="Spirits Logo" className="h-12" />
             <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
               Spirits
             </h2>

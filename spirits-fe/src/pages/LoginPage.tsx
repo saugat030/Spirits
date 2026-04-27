@@ -18,25 +18,27 @@ const Login = () => {
   const { mutate: loginMutate, isPending: loginPending } = useLogin();
   const { mutate: signupMutate, isPending: signupPending } = useSignup();
 
-  const handleLogin = () => {
-    loginMutate(
-      { email, password },
-      {
-        onSuccess: async (data) => {
-          console.log("Login successful:", data.message);
-          setIsLoggedin(true);
-          toast.success("Logged in Successfuly.");
-          await getProfileData();
-          // Navigation will be handled by useEffect when userData updates
+    const handleLogin = () => {
+      loginMutate(
+        { email, password },
+        {
+          onSuccess: async (data) => {
+            console.log("Login successful:", data.message);
+            setIsLoggedin(true);
+            toast.success("Logged in Successfuly.");
+            await getProfileData();
+            // fetch the role from store
+            const role = useAuthStore.getState().userData?.role;
+            navigate(role === "admin" ? "/admin" : "/");
+          },
+          onError: (error) => {
+            console.error("Login failed:", error.message);
+            toast.error("Login Failed");
+            setValidationError(error.message);
+          },
         },
-        onError: (error) => {
-          console.error("Login failed:", error.message);
-          toast.error("Login Failed");
-          setValidationError(error.message);
-        },
-      },
-    );
-  };
+      );
+    };
 
   const handleSignup = () => {
     signupMutate(
@@ -47,7 +49,7 @@ const Login = () => {
           setIsLoggedin(true);
           await getProfileData();
           toast.success("Sign in successful");
-          // Navigation will be handled by useEffect when userData updates
+          navigate("/verify-account");
         },
         onError: (error) => {
           console.error("Signup failed:", error.message);
@@ -58,22 +60,16 @@ const Login = () => {
     );
   };
 
-  useEffect(() => {
+    useEffect(() => {
     if (!userData) return;
-
-    if (userData.role === "admin") {
-      navigate("/admin");
-    } else {
-      navigate("/");
-    }
+    // Remove automated redirect here because it forces users out of the page unexpectedly 
+    // on a refresh if they manually typed a URL. Redirections on login/signup should be 
+    // handled explicitly in their respective onSuccess blocks.
   }, [userData, navigate]);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
-    // Clear previous validation errors
     setValidationError("");
-
     if (state === "Login") {
       if (!email || !password) {
         setValidationError(

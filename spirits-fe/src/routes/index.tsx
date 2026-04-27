@@ -4,7 +4,7 @@ import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import ProductFullView from "../pages/ProductFullView";
 import CartPage from "../pages/CartPage";
-import ProtectedRoute from "../components/protected/protectedRoute";
+import RoleGuard from "../components/protected/RoleGuard";
 import OrdersPage from "../pages/OrdersPage";
 import CheckoutPage from "../pages/CheckoutPage";
 import ProfilePage from "../pages/ProfilePage";
@@ -38,10 +38,10 @@ export const router = createBrowserRouter([
       },
             {
         element: (
-          <ProtectedRoute requireVerified={true} blockRole="admin">
+          <RoleGuard requireVerified={true} blockRole="admin">
             {/* since protected route component expects children, we feed it the outlet so it gets the children from the route */}
             <Outlet />
-          </ProtectedRoute>
+          </RoleGuard>
         ),
         children: [
           {
@@ -83,9 +83,9 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <ProtectedRoute requiredRole="admin">
+      <RoleGuard requiredRole="admin">
         <AdminDashboardPage />
-      </ProtectedRoute>
+      </RoleGuard>
     ),
   },
 ]);

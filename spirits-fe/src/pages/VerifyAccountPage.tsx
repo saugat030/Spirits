@@ -16,7 +16,11 @@ const VerifyAccountPage = () => {
   useEffect(() => {
     // if user is already verified redirect to profile
     if (userData?.is_verified) {
-      navigate("/profile");
+      if (userData.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/profile");
+      }
     }
   }, [userData, navigate]);
 
@@ -31,7 +35,9 @@ const VerifyAccountPage = () => {
       onSuccess: async () => {
         toast.success("Account verified successfully!");
         await getProfileData();
-        navigate("/profile");
+        // Use timeout to allow global state (userData) to update, triggering the useEffect
+        // Alternatively, manually route based on current logic if getProfileData takes time.
+        // For now, let the useEffect handle the redirection once getProfileData sets userData!
       },
       onError: (err) => {
         toast.error(err.message || "Failed to verify account");

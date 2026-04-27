@@ -7,6 +7,7 @@ axios.defaults.withCredentials = true;
 
 type AuthStoreState = {
   isLoggedin: boolean;
+  isAuthLoading: boolean;
   userData: UserProfile | null;
   setIsLoggedin: (value: boolean) => void;
   setProfileData: (data: UserProfile | null) => void;
@@ -17,30 +18,37 @@ type AuthStoreState = {
 
 export const useAuthStore = create<AuthStoreState>((set) => ({
   isLoggedin: false,
+  isAuthLoading: true, // Start as true so protected routes know we are checking
   userData: null,
   setIsLoggedin: (value: boolean) => set({ isLoggedin: value }),
   setProfileData: (data: UserProfile | null) => set({ userData: data }),
-  logout: () => set({ isLoggedin: false, userData: null }),
+  logout: () => set({ isLoggedin: false, userData: null, isAuthLoading: false }),
 
-  getAuthState: async () => {
+    getAuthState: async () => {
+    set({ isAuthLoading: true });
     try {
       const { data } = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}/auth/isAuth`
       );
       if (data.success) {
         set({ isLoggedin: true });
-        useAuthStore.getState().getProfileData();
+        await useAuthStore.getState().getProfileData();
       } else {
-        console.log(
-          "Error happened while trying to check the auth state. ",
-          data.message
-        );
-        toast.error("Error while checking the auth state: " + data.message);
+        // If it's not a success but no hard error is thrown, silently ignore for unauthenticated users
+        console.log("Not authenticated", data.message);
       }
     } catch (err) {
-      const errorMessage = (err as AxiosError<{ message?: string }>).response?.data.message;
-      console.log(err);
-      toast.error(errorMessage || "Unknown error while checking auth state");
+      // Check if it is simply a 401 Unauthorized (which is expected when not logged in yet)
+      const axiosError = err as AxiosError<{ message?: string }>;
+      if (axiosError.response?.status === 401) {
+        // Silently ignore - user is just not logged in.
+      } else {
+        const errorMessage = axiosError.response?.data.message;
+        console.log(err);
+        toast.error(errorMessage || "Unknown error while checking auth state");
+      }
+    } finally {
+      set({ isAuthLoading: false });
     }
   },
 
@@ -49,7 +57,7 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
       const { data } = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}/user/profile`
       );
-      data.success ? set({ userData: data.userData }) : toast.error(data.message);
+      data.success ? set({ userData: data.data }) : toast.error(data.message);
     } catch (err) {
       const errorMessage = (err as AxiosError<{ message?: string }>).response?.data.message;
       console.log(errorMessage);

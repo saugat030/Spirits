@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import { toast } from "react-toastify";
 
-type ProtectedRouteProps = {
+type RoleGuardProps = {
   children: ReactNode;
   requiredRole?: string;
   requireVerified?: boolean;
   blockRole?: string;
 };
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+const RoleGuard: React.FC<RoleGuardProps> = ({
   children,
   requiredRole,
   requireVerified = false,
@@ -21,16 +21,20 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   const isLoggedin = useAuthStore((state) => state.isLoggedin);
   const userData = useAuthStore((state) => state.userData);
+  const isAuthLoading = useAuthStore((state) => state.isAuthLoading);
 
   useEffect(() => {
-    // If not logged in
+    // Wait until the initial auth check is completely finished
+    if (isAuthLoading) return;
+
+    // If not logged in after auth check completes
     if (!isLoggedin) {
       toast.error("You must be logged in to perform that action");
       navigate("/login", { replace: true });
       return;
     }
 
-    // Wait until user data is loaded
+    // Wait until user data is specifically loaded for role/verification checks
     if (!userData) return;
 
     // If verification is required and user is not verified
@@ -47,7 +51,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       return;
     }
 
-        // If user has a blocked role
+    // If user has a blocked role
     if (blockRole && userData.role === blockRole) {
       navigate("/unauthorized", { replace: true });
       return;
@@ -55,11 +59,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
     // All checks passed
     setIsChecking(false);
-  }, [isLoggedin, userData, requiredRole, requireVerified, blockRole, navigate]);
+  }, [isLoggedin, userData, isAuthLoading, requiredRole, requireVerified, blockRole, navigate]);
 
-  if (isChecking) return null; // prevent children from flashing during redirect
+  if (isChecking || isAuthLoading) return null; // prevent children from flashing during redirect and loading
 
   return <>{children}</>;
 };
 
-export default ProtectedRoute;
+export default RoleGuard;

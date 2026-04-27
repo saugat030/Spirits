@@ -242,8 +242,12 @@ export const getProductById = async (id: string, tx: DbClient = db) => {
             })),
         };
     });
+    
+    const minDiscountedPrice = variantsWithPromotions.length > 0 
+        ? Math.min(...variantsWithPromotions.map((v) => v.discountedPrice))
+        : null;
 
-    return { ...product, variants: variantsWithPromotions };
+    return { ...product, variants: variantsWithPromotions, minDiscountedPrice };
 };
 
 export const getCategoryByName = async (name: string, tx: DbClient = db) => {

@@ -1,5 +1,4 @@
 import { Link, useParams } from "react-router-dom";
-import NavBar from "../components/NavBar";
 import { FaLongArrowAltRight, FaBookmark, FaHeart, FaShare } from "react-icons/fa";
 import { PiStarFill } from "react-icons/pi";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
@@ -305,7 +304,7 @@ const ProductFullView = () => {
               >
                 Add to Cart
               </button>
-
+              {/* purely asthetic */}
               <button className="flex-1 min-w-[200px] bg-gray-900 hover:bg-black text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                 Buy Now
               </button>
