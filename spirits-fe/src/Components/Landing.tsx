@@ -11,7 +11,7 @@ const Hero = () => {
   }
   return (
     <>
-      <div className="overflow-hidden bg-landingBg h-screen bg-no-repeat bg-center bg-cover text-white relative z-10 brightness-50"></div>
+      <div className="overflow-hidden bg-slate-900 bg-landingBg h-screen bg-no-repeat bg-center bg-cover text-white relative z-10 brightness-50"></div>
       <div className="absolute h-full w-full flex justify-center items-center top-0 z-20">
         <div className="text-white flex flex-col 2xl:gap-4 gap-4 xl:gap-2 2xl:mb-52">
           <h1 className="line-clamp-2 w-full xl:w-[60%] 2xl:w-1/2 text-center mx-auto font-bold xl:text-3xl 2xl:text-5xl text-lg 2xl:py-2 p-0">

@@ -1,3 +1,4 @@
+// HELLO FELLOW DEVELOPER!! THESE COMMENTS ARE NOT WRITTEN BY AI
 import axios from "axios";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -18,11 +19,11 @@ API.interceptors.response.use(
     return response;
   },
   async (error) => {
+    // save the blueprint of the original request from the error.config
     const originalRequest = error.config;
-    // Check if the error status is 401 Unauthorized
-    // and that we haven't already tried to retry this request (prevent infinite loops)
+    // check if the error status is 401 and not already tried to retry this request (prevent infinite loop)
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      // Don't intercept auth-related routes like login or isAuth or refresh
+      // dont intercept auth related routes like login or isAuth or refresh
       if (
         originalRequest.url.includes('/auth/login') || 
         originalRequest.url.includes('/auth/isAuth') ||
@@ -30,23 +31,22 @@ API.interceptors.response.use(
       ) {
         return Promise.reject(error);
       }
-
+      // custom property_retry to mark our request
       originalRequest._retry = true;
 
       try {
-        // Try to hit the refresh endpoint
+        // fresh axios.post use gareko instead of the existing instance s it doesnot accidently catches its own refresh req.
         const { data } = await axios.post(
           `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
           {},
           { withCredentials: true }
         );
-
         if (data.success) {
-          // If refresh successful, replay the original failed request
+          // if refresh successful, replay the original failed request
           return API(originalRequest);
         }
       } catch (refreshError) {
-        // If refresh fails, then we truly log the user out
+        // if refresh fails use true logout
         const logout = useAuthStore.getState().logout;
         logout();
         

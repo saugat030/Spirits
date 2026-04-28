@@ -128,6 +128,7 @@ export const updateUsers = async (req: UpdateUserRequest, res: Response): Promis
 type UpdateProfileRequest = Request<any, any, UpdateProfileRequestBody>;
 
 export const updateProfile = async (req: UpdateProfileRequest, res: Response): Promise<void> => {
+  console.log("User profile patch hit");
   const userId = req.user?.id;
 
   if (!userId) {
@@ -167,12 +168,14 @@ export const updateProfile = async (req: UpdateProfileRequest, res: Response): P
 
   try {
     const updatedUser = await updateUserService(userId, payload);
+    console.log("Profile Updated")
     res.status(200).json({
       success: true,
       message: "Profile updated successfully.",
       data: updatedUser
     });
   } catch (error: unknown) {
+    console.log("Error while updating profile", error);
     if (error instanceof Error && error.message === "USER_NOT_FOUND") {
       res.status(404).json({
         success: false,

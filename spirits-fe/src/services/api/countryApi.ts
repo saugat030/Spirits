@@ -4,9 +4,8 @@ import API from "../axiosInstance";
 import { AxiosError } from "axios";
 
 export interface Country {
-  id: string;
   name: string;
-  phone_code: string;
+  phoneCode: string;
 }
 
 export const useGetCountries = () => {

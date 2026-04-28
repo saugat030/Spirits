@@ -60,13 +60,6 @@ const Login = () => {
     );
   };
 
-    useEffect(() => {
-    if (!userData) return;
-    // Remove automated redirect here because it forces users out of the page unexpectedly 
-    // on a refresh if they manually typed a URL. Redirections on login/signup should be 
-    // handled explicitly in their respective onSuccess blocks.
-  }, [userData, navigate]);
-
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setValidationError("");
@@ -102,7 +95,7 @@ const Login = () => {
   const isLoading = loginPending || signupPending;
 
   return (
-    <div className="bg-loginBg h-screen bg-cover flex items-center justify-center font-Poppins p-4">
+    <div className="bg-slate-900 bg-loginBg h-screen bg-cover flex items-center justify-center font-Poppins p-4">
       <div className="absolute inset-0 bg-black/30"></div>
 
       <div className="relative z-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto">

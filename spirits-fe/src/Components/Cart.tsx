@@ -1,4 +1,4 @@
-import { Package, ShoppingCart } from "lucide-react";
+import { Package, ShoppingCart, ArrowRight } from "lucide-react";
 import { useCartStore } from "../store/useCartStore";
 import CartProductCard from "./CartProductCard";
 import { Link } from "react-router-dom";
@@ -14,105 +14,90 @@ const Cart = () => {
     return accumulator + price * item.quantity;
   }, 0);
 
-  return (
-    <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center lg:gap-16 justify-between lg:mb-4 mb-2">
-          <div className="flex items-center gap-2">
-            <ShoppingCart className="w-8 h-8 text-amber-600" />
-            <h1 className="text-2xl lg:text-4xl font-bold text-gray-900">
-              Shopping Cart
-            </h1>
-          </div>
-          <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full">
-            <Package className="w-5 h-5 text-amber-600" />
-            <span className="text-lg font-semibold text-amber-800">
-              {cartQuantity} {cartQuantity === 1 ? "Item" : "Items"}
-            </span>
-          </div>
+  if (cartItems.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
+        <div className="bg-slate-200 rounded-full w-32 h-32 mb-8 flex items-center justify-center">
+          <ShoppingCart className="w-12 h-12 text-slate-400" />
         </div>
-        <div className="h-1 bg-gradient-to-r from-amber-600 to-red-900 rounded-full"></div>
+        <h2 className="text-3xl font-semibold text-slate-900 mb-4 tracking-tight">
+          Your cart is empty
+        </h2>
+        <p className="text-slate-500 mb-8 max-w-md text-lg">
+          Looks like you haven't added any items to your cart yet. Start exploring our collection to find your favorite spirits.
+        </p>
+        <Link to="/products">
+          <button className="px-8 py-4 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all font-medium shadow-sm hover:shadow-md active:scale-[0.98] flex items-center gap-2">
+            Start Shopping
+            <ArrowRight className="w-5 h-5" />
+          </button>
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">
+          Your Cart
+        </h1>
+        <div className="flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-3xl border border-orange-100">
+          <Package className="w-4 h-4 text-orange-600" />
+          <span className="font-medium text-xs text-orange-800">
+            {cartQuantity} {cartQuantity === 1 ? "Item" : "Items"}
+          </span>
+        </div>
       </div>
 
-      {cartItems.length > 0 ? (
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-          {/* Table Header */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4">
-            <div className="grid grid-cols-12 gap-4 text-sm font-semibold text-gray-700 uppercase tracking-wide">
-              <div className="col-span-6 lg:col-span-5">Product</div>
-              <div className="col-span-2 text-center">Quantity</div>
-              <div className="col-span-2 text-center">Price</div>
-              <div className="col-span-2 text-center">Total</div>
+      <div className="flex flex-col lg:flex-row gap-10">
+        {/* Cart Items List */}
+        <div className="flex-1 space-y-4">
+          {cartItems.map((item) => (
+            <div key={item.selectedVariantId} className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+              <CartProductCard
+                quantity={item.quantity}
+                product={item.product}
+                selectedVariantId={item.selectedVariantId}
+              />
             </div>
-          </div>
+          ))}
+        </div>
 
-          {/* Table Body */}
-          <div className="divide-y divide-gray-100">
-            {cartItems.map((item, index) => {
-              return (
-                <div
-                  key={item.selectedVariantId}
-                  className={`transition-colors duration-200 hover:bg-gray-50 ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
-                  }`}
-                >
-                  <CartProductCard
-                    quantity={item.quantity}
-                    product={item.product}
-                    selectedVariantId={item.selectedVariantId}
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Cart Summary Footer */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-t-2 border-gray-200">
-            <div className="flex justify-between items-center">
-              <div className="text-lg text-gray-600 font-semibold">
-                Grand Total :{" "}
-                <span className="bg-slate-200 p-1 rounded-full text-base">
-                  {" "}
-                  NPR {grandTotal.toFixed(2)}
-                </span>
+        {/* Order Summary */}
+        <div className="w-full lg:w-[400px]">
+          <div className="bg-white rounded-3xl p-8 sticky top-28 text-slate-900 shadow-sm border border-slate-100">
+            <h2 className="text-2xl font-semibold mb-6 tracking-tight">Order Summary</h2>
+            
+            <div className="space-y-4 mb-6">
+              <div className="flex justify-between items-center text-slate-600">
+                <span className="font-medium">Subtotal</span>
+                <span className="font-semibold text-slate-900">NPR {grandTotal.toFixed(2)}</span>
               </div>
-
-              <div className="flex gap-4">
-                <Link to={"/products"}>
-                  <button className="px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200 font-medium">
-                    Continue Shopping
-                  </button>
-                </Link>
-                <Link to={"/checkout"}>
-                  <button className="px-8 py-2 bg-gradient-to-r from-amber-600 to-red-600 text-white rounded-lg hover:from-amber-700 hover:to-red-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                    Proceed to Checkout
-                  </button>
-                </Link>
+              <div className="flex justify-between items-center text-slate-600">
+                <span>Shipping</span>
+                <span className="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500 font-medium">Calculated at checkout</span>
               </div>
+            </div>
+
+            <div className="h-px w-full bg-slate-100 my-6"></div>
+
+            <div className="flex justify-between items-center mb-8">
+              <span className="text-lg font-medium text-slate-700">Grand Total</span>
+              <span className="text-3xl font-semibold text-orange-500 tracking-tighter">NPR {grandTotal.toFixed(2)}</span>
+            </div>
+
+            <div>
+              <Link to="/checkout" className="block w-full">
+                <button className="w-full py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all font-semibold shadow-sm hover:shadow-md active:scale-[0.98] flex items-center justify-center gap-1.5 text-sm">
+                  Proceed to Checkout
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </Link>
             </div>
           </div>
         </div>
-      ) : (
-        // Empty Cart State
-        <div className="text-center py-16">
-          <div className="bg-gray-100 rounded-full w-32 h-32 mx-auto mb-6 flex items-center justify-center">
-            <ShoppingCart className="w-16 h-16 text-gray-400" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Your cart is empty
-          </h2>
-          <p className="text-gray-600 mb-8 max-w-md mx-auto">
-            Looks like you haven't added any items to your cart yet. Start
-            shopping to fill it up!
-          </p>
-          <Link to={"/products"}>
-            <button className="px-8 py-3 bg-gradient-to-r from-amber-600 to-red-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              Start Shopping
-            </button>
-          </Link>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
