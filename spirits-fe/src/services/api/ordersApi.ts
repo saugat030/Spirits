@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ApiResponse, CreateOrderRequest, Order } from "../../types/api.types";
+import { ApiResponse, CreateOrderRequest, Order, OrderWithDetails } from "../../types/api.types";
 import API from "../axiosInstance";
 import { AxiosError } from "axios";
 
@@ -40,10 +40,10 @@ export const useGetMyOrders = () => {
 };
 
 export const useGetOrderById = (orderId: string | null) => {
-  return useQuery<ApiResponse<Order>, AxiosError<{ message?: string }>>({
+  return useQuery<ApiResponse<OrderWithDetails>, AxiosError<{ message?: string }>>({
     queryKey: ["order", orderId],
     queryFn: async () => {
-      const response = await API.get<ApiResponse<Order>>(`/orders/${orderId}`);
+      const response = await API.get<ApiResponse<OrderWithDetails>>(`/orders/${orderId}`);
       return response.data;
     },
     enabled: !!orderId,

@@ -111,9 +111,10 @@ export interface Order {
   shippingAddress: string;
   createdAt: string;
   updatedAt: string;
-  items?: OrderItem[];
 }
-
+export interface OrderWithDetails extends Order {
+  items: OrderItem[];
+}
 export interface CreateOrderRequest {
   items: { variantId: string; quantity: number }[];
   shippingAddress: string;

@@ -7,9 +7,16 @@ import {
   AlertCircle,
   ShoppingBag,
   Truck,
+  Eye,
 } from "lucide-react";
+import OrderDetailsDialog from "../components/OrderDetailsDialog";
 import { useGetMyOrders } from "../services/api/ordersApi";
 import { OrderStatus } from "../types/api.types";
+import {
+  getStatusBadgeStyles,
+  getStatusLabel,
+  getProgressPercentage,
+} from "../utils/userUtils";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useState } from "react";
 
@@ -30,17 +37,13 @@ const getStatusIcon = (status: OrderStatus) => {
   }
 };
 
-const getStatusLabel = (status: OrderStatus) => {
-  if (status === "shipped") return "In Transit";
-  return status.charAt(0).toUpperCase() + status.slice(1);
-};
-
 const OrdersPage = () => {
   const { data: ordersResponse, isLoading, error } = useGetMyOrders();
   const orders = ordersResponse?.data || [];
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [filterStatus, setFilterStatus] = useState<OrderStatus | "all">("all");
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   const statusCounts = {
     total: orders.length,
@@ -60,41 +63,6 @@ const OrdersPage = () => {
       filterStatus === "all" || order.status === filterStatus;
     return matchesDateRange && matchesFilter;
   });
-
-  const getStatusBadgeStyles = (status: OrderStatus) => {
-    const baseStyles = "inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-semibold";
-    switch (status) {
-      case "delivered":
-        return `${baseStyles} bg-green-100 text-green-800`;
-      case "shipped":
-        return `${baseStyles} bg-blue-100 text-blue-800`;
-      case "processing":
-        return `${baseStyles} bg-yellow-100 text-yellow-800`;
-      case "pending":
-        return `${baseStyles} bg-orange-100 text-orange-800`;
-      case "cancelled":
-        return `${baseStyles} bg-red-100 text-red-800`;
-      default:
-        return `${baseStyles} bg-gray-100 text-gray-800`;
-    }
-  };
-
-  const getProgressPercentage = (status: OrderStatus): number => {
-    switch (status) {
-      case "pending":
-        return 25;
-      case "processing":
-        return 50;
-      case "shipped":
-        return 75;
-      case "delivered":
-        return 100;
-      case "cancelled":
-        return 0;
-      default:
-        return 0;
-    }
-  };
 
   if (isLoading) {
     return (
@@ -282,7 +250,7 @@ const OrdersPage = () => {
                     className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow overflow-hidden"
                   >
                     {/* Desktop View - Table-like */}
-                    <div className="hidden md:grid md:grid-cols-5 gap-4 items-start p-5 border-b border-gray-100 last:border-b-0">
+                    <div className="hidden md:grid md:grid-cols-6 gap-4 items-start p-5 border-b border-gray-100 last:border-b-0">
                       <div>
                         <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                           Order ID
@@ -336,6 +304,17 @@ const OrdersPage = () => {
                             ? "Cash on Delivery"
                             : order.paymentMethod}
                         </p>
+                      </div>
+
+                      <div className="flex items-center justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedOrderId(order.id)}
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100"
+                          aria-label="View order details"
+                        >
+                          <Eye className="h-5 w-5" />
+                        </button>
                       </div>
                     </div>
 
@@ -400,6 +379,13 @@ const OrdersPage = () => {
                         </div>
                       )}
 
+                      <button
+                        type="button"
+                        onClick={() => setSelectedOrderId(order.id)}
+                        className="w-full rounded-xl bg-gray-100 px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-200"
+                      >
+                        View Details
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -413,6 +399,10 @@ const OrdersPage = () => {
           </>
         )}
       </div>
+      <OrderDetailsDialog
+        orderId={selectedOrderId}
+        onClose={() => setSelectedOrderId(null)}
+      />
     </div>
   );
 };

@@ -13,6 +13,4 @@ router.get("/admin", getAllOrders);
 router.get("/admin/:id", getAdminOrderById);
 router.patch("/admin/:id/status", updateOrderStatus);
 
-
-
 export default router;
