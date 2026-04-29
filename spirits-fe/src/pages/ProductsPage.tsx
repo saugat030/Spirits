@@ -9,8 +9,7 @@ const ProductsPage = () => {
   const [searchParams] = useSearchParams();
 
   const alcName = searchParams.get("name");
-  const searchTerm = searchParams.get("search");
-  const types = searchParams.getAll("type");
+  const categories = searchParams.getAll("category");
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
 
@@ -19,14 +18,14 @@ const ProductsPage = () => {
   const [itemsPerPage] = useState<number>(12);
 
   const getTypeParam = () => {
-    if (types.length > 0) return types;
+    if (categories.length > 0) return categories; // useGetProducts handles arrays or comma-separated depending on its implementation
     if (category) return category;
     return null;
   };
 
   const apiParams = {
-    type: getTypeParam(),
-    name: searchTerm || alcName || null,
+    category: getTypeParam(),
+    name: alcName || null,
     minPrice: minPrice ? parseInt(minPrice) : null,
     maxPrice: maxPrice ? parseInt(maxPrice) : null,
     page: currentPage,
@@ -37,38 +36,39 @@ const ProductsPage = () => {
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    // scroll to top when page changes
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCategoryChange = (newCategory: string) => {
     const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.delete("type");
+    // when clicking a category from ShopByCategs replace every other filter
+    newSearchParams.delete("category");
     if (newCategory) {
-      newSearchParams.set("type", newCategory);
+      newSearchParams.set("category", newCategory);
     }
     const queryString = newSearchParams.toString();
     navigate(queryString ? `?${queryString}` : "/products");
   };
 
   useEffect(() => {
-    const newCategory = types.length === 1 ? types[0] : "";
+    // if exactly one category is selected in the url highlight it in ShopByCategs
+    const newCategory = categories.length === 1 ? categories[0] : "";
     if (category !== newCategory) {
       setCategory(newCategory);
       setCurrentPage(1);
     }
-  }, [types]);
+  }, [categories, category]);
 
-  // reset page
+  // reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [alcName, searchTerm, types.join(","), minPrice, maxPrice]);
+  }, [alcName, categories.join(","), minPrice, maxPrice]);
 
-    return (
-    <div>
+  return (
+    <div className="bg-white min-h-screen">
       <ShopByCategs category={category} setCateg={handleCategoryChange} />
       <MostPopular
-        title={alcName ? `Showing results for " ${alcName} "` : "Most Popular"}
+        title={alcName ? `Results for "${alcName}"` : "Most Popular"}
         products={productsData}
         error={error}
         isLoading={isLoading}
