@@ -75,7 +75,7 @@ const OrderDetailsDialog = ({ orderId, onClose }: OrderDetailsDialogProps) => {
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="rounded-2xl bg-gray-50 p-4">
                   <p className="text-xs uppercase tracking-wide text-gray-500">Order ID</p>
-                  <p className="mt-2 break-all text-sm font-semibold text-gray-900">{order.id}</p>
+                  <p className="mt-2 break-all text-sm font-semibold text-gray-900">{order.id.slice(0, 8).toUpperCase()}</p>
                 </div>
                 <div className="rounded-2xl bg-gray-50 p-4">
                   <p className="text-xs uppercase tracking-wide text-gray-500">Status</p>

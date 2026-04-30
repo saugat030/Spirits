@@ -5,11 +5,10 @@ import {
   XCircle,
   Clock,
   AlertCircle,
-  ShoppingBag,
-  Truck,
   Eye,
 } from "lucide-react";
 import OrderDetailsDialog from "../components/OrderDetailsDialog";
+import OrdersSummary from "../components/OrdersSummary";
 import { useGetMyOrders } from "../services/api/ordersApi";
 import { OrderStatus } from "../types/api.types";
 import {
@@ -19,6 +18,8 @@ import {
 } from "../utils/userUtils";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useState } from "react";
+import EmptyState from "../components/shared/EmptyState";
+import ErrorState from "../components/shared/ErrorState";
 
 const getStatusIcon = (status: OrderStatus) => {
   switch (status) {
@@ -44,7 +45,9 @@ const OrdersPage = () => {
   const [dateTo, setDateTo] = useState("");
   const [filterStatus, setFilterStatus] = useState<OrderStatus | "all">("all");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-
+  const handleRetry = (): void => {
+    window.location.reload();
+  };
   const statusCounts = {
     total: orders.length,
     pending: orders.filter((o) => o.status === "pending").length,
@@ -74,15 +77,11 @@ const OrdersPage = () => {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-          <XCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-red-800 mb-2">
-            Unable to Load Orders
-          </h2>
-          <p className="text-red-600">{error.message}</p>
-        </div>
-      </div>
+      <ErrorState
+        title="Oops! A bit of a spill."
+        message={error.message}
+        onRetry={handleRetry}
+      />
     );
   }
 
@@ -91,103 +90,22 @@ const OrdersPage = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Orders</h1>
-          <p className="text-gray-600">Track and manage your orders with ease</p>
+          <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
+          <p className="text-gray-600">
+            Track and manage your orders with ease
+          </p>
         </div>
 
         {orders.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border p-12 text-center">
-            <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
-              No Orders Yet
-            </h2>
-            <p className="text-gray-600 mb-6">
-              You haven't placed any orders yet. Start shopping to see your
-              orders here.
-            </p>
-            <a
-              href="/products"
-              className="inline-block px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors font-semibold"
-            >
-              Start Shopping
-            </a>
-          </div>
+          <EmptyState
+            title="Glass Empty!"
+            description="You haven't placed any orders yet. Start shopping to see your orders here."
+          />
         ) : (
           <>
-            {/* Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-              <div className="bg-white p-5 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                      Total Orders
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
-                      {statusCounts.total}
-                    </p>
-                  </div>
-                  <ShoppingBag className="w-10 h-10 text-blue-100" />
-                </div>
-              </div>
+            <OrdersSummary statusCounts={statusCounts} />
 
-              <div className="bg-white p-5 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                      Pending
-                    </p>
-                    <p className="text-2xl font-bold text-orange-600 mt-1">
-                      {statusCounts.pending}
-                    </p>
-                  </div>
-                  <AlertCircle className="w-10 h-10 text-orange-100" />
-                </div>
-              </div>
-
-              <div className="bg-white p-5 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                      Processing
-                    </p>
-                    <p className="text-2xl font-bold text-yellow-600 mt-1">
-                      {statusCounts.processing}
-                    </p>
-                  </div>
-                  <Clock className="w-10 h-10 text-yellow-100" />
-                </div>
-              </div>
-
-              <div className="bg-white p-5 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                      In Transit
-                    </p>
-                    <p className="text-2xl font-bold text-blue-600 mt-1">
-                      {statusCounts.shipped}
-                    </p>
-                  </div>
-                  <Truck className="w-10 h-10 text-blue-100" />
-                </div>
-              </div>
-
-              <div className="bg-white p-5 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                      Delivered
-                    </p>
-                    <p className="text-2xl font-bold text-green-600 mt-1">
-                      {statusCounts.delivered}
-                    </p>
-                  </div>
-                  <CheckCircle className="w-10 h-10 text-green-100" />
-                </div>
-              </div>
-            </div>
-
-            {/* Date and Status Filter */}
+            {/* date and Status filter */}
             <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
@@ -238,18 +156,18 @@ const OrdersPage = () => {
 
             {/* Orders List */}
             {filteredOrders.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-                <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-600 font-medium">No orders found</p>
-              </div>
+              <EmptyState
+                title="No Orders Found"
+                description="We couldn't find any orders matching your filters. Try adjusting the date range or status to find your orders."
+              />
             ) : (
-              <div className="space-y-4">
+              <div className="">
                 {filteredOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow overflow-hidden"
+                    className="bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden"
                   >
-                    {/* Desktop View - Table-like */}
+                    {/* desktop view table like */}
                     <div className="hidden md:grid md:grid-cols-6 gap-4 items-start p-5 border-b border-gray-100 last:border-b-0">
                       <div>
                         <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
@@ -271,7 +189,7 @@ const OrdersPage = () => {
                               year: "numeric",
                               month: "short",
                               day: "numeric",
-                            }
+                            },
                           )}
                         </p>
                       </div>
@@ -345,7 +263,7 @@ const OrdersPage = () => {
                                 year: "numeric",
                                 month: "short",
                                 day: "numeric",
-                              }
+                              },
                             )}
                           </span>
                           <span className="text-sm font-semibold text-gray-900">
@@ -353,7 +271,12 @@ const OrdersPage = () => {
                           </span>
                         </div>
                         <div className="flex justify-between text-sm text-gray-600">
-                          <span>Payment: {order.paymentMethod === "cod" ? "Cash on Delivery" : order.paymentMethod}</span>
+                          <span>
+                            Payment:{" "}
+                            {order.paymentMethod === "cod"
+                              ? "Cash on Delivery"
+                              : order.paymentMethod}
+                          </span>
                         </div>
                       </div>
 
@@ -366,10 +289,10 @@ const OrdersPage = () => {
                                 order.status === "delivered"
                                   ? "bg-green-500"
                                   : order.status === "shipped"
-                                  ? "bg-blue-500"
-                                  : order.status === "processing"
-                                  ? "bg-yellow-500"
-                                  : "bg-orange-500"
+                                    ? "bg-blue-500"
+                                    : order.status === "processing"
+                                      ? "bg-yellow-500"
+                                      : "bg-orange-500"
                               }`}
                               style={{
                                 width: `${getProgressPercentage(order.status)}%`,
@@ -392,7 +315,7 @@ const OrdersPage = () => {
               </div>
             )}
 
-            {/* Results Count */}
+            {/* results count */}
             <div className="mt-6 text-center text-sm text-gray-600">
               Showing {filteredOrders.length} of {orders.length} orders
             </div>
