@@ -1,3 +1,10 @@
+import {
+  CheckCircle,
+  Package,
+  Clock,
+  AlertCircle,
+  XCircle,
+} from "lucide-react";
 import { OrderStatus } from "../types/api.types";
 
 export const getStatusLabel = (status: OrderStatus) => {
@@ -6,7 +13,8 @@ export const getStatusLabel = (status: OrderStatus) => {
 };
 
 export const getStatusBadgeStyles = (status: OrderStatus) => {
-  const baseStyles = "inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-semibold";
+  const baseStyles =
+    "inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-semibold";
   switch (status) {
     case "delivered":
       return `${baseStyles} bg-green-100 text-green-800`;
@@ -48,3 +56,20 @@ export const formatDate = (dateString: string) =>
     hour: "numeric",
     minute: "2-digit",
   });
+
+export const getStatusIcon = (status: OrderStatus) => {
+  switch (status) {
+    case "delivered":
+      return <CheckCircle className="w-5 h-5 text-green-500" />;
+    case "shipped":
+      return <Package className="w-5 h-5 text-blue-500" />;
+    case "processing":
+      return <Clock className="w-5 h-5 text-yellow-500" />;
+    case "pending":
+      return <AlertCircle className="w-5 h-5 text-orange-500" />;
+    case "cancelled":
+      return <XCircle className="w-5 h-5 text-red-500" />;
+    default:
+      return <AlertCircle className="w-5 h-5 text-gray-500" />;
+  }
+};

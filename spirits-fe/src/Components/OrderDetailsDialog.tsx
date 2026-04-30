@@ -1,30 +1,12 @@
-import { XCircle, Package, Clock, AlertCircle, CheckCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useGetOrderById } from "../services/api/ordersApi";
 import { OrderWithDetails } from "../types/api.types";
-import { formatDate, getStatusBadgeStyles, getStatusLabel } from "../utils/userUtils";
+import { formatDate, getStatusBadgeStyles, getStatusIcon, getStatusLabel } from "../utils/userUtils";
 
 type OrderDetailsDialogProps = {
   orderId: string | null;
   onClose: () => void;
-};
-
-
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case "delivered":
-      return <CheckCircle className="w-5 h-5 text-green-500" />;
-    case "shipped":
-      return <Package className="w-5 h-5 text-blue-500" />;
-    case "processing":
-      return <Clock className="w-5 h-5 text-yellow-500" />;
-    case "pending":
-      return <AlertCircle className="w-5 h-5 text-orange-500" />;
-    case "cancelled":
-      return <XCircle className="w-5 h-5 text-red-500" />;
-    default:
-      return <AlertCircle className="w-5 h-5 text-gray-500" />;
-  }
 };
 
 const OrderDetailsDialog = ({ orderId, onClose }: OrderDetailsDialogProps) => {

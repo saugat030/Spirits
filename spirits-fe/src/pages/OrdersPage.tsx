@@ -1,12 +1,4 @@
-import {
-  Package,
-  Calendar,
-  CheckCircle,
-  XCircle,
-  Clock,
-  AlertCircle,
-  Eye,
-} from "lucide-react";
+import { Calendar, Eye } from "lucide-react";
 import OrderDetailsDialog from "../components/OrderDetailsDialog";
 import OrdersSummary from "../components/OrdersSummary";
 import { useGetMyOrders } from "../services/api/ordersApi";
@@ -15,28 +7,12 @@ import {
   getStatusBadgeStyles,
   getStatusLabel,
   getProgressPercentage,
+  getStatusIcon,
 } from "../utils/userUtils";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useState } from "react";
 import EmptyState from "../components/shared/EmptyState";
 import ErrorState from "../components/shared/ErrorState";
-
-const getStatusIcon = (status: OrderStatus) => {
-  switch (status) {
-    case "delivered":
-      return <CheckCircle className="w-5 h-5 text-green-500" />;
-    case "shipped":
-      return <Package className="w-5 h-5 text-blue-500" />;
-    case "processing":
-      return <Clock className="w-5 h-5 text-yellow-500" />;
-    case "pending":
-      return <AlertCircle className="w-5 h-5 text-orange-500" />;
-    case "cancelled":
-      return <XCircle className="w-5 h-5 text-red-500" />;
-    default:
-      return <AlertCircle className="w-5 h-5 text-gray-500" />;
-  }
-};
 
 const OrdersPage = () => {
   const { data: ordersResponse, isLoading, error } = useGetMyOrders();
@@ -104,7 +80,6 @@ const OrdersPage = () => {
         ) : (
           <>
             <OrdersSummary statusCounts={statusCounts} />
-
             {/* date and Status filter */}
             <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -141,7 +116,7 @@ const OrdersPage = () => {
                     onChange={(e) =>
                       setFilterStatus(e.target.value as OrderStatus | "all")
                     }
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+                    className="font-Poppins w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
                   >
                     <option value="all">All Status</option>
                     <option value="pending">Pending</option>
@@ -279,8 +254,7 @@ const OrdersPage = () => {
                           </span>
                         </div>
                       </div>
-
-                      {/* Progress Bar */}
+                      {/* progress bar */}
                       {order.status !== "cancelled" && (
                         <div className="mb-4">
                           <div className="w-full bg-gray-200 rounded-full h-2">
