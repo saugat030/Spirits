@@ -5,9 +5,9 @@ import { getNetSales, getProductSalesDetails, totalProducts } from "../controlle
 const router = express.Router();
 
 router.use(requireAuth, requireRole(["admin"]));
-//How much total capital earned:
+// how much total capital earned
 router.get("/admin/net", getNetSales);
-//how many total products sold. Sum of quantity
+// how many total products sold. Sum of quantity
 router.get("/admin/total", totalProducts);
 router.get("/admin/product-details", getProductSalesDetails);
 
