@@ -6,13 +6,11 @@ const router = Router();
 
 router.post("/", requireAuth, createOrder);
 router.get("/my-orders", requireAuth, getMyOrders);
+router.get("/:id", requireAuth, getOrderById);
 
 router.use(requireAuth, requireRole(["admin"]));
-
 router.get("/admin", getAllOrders);
 router.get("/admin/:id", getAdminOrderById);
 router.patch("/admin/:id/status", updateOrderStatus);
-
-router.get("/:id", requireAuth, getOrderById);
 
 export default router;

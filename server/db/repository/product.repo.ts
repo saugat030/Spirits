@@ -1,4 +1,4 @@
-import { eq, and, ilike, inArray, or, isNull, lte, gte, sql } from "drizzle-orm";
+import { eq, and, ilike, or, isNull, lte, gte, sql } from "drizzle-orm";
 import { db } from "../../config/dbConnect.js";
 import { liquors, categories, liquorVariants, promotions, type NewLiquor, type NewLiquorVariant } from "../schema/index.js";
 import type { DbClient, ProductFilters } from "../../types/types.js";
@@ -9,7 +9,8 @@ export const fetchProductsWithFilters = async (filters: ProductFilters, tx: DbCl
     conditions.push(eq(liquors.isActive, true));
 
     if (filters.types && filters.types.length > 0) {
-        conditions.push(inArray(categories.category_name, filters.types));
+        const typeConditions = filters.types.map((t) => ilike(categories.category_name, t));
+        conditions.push(or(...typeConditions));
     }
     if (filters.name) {
         conditions.push(ilike(liquors.name, `%${filters.name}%`));
@@ -241,8 +242,12 @@ export const getProductById = async (id: string, tx: DbClient = db) => {
             })),
         };
     });
+    
+    const minDiscountedPrice = variantsWithPromotions.length > 0 
+        ? Math.min(...variantsWithPromotions.map((v) => v.discountedPrice))
+        : null;
 
-    return { ...product, variants: variantsWithPromotions };
+    return { ...product, variants: variantsWithPromotions, minDiscountedPrice };
 };
 
 export const getCategoryByName = async (name: string, tx: DbClient = db) => {

@@ -18,12 +18,14 @@ export const getAllSpirits = async (req: Request, res: Response): Promise<void> 
         const page = Math.max(1, Number(req.query.page) || 1);
         const limit = Number(req.query.limit) || 12;
         const offset = (page - 1) * limit;
-        const { type, name, minPrice, maxPrice } = req.query;
+        const { category, name, minPrice, maxPrice } = req.query;
 
-        const types = Array.isArray(type)
-            ? (type as string[])
-            : typeof type === "string" && type !== "null" && type !== ""
-                ? [type]
+        const toTitleCase = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+        const types = Array.isArray(category)
+            ? (category as string[]).map(toTitleCase)
+            : typeof category === "string" && category !== "null" && category !== ""
+                ? [toTitleCase(category)]
                 : null;
         const normalizedName =
             typeof name === "string" && name !== "null" && name !== "" ? name : null;

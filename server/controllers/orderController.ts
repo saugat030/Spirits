@@ -1,10 +1,27 @@
 import { type Request, type Response } from "express";
 import { createOrderService, getMyOrdersService, getOrderByIdService, updateOrderStatusService, getAllOrdersService } from "../service/OrderService.js";
+import { getUserById } from "../db/repository/auth.repo.js";
 
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.user!.id;
         const { items, shippingAddress, paymentMethod } = req.body;
+
+        const user = await getUserById(userId);
+        if (!user) {
+            res.status(401).json({ success: false, message: "User not found." });
+            return;
+        }
+
+        if (!user.is_verified) {
+            res.status(403).json({ success: false, message: "Your account must be verified before placing orders. Please check your email for the verification link." });
+            return;
+        }
+
+        if (!user.is_active) {
+            res.status(403).json({ success: false, message: "Your account is inactive. Please contact support." });
+            return;
+        }
 
         if (!items || items.length === 0) {
             res.status(400).json({ success: false, message: "Cart cannot be empty." });

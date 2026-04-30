@@ -1,130 +1,78 @@
-import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
-import { Trash2, Loader2 } from "lucide-react";
-import { useShoppingCart } from "../context/ShoppingCartContext";
-import { ProductData } from "../types/api.types";
+import { Trash2, Plus, Minus } from "lucide-react";
+import { useCartStore } from "../store/useCartStore";
+import { Product } from "../types/api.types";
 
 type CartProductCardProps = {
-  id: number;
+  product: Product;
+  selectedVariantId: string;
   quantity: number;
-  product?: ProductData;
-  isLoading?: boolean;
-  error?: unknown;
 };
 
 const CartProductCard = ({
-  id,
-  quantity,
   product,
-  isLoading,
-  error,
+  selectedVariantId,
+  quantity,
 }: CartProductCardProps) => {
-  const { removeFromCart, increaseCartQuantity, decreaseCartQuantity } =
-    useShoppingCart();
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const increaseCartQuantity = useCartStore((state) => state.increaseCartQuantity);
+  const decreaseCartQuantity = useCartStore((state) => state.decreaseCartQuantity);
 
-  if (isLoading) {
-    return (
-      <div className="px-6 py-8">
-        <div className="grid grid-cols-12 gap-4 items-center">
-          <div className="col-span-6 lg:col-span-5 flex items-center gap-4">
-            <div className="w-20 h-20 bg-gray-200 rounded-lg animate-pulse"></div>
-            <div className="flex-1">
-              <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3"></div>
-            </div>
-          </div>
-          <div className="col-span-2 flex justify-center">
-            <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-          </div>
-          <div className="col-span-2 text-center">
-            <div className="h-4 bg-gray-200 rounded animate-pulse mx-auto w-16"></div>
-          </div>
-          <div className="col-span-2 text-center">
-            <div className="h-4 bg-gray-200 rounded animate-pulse mx-auto w-20"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !product) {
-    return (
-      <div className="px-6 py-8">
-        <div className="grid grid-cols-12 gap-4 items-center">
-          <div className="col-span-12 text-center text-red-500 font-medium">
-            Error loading product details
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const selectedVariant = product.variants.find((v) => v.id === selectedVariantId);
+  const price = selectedVariant?.discountedPrice || product.minDiscountedPrice;
 
   return (
-    <div className="px-6 py-6 transition-all duration-200">
-      <div className="grid grid-cols-12 gap-4 items-center">
-        {/* Product Info */}
-        <div className="col-span-6 lg:col-span-5 flex lg:flex-row flex-col justify-center lg:justify-normal items-center gap-4">
-          <div className="relative group">
-            <img
-              src={product.image_link}
-              alt={product.name}
-              className="w-20 h-20 object-cover rounded-lg shadow-md group-hover:shadow-lg transition-shadow duration-200"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition-opacity duration-200"></div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-gray-900 truncate mb-1">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+      <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 bg-slate-50 rounded-xl overflow-hidden border border-slate-100 flex items-center justify-center p-2">
+        <img
+          src={product.thumbnail_url}
+          alt={product.name}
+          className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
+        />
+      </div>
+      
+      <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch py-1">
+        <div>
+          <div className="flex justify-between items-start gap-4 mb-1">
+            <h3 className="font-semibold text-lg text-slate-900 truncate leading-tight">
               {product.name}
             </h3>
-            <p className="text-sm text-gray-500 mb-2">{product.type_name}</p>
-            <button
-              onClick={() => removeFromCart(id)}
-              className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 px-2 py-1 rounded-md transition-colors duration-200 font-medium"
-            >
-              <Trash2 className="w-4 h-4" />
-              Remove
-            </button>
+            <p className="text-xl font-semibold text-slate-900 whitespace-nowrap">
+              NPR {(price * quantity).toFixed(2)}
+            </p>
           </div>
+          <p className="text-sm font-medium text-slate-500 mb-3">
+            {product.categoryName} {selectedVariant && `• ${selectedVariant.size}`}
+          </p>
         </div>
 
-        {/* Quantity Controls */}
-        <div className="col-span-2 flex justify-center">
-          <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1">
+        <div className="flex items-center justify-between mt-auto">
+          <div className="flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200">
             <button
-              onClick={() => decreaseCartQuantity(id)}
-              className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-white hover:bg-red-500 rounded-md transition-colors duration-200"
+              onClick={() => decreaseCartQuantity(selectedVariantId)}
+              className="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 rounded-md transition-all hover:shadow-sm"
               aria-label="Decrease quantity"
             >
-              <CiCircleMinus className="text-xl" strokeWidth={1} />
+              <Minus className="w-4 h-4" />
             </button>
-            <span className="text-lg font-semibold text-gray-900 min-w-[2rem] text-center">
+            <span className="w-10 text-center font-medium text-slate-900">
               {quantity}
             </span>
             <button
-              onClick={() => increaseCartQuantity(id)}
-              className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-white hover:bg-green-500 rounded-md transition-colors duration-200"
+              onClick={() => increaseCartQuantity(product, selectedVariantId)}
+              className="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 rounded-md transition-all hover:shadow-sm"
               aria-label="Increase quantity"
             >
-              <CiCirclePlus className="text-xl" strokeWidth={1} />
+              <Plus className="w-4 h-4" />
             </button>
           </div>
-        </div>
 
-        {/* Unit Price */}
-        <div className="col-span-2 text-center">
-          <p className="text-lg font-semibold text-gray-900">
-            Rs. {product.price}
-          </p>
-          <p className="text-xs text-gray-500">per item</p>
-        </div>
-
-        {/* Total Price */}
-        <div className="col-span-2 text-center">
-          <p className="text-xl font-bold text-green-600">
-            Rs. {(product.price * quantity).toFixed(2)}
-          </p>
-          <p className="text-xs text-gray-500">
-            {quantity} × Rs. {product.price}
-          </p>
+          <button
+            onClick={() => removeFromCart(selectedVariantId)}
+            className="flex items-center justify-center p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors group"
+            aria-label="Remove item"
+          >
+            <Trash2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
+          </button>
         </div>
       </div>
     </div>

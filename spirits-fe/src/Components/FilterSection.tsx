@@ -1,39 +1,62 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { IoSearch } from "react-icons/io5";
-
-type Category = "Beer" | "Vodka" | "Rum" | "Whiskey" | "Wine" | "Tequilla";
-
-interface FilterData {
-  search: string;
-  priceRange: {
-    min: number;
-    max: number;
-  };
-  categories: Category[];
-}
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useGetCategories } from "../services/api/categoryApi";
+import { useDebounce } from "../hooks/useDebounce";
 
 const FilterSection = () => {
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
-  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { data: categoryResponse } = useGetCategories();
+  const categories = categoryResponse?.data || [];
+
+  const MAX_PRICE = 20000;
+
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    Number(searchParams.get("minPrice")) || 0,
+    Number(searchParams.get("maxPrice")) || MAX_PRICE,
+  ]);
+  
+  const debouncedPriceRange = useDebounce(priceRange, 500);
+
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    searchParams.getAll("category")
+  );
+
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
-  const categories: Category[] = [
-    "Beer",
-    "Vodka",
-    "Rum",
-    "Whiskey",
-    "Wine",
-    "Tequilla",
-  ];
+  // sync external URL changes to local state
+  useEffect(() => {
+    setSelectedCategories(searchParams.getAll("category"));
+  }, [searchParams]);
 
-  // const handleClearFilters = (): void => {
-  //   setSearchTerm("");
-  //   setPriceRange([0, 1000]);
-  //   setSelectedCategories([]);
-  // };
+  // sync local state to URL
+  useEffect(() => {
+    setSearchParams(
+      (prevParams) => {
+        const newParams = new URLSearchParams(prevParams);
+
+        newParams.delete("category");
+        selectedCategories.forEach((category) => {
+          newParams.append("category", category);
+        });
+
+        if (debouncedPriceRange[0] > 0) {
+          newParams.set("minPrice", debouncedPriceRange[0].toString());
+        } else {
+          newParams.delete("minPrice");
+        }
+
+        if (debouncedPriceRange[1] < MAX_PRICE) {
+          newParams.set("maxPrice", debouncedPriceRange[1].toString());
+        } else {
+          newParams.delete("maxPrice");
+        }
+
+        return newParams;
+      },
+      { replace: true }
+    );
+  }, [selectedCategories, debouncedPriceRange, setSearchParams]);
+
 
   const toggleCollapse = (): void => {
     setIsCollapsed(!isCollapsed);
@@ -43,7 +66,6 @@ const FilterSection = () => {
     const newRange: [number, number] = [...priceRange];
     newRange[index] = value;
 
-    // Ensure min doesn't exceed max and vice versa
     if (index === 0 && value > priceRange[1]) {
       newRange[1] = value;
     } else if (index === 1 && value < priceRange[0]) {
@@ -53,64 +75,21 @@ const FilterSection = () => {
     setPriceRange(newRange);
   };
 
-  const handleCategoryChange = (category: Category): void => {
+  const handleCategoryChange = (categoryName: string): void => {
     setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((cat) => cat !== category)
-        : [...prev, category]
+      prev.includes(categoryName)
+        ? prev.filter((cat) => cat !== categoryName)
+        : [...prev, categoryName]
     );
   };
 
-  const buildFilterUrl = (): string => {
-    const params = new URLSearchParams();
-
-    // Add search term if present
-    if (searchTerm.trim()) {
-      params.append("search", searchTerm.trim());
-    }
-
-    // Add categories
-    selectedCategories.forEach((category) => {
-      params.append("type", category);
-    });
-
-    // Add price range (only if different from default)
-    if (priceRange[0] > 0) {
-      params.append("minPrice", priceRange[0].toString());
-    }
-    if (priceRange[1] < 1000) {
-      params.append("maxPrice", priceRange[1].toString());
-    }
-
-    return `/products?${params.toString()}`;
-  };
-
-  const handleFilter = (): void => {
-    const filterData: FilterData = {
-      search: searchTerm,
-      priceRange: {
-        min: priceRange[0],
-        max: priceRange[1],
-      },
-      categories: selectedCategories,
-    };
-
-    console.log("Filter Values:", filterData);
-
-    // Navigate to the filtered products page
-    const filterUrl = buildFilterUrl();
-    console.log("Navigating to:", filterUrl);
-    navigate(filterUrl);
-  };
-
   return (
-    <section className="lg:w-[20%]  flex flex-col gap-2 mx-5">
-      {/* Header with collapse button */}
+    <section className="lg:w-[20%] flex flex-col gap-2 mx-5">
       <div className="flex items-center justify-between ml-2">
-        <h1 className="lg:text-3xl text-xl font-medium">Filters</h1>
+        <h1 className="text-xl font-semibold text-slate-900">Filters</h1>
         <button
           onClick={toggleCollapse}
-          className="text-gray-600 hover:text-gray-800 transition-colors"
+          className="text-slate-500 hover:text-slate-800 transition-colors"
           aria-label={isCollapsed ? "Expand filters" : "Collapse filters"}
         >
           <svg
@@ -118,7 +97,7 @@ const FilterSection = () => {
               isCollapsed ? "rotate-180" : ""
             }`}
             fill="none"
-            stroke="brown"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path
@@ -130,108 +109,73 @@ const FilterSection = () => {
           </svg>
         </button>
       </div>
-      <hr className="bg-black" />
+      <div className="h-px w-full bg-slate-200 my-2"></div>
 
-      {/* Collapsible filter content */}
-      <div className={`${isCollapsed ? "hidden" : "flex flex-col gap-2"}`}>
-        {/* Search Filter */}
-        <div className="my-4 bg-white rounded-2xl">
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium text-gray-900">Search</h3>
-
-            <div className="relative max-w-md">
-              <IoSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Quick search..."
-                value={searchTerm}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setSearchTerm(e.target.value)
-                }
-                className="w-full pl-10 pr-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-          </div>
-        </div>
-        <hr />
-
+      <div className={`${isCollapsed ? "hidden" : "flex flex-col gap-6"}`}>
         {/* Price Filter */}
-        <div id="Price_Section" className="flex flex-col gap-3 ml-2 mb-2">
-          <h2 className="text-lg font-medium text-gray-900 self-start">
+        <div className="flex flex-col gap-3 px-2">
+          <h2 className="text-base font-semibold text-slate-800">
             Price Range
           </h2>
-          <div className="w-full px-1">
-            <div className="flex justify-between text-sm text-gray-600 mb-2">
-              <span>Rs. {priceRange[0]}</span>
-              <span>Rs. {priceRange[1]}</span>
+          <div className="w-full">
+            <div className="flex justify-between text-sm text-slate-600 mb-3 font-medium">
+              <span>NPR {priceRange[0]}</span>
+              <span>NPR {priceRange[1]}</span>
             </div>
 
-            {/* Min Price Slider */}
-            <div className="relative mb-3">
-              <label className="text-xs text-gray-500 mb-1 block">
+            <div className="relative mb-4">
+              <label className="text-xs text-slate-500 mb-1 block font-medium">
                 Min Price
               </label>
               <input
                 type="range"
                 min="0"
-                max="1000"
-                step="10"
+                max={MAX_PRICE}
+                step="100"
                 value={priceRange[0]}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handlePriceChange(0, parseInt(e.target.value))
-                }
-                className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider-thumb-amber-600"
+                onChange={(e) => handlePriceChange(0, parseInt(e.target.value))}
+                className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
               />
             </div>
 
-            {/* Max Price Slider */}
             <div className="relative">
-              <label className="text-xs text-gray-500 mb-1 block">
+              <label className="text-xs text-slate-500 mb-1 block font-medium">
                 Max Price
               </label>
               <input
                 type="range"
                 min="0"
-                max="1000"
-                step="10"
+                max={MAX_PRICE}
+                step="100"
                 value={priceRange[1]}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handlePriceChange(1, parseInt(e.target.value))
-                }
-                className="w-full h-2 bg-red-200 rounded-lg appearance-none cursor-pointer slider-thumb-amber"
+                onChange={(e) => handlePriceChange(1, parseInt(e.target.value))}
+                className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
               />
             </div>
           </div>
         </div>
-        <hr />
+        
+        <div className="h-px w-full bg-slate-100"></div>
 
-        {/* Categories Filter */}
-        <div className="flex flex-col gap-1">
-          <h1 className="text-lg font-medium text-gray-900 my-2">Categories</h1>
-          <div className="grid grid-cols-2 gap-1 ml-2">
+        {/* categories checkboxes */}
+        <div className="flex flex-col gap-3 px-2">
+          <h2 className="text-base font-semibold text-slate-800">Categories</h2>
+          <div className="flex flex-col gap-2.5">
             {categories.map((category) => (
-              <label key={category} htmlFor={category}>
+              <label key={category.id} className="flex items-center gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
-                  id={category}
-                  name={category}
-                  checked={selectedCategories.includes(category)}
-                  onChange={() => handleCategoryChange(category)}
-                  className="me-1"
+                  checked={selectedCategories.includes(category.category_name)}
+                  onChange={() => handleCategoryChange(category.category_name)}
+                  className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500 cursor-pointer"
                 />
-                {category}
+                <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
+                  {category.category_name}
+                </span>
               </label>
             ))}
           </div>
         </div>
-
-        <button
-          type="button"
-          onClick={handleFilter}
-          className="bg-amber-600 text-white border border-gray-600 rounded-lg px-4 py-1 self-start mt-2"
-        >
-          Filter
-        </button>
       </div>
     </section>
   );

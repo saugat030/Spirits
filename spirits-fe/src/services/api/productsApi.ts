@@ -1,71 +1,48 @@
 import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, Product } from "../../types/api.types";
 import API from "../axiosInstance";
+import { AxiosError } from "axios";
 
 export const useGetProducts = ({
-  type,
+  category,
   name,
   minPrice,
   maxPrice,
   page = 1,
   limit = 12,
 }: {
-  type?: string | string[] | null;
+  category?: string | string[] | null;
   name?: string | null;
   minPrice?: number | null;
   maxPrice?: number | null;
   page?: number | null;
   limit?: number | null;
 }) => {
-  return useQuery<ApiResponse<Product[]>, Error>({
-    queryKey: ["products", { name, type, minPrice, maxPrice, page, limit }],
+  return useQuery<ApiResponse<Product[]>, AxiosError<{ message?: string }>>({
+    queryKey: ["products", { name, category, minPrice, maxPrice, page, limit }],
     queryFn: async (): Promise<ApiResponse<Product[]>> => {
       const params = new URLSearchParams();
-
-      // Handle type parameter (single or multiple)
-      if (type) {
-        if (Array.isArray(type)) {
-          type.forEach((t) => params.append("type", t));
+      //handle category parameter (single or multiple)
+      if (category) {
+        if (Array.isArray(category)) {
+          category.forEach((c) => params.append("category", c));
         } else {
-          params.append("type", type);
+          params.append("category", category);
         }
       }
-
       if (name) params.append("name", name);
       if (minPrice !== null && minPrice !== undefined)
         params.append("minPrice", minPrice.toString());
       if (maxPrice !== null && maxPrice !== undefined)
         params.append("maxPrice", maxPrice.toString());
-      if (page !== null) params.append("page", page.toString());
-      if (limit !== null) params.append("limit", limit.toString());
-
+      if (page) params.append("page", page.toString());
+      if (limit) params.append("limit", limit.toString());
       const queryString = params.toString();
       const url = `/products?${queryString}`;
-
-      console.log("Fetching products with:", {
-        type,
-        name,
-        minPrice,
-        maxPrice,
-        page,
-        limit,
-      });
-
-      try {
-        const response = await API.get(url);
-
-        if (!response.data) {
-          throw new Error("No data received from server");
-        }
-
-        console.log("Product data:", response.data);
-        return response.data;
-      } catch (error) {
-        //Axios catches all the responses with status 200 bahek as error and the axios error is an object that contains a message , response etc fields. To access the backend's message , error.response.data.message
-        //throwing that error makes it so that the error is caught by the useQuery's "error".
-        console.log("Error fetching Products", error);
-        throw error;
-      }
+      //axios catches all the responses with status 200 bahek as error and the axios error is an object that contains a message , response etc fields. To access the backend's message , error.response.data.message
+      const response = await API.get(url);
+      console.log("Product data:(log from query function)", response.data);
+      return response.data;
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -88,30 +65,15 @@ export const useGetProductById = (id: string | null) => {
   });
 };
 
-//utility function for fetching by ID since this needs to be used in the cart page to fetch multiple IDs.
 export const getProductById = async (
   id: string
 ): Promise<ApiResponse<Product>> => {
   if (!id) {
     throw new Error("Product ID is required");
   }
-
   const url = `/products/${id}`;
   console.log("Fetching product with ID:", id);
-
-  try {
-    const response = await API.get(url);
-    if (!response.data) {
-      throw new Error("No data received from server");
-    }
-    console.log("Product by ID data:", response.data);
-    return response.data;
-  } catch (error: any) {
-    // axios catches all the responses with status 200 bahek as error and the axios error is an object that contains a message, response etc fields. To access the backend's message, error.response.data.message
-    // throwing that error makes it so that the error is caught by the useQuery's "error".
-    console.log("Error fetching Product by ID", error);
-    throw new Error(
-      error.response.data.message || "Error fetching the product"
-    );
-  }
+  const response = await API.get(url);
+  console.log("Product by ID data:", response.data);
+  return response.data;
 };

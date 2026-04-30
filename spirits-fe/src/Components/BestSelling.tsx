@@ -18,7 +18,7 @@ const BestSelling = () => {
   const [activeCategory, setActiveCategory] = useState<string>("Whiskey");
 
   const { data, error, isLoading, isError } = useGetProducts({
-    type: activeCategory,
+    category: activeCategory,
   });
 
   const productsToShow = data?.data.slice(0, 5) ?? [];
@@ -74,7 +74,7 @@ const BestSelling = () => {
           >
             {productsToShow.map((item: Product, index) => (
               <SwiperSlide key={item.id ?? index} className="rounded-2xl">
-                <ProductCard {...item} />
+                <ProductCard product={item} />
               </SwiperSlide>
             ))}
           </Swiper>

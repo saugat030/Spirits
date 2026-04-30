@@ -25,7 +25,8 @@
     "react-spinners": "^0.17.0",
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.3",
-    "swiper": "^11.2.1"
+    "swiper": "^11.2.1",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

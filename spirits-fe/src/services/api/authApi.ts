@@ -1,89 +1,86 @@
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../axiosInstance";
+import { AuthResponse, LoginPayload, SignupPayload } from "../../types/api.types";
+import { AxiosError } from "axios";
 
-interface AuthData {
-  email: string;
-  password: string;
-}
-interface SignupData extends AuthData {
-  username: string;
-}
-
-interface AuthResponse {
-  success: boolean;
-  message: string;
-}
 
 export const useLogin = () => {
-  return useMutation<AuthResponse, Error, AuthData>({
-    mutationFn: async (data: AuthData): Promise<AuthResponse> => {
-      console.log(
-        "Email and password received by the mutation function:",
-        data
-      );
-      try {
-        const response = await axiosInstance.post(`/auth/login`, {
-          email: data.email,
-          password: data.password,
-        });
-        return response.data;
-      } catch (error: any) {
-        //Axios catches all the responses with status 200 bahek as error and the axios error is an object that contains a message , response etc fields. To access the backend's message , error.response.data.message
-        //throwing that error makes it so that the error is caught by the useQuery's "error".
-        console.log("Login error from the hook:", error);
-        //If the server responded with its custom error message.
-        if (error.response) {
-          throw new Error("Error: " + error.response.data.message);
-        } else if (error.request) {
-          // Request was made but no response received
-          throw new Error(
-            "Unable to connect to the server. Please check your internet connection and try again."
-          );
-        } else {
-          // Something else happened
-          throw new Error(
-            error.message ||
-              "An unexpected error occurred during login. Please try again."
-          );
-        }
-      }
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, LoginPayload>({
+    mutationFn: async (data: LoginPayload): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/login`, {
+        email: data.email,
+        password: data.password,
+      });
+      return response.data;
     },
   });
 };
 
+// sends verification email to the user and creates a new user in the database with isVerified set to false. The user will be able to login but will have limited access until they verify their email
 export const useSignup = () => {
-  return useMutation<AuthResponse, Error, SignupData>({
-    mutationFn: async (data: SignupData): Promise<AuthResponse> => {
-      console.log(
-        "Username, email and password received by the mutation function:",
-        data
-      );
-      try {
-        const response = await axiosInstance.post(`/auth/signup`, {
-          name: data.username,
-          email: data.email,
-          password: data.password,
-        });
-        console.log(response.data);
-        return response.data;
-      } catch (error: any) {
-        console.log("Signup error from the hook:", error);
-        //If the server responded with its custom error message.
-        if (error.response) {
-          throw new Error("Error: " + error.response.data.message);
-        } else if (error.request) {
-          // Request was made but no response received
-          throw new Error(
-            "Unable to connect to the server. Please check your internet connection and try again."
-          );
-        } else {
-          // Something else happened
-          throw new Error(
-            error.message ||
-              "An unexpected error occurred during signup. Please try again."
-          );
-        }
-      }
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, SignupPayload>({
+    mutationFn: async (data: SignupPayload): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/signup`, {
+        name: data.username,
+        email: data.email,
+        password: data.password,
+      });
+      return response.data;
+    },
+  });
+};
+
+// route to verify the email.
+export const useVerifyEmail = () => {
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, { otp: string }>({
+    mutationFn: async (data: { otp: string }): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/verify-email`, {
+        otp: data.otp,
+      });
+      return response.data;
+    },
+  });
+};
+
+// route to request a new verification OTP manually
+export const useSendVerificationOtp = () => {
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, void>({
+    mutationFn: async (): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/send-verification-otp`);
+      return response.data;
+    },
+  });
+};
+
+export const useForgotPassword = () => {
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, { email: string }>({
+    mutationFn: async (data: { email: string }): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/forgot-password`, {
+        email: data.email,
+      });
+      return response.data;
+    },
+  });
+};
+
+export const useResetPassword = () => {
+  return useMutation<
+    AuthResponse,
+    AxiosError<{ message?: string }>,
+    { email: string; otp: string; newPassword: string }
+  >({
+    mutationFn: async (data): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/reset-password`, data);
+      return response.data;
+    },
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, { currentPassword: string; newPassword: string }>({
+    mutationFn: async (data): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/change-password`, data);
+      return response.data;
     },
   });
 };
