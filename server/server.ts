@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import ordersRoutes from "./routes/ordersRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
+import statRoutes from "./routes/statRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import promotionRoutes from "./routes/promotionRoutes.js";
 import countryRoutes from "./routes/countryRoutes.js";
@@ -39,11 +39,11 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", ordersRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/category", categoryRoutes);
+app.use("/api/stats", statRoutes);
+app.use("/api/categories", categoryRoutes);
 app.use("/api/promotions", promotionRoutes);
 app.use("/api/countries", countryRoutes);
-app.use("/api/user", userRoutes);
+app.use("/api/users", userRoutes);
 
 const startServer = async () => {
   try {
