@@ -18,14 +18,15 @@ const router = Router();
 router.get("/", getAllSpirits);
 router.get("/:id", getSpiritsById);
 
-router.post("/", requireAuth, requireRole(["admin"]), uploadProductFields, addProduct);
-router.put("/:id", requireAuth, requireRole(["admin"]), uploadProductFields, updateProduct);
-router.delete("/:id", requireAuth, requireRole(["admin"]), deleteProduct);
+router.post("/admin", requireAuth, requireRole(["admin"]), uploadProductFields, addProduct);
+router.put("/admin/:id", requireAuth, requireRole(["admin"]), uploadProductFields, updateProduct);
+router.delete("/admin/:id", requireAuth, requireRole(["admin"]), deleteProduct);
 
 router.get("/:productId/variants", getProductVariants);
 // multipart form data use is better here even though you update only one field like size that doesnot involve image to be uploaded.
-router.post("/:productId/variants", requireAuth, requireRole(["admin"]), uploadVariantFields, addVariant);
-router.put("/:productId/variants/:variantId", requireAuth, requireRole(["admin"]), uploadVariantFields, updateVariant);
-router.delete("/:productId/variants/:variantId", requireAuth, requireRole(["admin"]), deleteVariant);
+router.post("/admin/:productId/variants", requireAuth, requireRole(["admin"]), uploadVariantFields, addVariant);
+router.put("/admin/variants/:variantId", requireAuth, requireRole(["admin"]), uploadVariantFields, updateVariant);
+router.delete("/admin/variants/:variantId", requireAuth, requireRole(["admin"]), deleteVariant);
+
 
 export default router;

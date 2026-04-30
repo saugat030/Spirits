@@ -6,9 +6,9 @@ const router = express.Router();
 
 router.use(requireAuth, requireRole(["admin"]));
 //How much total capital earned:
-router.get("/stats/sales/net", getNetSales);
+router.get("/admin/net", getNetSales);
 //how many total products sold. Sum of quantity
-router.get("/stats/sales/total", totalProducts);
-router.get("/stats/sales/products", getProductSalesDetails);
+router.get("/admin/total", totalProducts);
+router.get("/admin/product-details", getProductSalesDetails);
 
 export default router;

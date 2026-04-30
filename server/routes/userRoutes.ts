@@ -15,9 +15,9 @@ router.get("/profile", apiLimiter, requireAuth, userData);
 router.patch("/profile", apiLimiter, requireAuth, updateProfile);
 
 // admin user management routes
-router.get("/admin/users", apiLimiter, requireAuth, requireRole(["admin"]), getUsers);
+router.get("/admin", apiLimiter, requireAuth, requireRole(["admin"]), getUsers);
 router.patch(
-  "/admin/update/:id",
+  "/admin/:id",
   apiLimiter,
   requireAuth,
   requireRole(["admin"]),
