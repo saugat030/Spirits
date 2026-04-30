@@ -1,6 +1,6 @@
 import { eq, desc, and, count } from "drizzle-orm";
 import { db } from "../../config/dbConnect.js";
-import { orders, orderItems } from "../schema/index.js";
+import { orders, orderItems, liquorVariants, liquors, promotions } from "../schema/index.js";
 import type { DbClient } from "../../types/types.js";
 
 type NewOrderItem = {
@@ -52,10 +52,37 @@ export const fetchOrderById = async (orderId: string, tx: DbClient = db) => {
 };
 
 export const fetchOrderItemsByOrderId = async (orderId: string, tx: DbClient = db) => {
-    return await tx.select()
-        .from(orderItems)
-        .where(eq(orderItems.orderId, orderId));
+    const result = await tx.select({
+        id: orderItems.id,
+        variantId: orderItems.variantId,
+        appliedPromotionId: orderItems.appliedPromotionId,
+        quantity: orderItems.quantity,
+        originalPrice: orderItems.originalPrice,
+        priceAtPurchase: orderItems.priceAtPurchase,
+        discountAmount: orderItems.discountAmount,
+        variant: {
+            id: liquorVariants.id,
+            size: liquorVariants.size,
+            name: liquors.name,
+            thumbnail: liquors.thumbnail_url,
+        },
+        promotion: {
+            id: promotions.id,
+            name: promotions.name,
+            discountType: promotions.discountType,
+            discountValue: promotions.discountValue,
+        }
+    })
+    .from(orderItems)
+    .innerJoin(liquorVariants, eq(orderItems.variantId, liquorVariants.id))
+    .innerJoin(liquors, eq(liquorVariants.liquorId, liquors.id))
+    .leftJoin(promotions, eq(orderItems.appliedPromotionId, promotions.id))
+    .where(eq(orderItems.orderId, orderId));
+
+    return result;
 };
+
+
 
 export const updateOrderStatusInDb = async (orderId: string, status: string, tx: DbClient = db) => {
     const result = await tx.update(orders)

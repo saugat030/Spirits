@@ -124,7 +124,7 @@ export const updateOrderStatusService = async (orderId: string, status: string) 
     if (status === "cancelled") {
         const orderItems = await fetchOrderItemsByOrderId(orderId);
         for (const item of orderItems) {
-            await incrementVariantInventory(item.variantId, item.quantity);
+            await incrementVariantInventory(item.variant.id, item.quantity);
         }
     }
 
