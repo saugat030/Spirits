@@ -55,7 +55,7 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
   getProfileData: async () => {
     try {
       const { data } = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/user/profile`
+        `${import.meta.env.VITE_API_BASE_URL}/users/profile`
       );
       data.success ? set({ userData: data.data }) : toast.error(data.message);
     } catch (err) {

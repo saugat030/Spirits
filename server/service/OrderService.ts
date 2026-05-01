@@ -101,8 +101,11 @@ export const createOrderService = async (params: CreateOrderParams) => {
     });
 };
 
-export const getMyOrdersService = async (userId: string) => {
-    return await fetchOrdersByUserId(userId);
+export const getMyOrdersService = async (
+  userId: string, 
+  options?: { page?: number; limit?: number }
+) => {
+  return await fetchOrdersByUserId(userId, options);
 };
 
 export const getOrderByIdService = async (orderId: string) => {

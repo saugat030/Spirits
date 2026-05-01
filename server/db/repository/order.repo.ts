@@ -36,11 +36,36 @@ export const insertOrderItems = async (items: NewOrderItem[], tx: DbClient = db)
     return await tx.insert(orderItems).values(items).returning();
 };
 
-export const fetchOrdersByUserId = async (userId: string, tx: DbClient = db) => {
-    return await tx.select()
-        .from(orders)
-        .where(eq(orders.userId, userId))
-        .orderBy(desc(orders.createdAt));
+export const fetchOrdersByUserId = async (
+  userId: string, 
+  options?: { page?: number; limit?: number }, 
+  tx: DbClient = db
+) => {
+  const page = Math.max(1, options?.page || 1);
+  const limit = Math.max(1, options?.limit || 20);
+  const offset = (page - 1) * limit;
+
+  const [ordersList, totalCountResult] = await Promise.all([
+    tx.select()
+      .from(orders)
+      .where(eq(orders.userId, userId))
+      .orderBy(desc(orders.createdAt))
+      .limit(limit)
+      .offset(offset),
+    tx.select({ total: count() })
+      .from(orders)
+      .where(eq(orders.userId, userId)),
+  ]);
+
+  const total = totalCountResult[0]?.total || 0;
+
+  return {
+    data: ordersList,
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+  };
 };
 
 export const fetchOrderById = async (orderId: string, tx: DbClient = db) => {
