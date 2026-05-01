@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, integer, text, boolean, pgEnum, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, integer, text, boolean, pgEnum } from "drizzle-orm/pg-core";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
 export const roleEnum = pgEnum("user_role", ["admin", "user"]);
@@ -7,6 +7,9 @@ export const users = pgTable("users", {
     id: uuid("id").defaultRandom().primaryKey().notNull(),
     name: varchar({ length: 100 }).notNull(),
     email: varchar({ length: 100 }).notNull().unique("users_email_key"),
+  // specific social provider ids
+    google_id: varchar("google_id", { length: 255 }).unique(),
+    facebook_id: varchar("facebook_id", { length: 255 }).unique(),
     password: text().notNull(),
     role: roleEnum("role").default("user").notNull(),
     phone_number: varchar("phone_number", { length: 20 }),
@@ -17,7 +20,7 @@ export const users = pgTable("users", {
     is_verified: boolean().default(false),
     resetotp: varchar({ length: 100 }),
     resetotpexpireat: integer(),
-    is_active: boolean().default(false)
+    is_active: boolean().default(true)
     //      (table) => [
     //      unique("users_email_key").on(table.email), another syntax for unique constraint
     //      check("users_role_check", sql`(role)::text = ANY (ARRAY[('admin'::character varying)::text, ('user'::character varying)::text])`),

@@ -22,10 +22,12 @@ const router = Router();
 // auth routes with rate limiting
 router.post("/signup", authLimiter, signup);
 router.post("/login", authLimiter, login);
+router.post("/google", authLimiter, login);
+
 router.post("/logout", logout);
 router.post("/refresh", refreshLimiter, refresh);
 // true or false return garxa if auth
-router.get("/isAuth", apiLimiter, requireAuth, isAuth);
+router.get("/is-auth", apiLimiter, requireAuth, isAuth);
 
 // for user who want to verify accounts later 
 router.post("/send-verification-otp", apiLimiter, requireAuth, sendVerificationOtp);
