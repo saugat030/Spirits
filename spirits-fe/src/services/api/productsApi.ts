@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { ApiResponse, Product } from "../../types/api.types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ApiResponse, Product, ProductVariant } from "../../types/api.types";
 import API from "../axiosInstance";
 import { AxiosError } from "axios";
 
@@ -76,4 +76,103 @@ export const getProductById = async (
   const response = await API.get(url);
   console.log("Product by ID data:", response.data);
   return response.data;
+};
+
+// --- Admin Mutations ---
+export const useAddProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResponse<Product>, AxiosError<{ message?: string }>, FormData>({
+    mutationFn: async (data: FormData) => {
+      const response = await API.post("/products/admin", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+};
+
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResponse<Product>, AxiosError<{ message?: string }>, { id: string; data: FormData }>({
+    mutationFn: async ({ id, data }) => {
+      const response = await API.put(`/products/admin/${id}`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product", variables.id] });
+    },
+  });
+};
+
+export const useDeleteProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResponse<null>, AxiosError<{ message?: string }>, string>({
+    mutationFn: async (id: string) => {
+      const response = await API.delete(`/products/admin/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+};
+
+export const useAddVariant = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResponse<ProductVariant>, AxiosError<{ message?: string }>, { productId: string; data: FormData }>({
+    mutationFn: async ({ productId, data }) => {
+      const response = await API.post(`/products/admin/${productId}/variants`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["product", variables.productId] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+};
+
+export const useUpdateVariant = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResponse<ProductVariant>, AxiosError<{ message?: string }>, { variantId: string; productId: string; data: FormData }>({
+    mutationFn: async ({ variantId, data }) => {
+      const response = await API.put(`/products/admin/variants/${variantId}`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["product", variables.productId] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+};
+
+export const useDeleteVariant = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResponse<null>, AxiosError<{ message?: string }>, { variantId: string; productId: string }>({
+    mutationFn: async ({ variantId }) => {
+      const response = await API.delete(`/products/admin/variants/${variantId}`);
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["product", variables.productId] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
 };

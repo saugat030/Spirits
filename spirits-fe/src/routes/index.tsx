@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
         path: "/cart",
         element: <CartPage />,
       },
-            {
+      {
         element: (
           <RoleGuard requireVerified={true} blockRole="admin">
             {/* since protected route component expects children, we feed it the outlet so it gets the children from the route */}
@@ -70,7 +70,7 @@ export const router = createBrowserRouter([
         path: "/reset-password",
         element: <ResetPasswordPage />,
       },
-            {
+      {
         path: "/unauthorized",
         element: <UnauthorizedPage />,
       },

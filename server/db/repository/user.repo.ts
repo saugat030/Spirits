@@ -32,6 +32,9 @@ export const updateUserById = async (id: string, data: UserUpdateData, tx: DbCli
             is_verified: users.is_verified,
             is_active: users.is_active
         });
-
     return result[0];
+};
+
+export const hardDeleteUserById = async (id: string, tx: DbClient = db) => {
+    await tx.delete(users).where(eq(users.id, id));
 };

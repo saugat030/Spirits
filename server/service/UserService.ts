@@ -1,4 +1,5 @@
-import { fetchAllUsers, updateUserById } from "../db/repository/user.repo.js";
+import { fetchAllUsers, updateUserById, hardDeleteUserById } from "../db/repository/user.repo.js";
+import { getUserById } from "../db/repository/auth.repo.js";
 import type { UserUpdateData } from "../db/schema/User.js";
 
 export const getAllUsersService = async () => {
@@ -45,4 +46,23 @@ export const updateUserService = async (id: string, data: UserUpdateData) => {
     }
 
     return updatedUser;
+};
+
+export const softDeleteUserService = async (id: string) => {
+    const updatedUser = await updateUserById(id, { is_active: false });
+    if (!updatedUser) {
+        throw new Error("USER_NOT_FOUND");
+    }
+    return updatedUser;
+};
+
+export const hardDeleteUserService = async (id: string) => {
+    const user = await getUserById(id);
+    if (!user) {
+        throw new Error("USER_NOT_FOUND");
+    }
+    if (user.is_active !== false) {
+        throw new Error("CANNOT_HARD_DELETE_ACTIVE_USER");
+    }
+    await hardDeleteUserById(id);
 };

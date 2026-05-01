@@ -128,6 +128,17 @@ export interface UpdateProfileRequest {
   address?: string;
 }
 
+export interface UpdateUserRequest {
+  name?: string;
+  email?: string;
+  role?: UserRole;
+  is_verified?: boolean;
+  is_active?: boolean;
+  phone_number?: string;
+  country?: string;
+  address?: string;
+}
+
 export interface NetSalesResponse {
   success: boolean;
   netSales: number;
