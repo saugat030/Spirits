@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { create } from "zustand";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { UserProfile } from "../types/api.types";
 
 axios.defaults.withCredentials = true;

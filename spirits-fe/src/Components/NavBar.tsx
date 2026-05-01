@@ -8,7 +8,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import axios from "axios";
 import { useCartStore } from "../store/useCartStore";
 import API from "../services/axiosInstance";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { ApiResponse } from "../types/api.types";
 import { DROPDOWN_CONSTANTS } from "../constants/homepage.constants";
 import { HashLink } from "react-router-hash-link";

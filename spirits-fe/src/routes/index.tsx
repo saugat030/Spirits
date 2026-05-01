@@ -12,8 +12,15 @@ import VerifyAccountPage from "../pages/VerifyAccountPage";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
-import AdminDashboardPage from "../pages/AdminDashboardPage";
 import { MainLayout } from "../layouts/MainLayout";
+import { AdminLayout } from "../layouts/AdminLayout";
+import AdminDashboardPage from "../pages/admin/DashboardPage";
+import AdminUsersPage from "../pages/admin/UsersPage";
+import AdminCategoriesPage from "../pages/admin/CategoriesPage";
+import AdminProductsPage from "../pages/admin/ProductsPage";
+import AdminOrdersPage from "../pages/admin/OrdersPage";
+import AdminPromotionsPage from "../pages/admin/PromotionsPage";
+import AdminOthersPage from "../pages/admin/OthersPage";
 
 export const router = createBrowserRouter([
   {
@@ -84,8 +91,38 @@ export const router = createBrowserRouter([
     path: "/admin",
     element: (
       <RoleGuard requiredRole="admin">
-        <AdminDashboardPage />
+        <AdminLayout />
       </RoleGuard>
     ),
+    children: [
+      {
+        index: true,
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: "users",
+        element: <AdminUsersPage />,
+      },
+      {
+        path: "categories",
+        element: <AdminCategoriesPage />,
+      },
+      {
+        path: "products",
+        element: <AdminProductsPage />,
+      },
+      {
+        path: "orders",
+        element: <AdminOrdersPage />,
+      },
+      {
+        path: "promotions",
+        element: <AdminPromotionsPage />,
+      },
+      {
+        path: "others",
+        element: <AdminOthersPage />,
+      },
+    ],
   },
 ]);

@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 type RoleGuardProps = {
   children: ReactNode;

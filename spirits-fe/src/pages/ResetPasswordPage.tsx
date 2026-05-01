@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useResetPassword } from "../services/api/authApi";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
