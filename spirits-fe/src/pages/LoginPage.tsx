@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { useLogin, useSignup } from "../services/api/authApi";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
   const [state, setState] = useState<"Login" | "Sign Up">("Login");
   const navigate = useNavigate();
-  const userData = useAuthStore((state) => state.userData);
+  // const userData = useAuthStore((state) => state.userData);
   const setIsLoggedin = useAuthStore((state) => state.setIsLoggedin);
   const getProfileData = useAuthStore((state) => state.getProfileData);
 

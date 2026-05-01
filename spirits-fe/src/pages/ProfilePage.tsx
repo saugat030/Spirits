@@ -5,7 +5,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useUpdateProfile } from "../services/api/userApi";
 import { useChangePassword } from "../services/api/authApi";
 import { useGetCountries } from "../services/api/countryApi";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const ProfilePage = () => {
@@ -74,7 +74,7 @@ const ProfilePage = () => {
     e.preventDefault();
 
     if (!hasChanges) {
-      toast.info("No changes to save");
+      toast("No changes to save");
       return;
     }
 

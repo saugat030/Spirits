@@ -137,3 +137,36 @@ export interface UpdateProfileRequest {
   country?: string;
   address?: string;
 }
+
+export interface UpdateUserRequest {
+  name?: string;
+  email?: string;
+  role?: UserRole;
+  is_verified?: boolean;
+  is_active?: boolean;
+  phone_number?: string;
+  country?: string;
+  address?: string;
+}
+
+export interface NetSalesResponse {
+  success: boolean;
+  netSales: number;
+}
+
+export interface TotalProductsResponse {
+  success: boolean;
+  totalProducts: number;
+}
+
+export interface ProductSalesDetails {
+  productId: string;
+  productName: string;
+  totalQuantitySold: number;
+  totalRevenue: number;
+}
+
+export interface ProductSalesDetailsResponse {
+  success: boolean;
+  data: ProductSalesDetails[];
+}

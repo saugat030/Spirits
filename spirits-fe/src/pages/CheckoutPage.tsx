@@ -4,9 +4,8 @@ import { FaLongArrowAltRight, FaMapMarkerAlt, FaCreditCard } from "react-icons/f
 import { useCartStore } from "../store/useCartStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useCreateOrder } from "../services/api/ordersApi";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import ClipLoader from "react-spinners/ClipLoader";
-import NavBar from "../components/NavBar";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();

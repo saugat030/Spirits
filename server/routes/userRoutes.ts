@@ -3,6 +3,8 @@ import {
   getUsers,
   updateUsers,
   updateProfile,
+  softDeleteUser,
+  hardDeleteUser,
 } from "../controllers/userController.js";
 import { userData } from "../controllers/authController.js";
 import { requireAuth, requireRole } from "../middlewares/auth.middleware.js";
@@ -22,6 +24,21 @@ router.patch(
   requireAuth,
   requireRole(["admin"]),
   updateUsers
+);
+router.delete(
+  "/admin/:id",
+  apiLimiter,
+  requireAuth,
+  requireRole(["admin"]),
+  softDeleteUser
+);
+// requires is_active to be true to delete
+router.delete(
+  "/admin/:id/hard",
+  apiLimiter,
+  requireAuth,
+  requireRole(["admin"]),
+  hardDeleteUser
 );
 
 export default router;

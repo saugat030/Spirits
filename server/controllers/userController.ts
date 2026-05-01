@@ -6,7 +6,7 @@
 // };
 
 import { type Request, type Response } from "express";
-import { getAllUsersService, updateUserService } from "../service/UserService.js";
+import { getAllUsersService, updateUserService, softDeleteUserService, hardDeleteUserService } from "../service/UserService.js";
 import type { UserUpdateData } from "../db/schema/User.js";
 
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
@@ -187,6 +187,81 @@ export const updateProfile = async (req: UpdateProfileRequest, res: Response): P
     res.status(500).json({
       success: false,
       message: "Server error while updating profile."
+    });
+  }
+};
+
+
+export const softDeleteUser = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.params.id;
+
+  if (!userId) {
+    res.status(400).json({
+      success: false,
+      message: "Invalid user ID format."
+    });
+    return;
+  }
+
+  try {
+    const deletedUser = await softDeleteUserService(userId as string);
+    res.status(200).json({
+      success: true,
+      message: "User has been deactivated successfully.",
+      data: deletedUser
+    });
+  } catch (error: any) {
+    if (error.message === "USER_NOT_FOUND") {
+      res.status(404).json({
+        success: false,
+        message: `Unable to find user with the ID: ${userId}`
+      });
+      return;
+    }
+    console.error("Soft Delete User Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while deactivating user."
+    });
+  }
+};
+
+export const hardDeleteUser = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.params.id;
+
+  if (!userId) {
+    res.status(400).json({
+      success: false,
+      message: "Invalid user ID format."
+    });
+    return;
+  }
+
+  try {
+    await hardDeleteUserService(userId as string);
+    res.status(200).json({
+      success: true,
+      message: "User has been permanently deleted."
+    });
+  } catch (error: any) {
+    if (error.message === "USER_NOT_FOUND") {
+      res.status(404).json({
+        success: false,
+        message: `Unable to find user with the ID: ${userId}`
+      });
+      return;
+    }
+    if (error.message === "CANNOT_HARD_DELETE_ACTIVE_USER") {
+      res.status(400).json({
+        success: false,
+        message: "Cannot delete an active user. User must be deactivated first."
+      });
+      return;
+    }
+    console.error("Hard Delete User Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while deleting user."
     });
   }
 };

@@ -104,8 +104,11 @@ export const createOrder = async (
 export const getMyOrders = async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.user!.id;
-        const orders = await getMyOrdersService(userId);
-        res.status(200).json({ success: true, data: orders });
+        const page = Math.max(1, Number(req.query.page) || 1);
+        const limit = Number(req.query.limit) || 20;
+
+        const result = await getMyOrdersService(userId, { page, limit });
+        res.status(200).json({ success: true, ...result });
     } catch (error) {
         console.error("Fetch Orders Error:", error);
         res.status(500).json({ success: false, message: "Could not fetch your orders." });

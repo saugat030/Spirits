@@ -3,7 +3,7 @@ import { FaLongArrowAltRight, FaBookmark, FaHeart, FaShare } from "react-icons/f
 import { PiStarFill } from "react-icons/pi";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { useCartStore } from "../store/useCartStore";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { useGetProductById } from "../services/api/productsApi";
 import { useState } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
