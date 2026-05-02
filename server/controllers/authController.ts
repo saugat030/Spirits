@@ -10,23 +10,19 @@ import {
   sendResetOtpService,
   resetPasswordService,
   changePasswordService,
+  googleAuthService,
 } from "../service/AuthService.js";
 import { isProduction } from "../constants/auth.constants.js";
 import { getUserDataService } from "../service/AuthService.js";
 
 // signup
-export const signup = async (req: Request, res: Response): Promise<void> => {
+export const localSignup = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    res.status(400).json({ success: false, message: "Missing registration details" });
-    return;
-  }
-
   try {
     const { accessToken, refreshToken } = await registerUserService({
-      name,
-      email,
-      password,
+      name: name.trim(),
+      email: email.trim(),
+      password: password.trim(),
       role: "user",
     });
     res.cookie("accessToken", accessToken, {
@@ -54,8 +50,46 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const googleLogin = async (req: Request, res: Response): Promise<void> => {
+  const { idToken } = req.body;
+  try {
+    if (!idToken) {
+      res.status(400).json({ success: false, message: "Google ID token is required." });
+      return;
+    }
+    // pass the token to our new service
+    const { accessToken, refreshToken, isNewUser } = await googleAuthService(idToken);
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    const message = isNewUser 
+      ? "Account created and logged in via Google successfully." 
+      : "Logged in via Google successfully.";
+    console.log("Google Login successful" , message);
+    res.status(200).json({ success: true, message });
+  } catch (err: any) {
+    console.error("Google Auth Error:", err);
+    if (err.message === "Invalid Google token payload" || err.message.includes("Invalid token signature")) {
+      res.status(401).json({ success: false, message: "Invalid Google token or authentication failed." });
+      return;
+    }
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 // login
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const localLogin = async (req: Request, res: Response): Promise<void> => {
   console.log("login controller reached");
   const { email, password } = req.body;
   if (!email || !password) {
@@ -338,6 +372,10 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
   } catch (err: any) {
     if (err.message === "USER_NOT_FOUND") {
       res.status(404).json({ success: false, message: "User not found." });
+      return;
+    }
+    if (err.message === "NO_LOCAL_PASSWORD") {
+      res.status(400).json({ success: false, message: "This account was created with Google and doesn't have a password. Use the reset password option to create one." });
       return;
     }
     if (err.message === "INVALID_CURRENT_PASSWORD") {

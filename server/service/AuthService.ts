@@ -19,17 +19,21 @@ import {
   clearResetOtp,
   getResetOtpData,
   updateUserPassword,
+  updateGoogleId,
+  createGoogleUser,
 } from "../db/repository/auth.repo.js";
 import { REFRESH_TOKEN_SECRET, saltRounds } from "../constants/auth.constants.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/auth.utils.js";
+import { OAuth2Client } from "google-auth-library";
 import { generateOtp, otpExpiresAt } from "../utils/otp.utils.js";
 import { sendOtpEmail } from "../utils/email.utils.js";
 import type { RefreshTokenPayload } from "../types/types.js";
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const registerUserService = async (userData: NewUser) => {
   const existingUser = await getUserByEmail(userData.email);
   if (existingUser) throw new Error("USER_EXISTS");
-  const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+  const hashedPassword = await bcrypt.hash(userData.password!, saltRounds);
 
   // everything inside here rolls back if any of the step fails
   return await db.transaction(async (tx) => {
@@ -53,9 +57,53 @@ export const registerUserService = async (userData: NewUser) => {
   });
 };
 
+export const googleAuthService = async (idToken: string) => {
+  // verify the token with Google
+  const ticket = await googleClient.verifyIdToken({
+    idToken,
+    audience: process.env.GOOGLE_CLIENT_ID!,
+  });
+  const payload = ticket.getPayload();
+  if (!payload || !payload.email) {
+    throw new Error("Invalid Google token payload");
+  }
+  let isNewUser = false;
+  const { email, name, sub: googleId } = payload;
+
+  return await db.transaction(async (tx) => {
+    const existingUser = await getUserByEmail(email, tx);
+    let userId: string;
+    let userRole: "admin" | "user";
+    if (existingUser) {
+      // user exists. If they don't have a google_id yet, the local user is logging in with Google for the first time so link them
+      if (!existingUser.google_id) {
+        await updateGoogleId(existingUser.id, googleId, existingUser.is_verified, tx);
+      }
+      userId = existingUser.id;
+      userRole = existingUser.role;
+    } else {
+      // user does not exist. Create them instantly.
+      isNewUser = true;
+      const newUser = await createGoogleUser({ email, name: name || "Google User", googleId }, tx);
+      userId = newUser.id;
+      userRole = newUser.role;
+    }
+    // normal token flow
+    const accessToken = generateAccessToken({ id: userId, role: userRole });
+    const refreshToken = generateRefreshToken({ id: userId, role: userRole });
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await insertRefreshToken(userId, refreshToken, expiresAt.toISOString(), tx);
+
+    return { accessToken, refreshToken, isNewUser };
+  });
+};
+
 export const loginUserService = async (email: string, passwordUnHashed: string) => {
   const user = await getUserByEmail(email);
-  if (!user) {
+  // if a user exists but only through google then pw will be null.
+  if (!user || !user.password) {
     throw new Error("INVALID_CREDENTIALS");
   }
   // check password
@@ -207,6 +255,7 @@ export const changePasswordService = async (
   // getUserByEmail includes the password hash for comparison
   const fullUser = await getUserByEmail(userData.email);
   if (!fullUser) throw new Error("USER_NOT_FOUND");
+  if (!fullUser.password) throw new Error("NO_LOCAL_PASSWORD");
 
   const isPasswordValid = await bcrypt.compare(currentPassword, fullUser.password);
   if (!isPasswordValid) throw new Error("INVALID_CURRENT_PASSWORD");

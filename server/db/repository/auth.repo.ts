@@ -26,6 +26,7 @@ export const getUserByEmail = async (email: string, tx: DbClient = db) => {
       name: users.name,
       email: users.email,
       password: users.password,
+      google_id: users.google_id,
       role: users.role,
       phone_number: users.phone_number,
       country: users.country,
@@ -59,6 +60,41 @@ export const getUserById = async (id: string, tx: DbClient = db) => {
 export const createUser = async (userData: NewUser, tx: DbClient = db) => {
   const result = await tx.insert(users).values(userData).returning({ id: users.id });
   return result[0]!.id;
+};
+
+export const updateGoogleId = async (
+  userId: string,
+  googleId: string,
+  is_verified: boolean,
+  tx: DbClient = db,
+) => {
+  if (!is_verified) {
+    await tx
+      .update(users)
+      .set({ google_id: googleId, is_verified: true })
+      .where(eq(users.id, userId));
+  } else {
+    await tx
+      .update(users)
+      .set({ google_id: googleId })
+      .where(eq(users.id, userId));
+  }
+};
+
+export const createGoogleUser = async (
+  data: { email: string; name: string; googleId: string },
+  tx: DbClient = db
+) => {
+  const result = await tx.insert(users).values({
+    email: data.email,
+    name: data.name,
+    google_id: data.googleId,
+    is_verified: true,
+    role: "user",
+    password: null,
+  }).returning({ id: users.id, role: users.role });
+  
+  return result[0]!;
 };
 
 export const insertRefreshToken = async (
