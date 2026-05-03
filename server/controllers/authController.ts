@@ -1,4 +1,3 @@
-import { db } from "../config/dbConnect.js";
 import { type Request, type Response } from "express";
 import {
   loginUserService,

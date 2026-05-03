@@ -84,3 +84,12 @@ export const useChangePassword = () => {
     },
   });
 };
+
+export const useGoogleLogin = () => {
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, { idToken: string }>({
+    mutationFn: async (data): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/google`, data);
+      return response.data;
+    },
+  });
+};

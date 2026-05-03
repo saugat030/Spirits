@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { useLogin, useSignup } from "../services/api/authApi";
 import { toast } from "react-hot-toast";
+import GoogleSignInButton from "../components/GoogleSignInButton";
 
 const Login = () => {
   const [state, setState] = useState<"Login" | "Sign Up">("Login");
@@ -234,7 +235,14 @@ const Login = () => {
             )}
           </button>
 
-          {/* Switch State */}
+          {/* divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-white/20"></div>
+            <span className="text-gray-400 text-sm">or</span>
+            <div className="flex-1 h-px bg-white/20"></div>
+          </div>
+          <GoogleSignInButton />
+          {/* switch state */}
           <div className="text-center space-y-3">
             <div>
               <button
