@@ -11,6 +11,7 @@ import {
   resetPassword,
   changePassword,
   googleLogin,
+  setPassword,
 } from "../controllers/authController.js";
 import {
   authLimiter,
@@ -37,6 +38,7 @@ router.post("/verify-email", apiLimiter, requireAuth, verifyEmail);
 
 // new password old password only. No otp requried
 router.post("/change-password", apiLimiter, requireAuth, changePassword);
+router.post("/set-password", apiLimiter, requireAuth, setPassword);
 
 // password reset routes without auth
 router.post("/forgot-password", authLimiter, forgotPassword);

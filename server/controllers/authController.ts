@@ -10,6 +10,7 @@ import {
   resetPasswordService,
   changePasswordService,
   googleAuthService,
+  setPasswordService,
 } from "../service/AuthService.js";
 import { isProduction } from "../constants/auth.constants.js";
 import { getUserDataService } from "../service/AuthService.js";
@@ -382,6 +383,36 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
       return;
     }
     console.error("Change Password Error:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const setPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+
+    const { newPassword } = req.body;
+    if (!newPassword) {
+      res.status(400).json({ success: false, message: "New password is required." });
+      return;
+    }
+
+    await setPasswordService(req.user.id, newPassword);
+    res.status(200).json({ success: true, message: "Password set successfully." });
+
+  } catch (err: any) {
+    if (err.message === "USER_NOT_FOUND") {
+      res.status(404).json({ success: false, message: "User not found." });
+      return;
+    }
+    if (err.message === "PASSWORD_ALREADY_SET") {
+      res.status(400).json({ success: false, message: "You already have a password. Use change password instead." });
+      return;
+    }
+    console.error("Set Password Error:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

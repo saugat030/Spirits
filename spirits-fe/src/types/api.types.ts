@@ -14,6 +14,7 @@ export interface UserProfile {
   address: string | null;
   is_verified: boolean;
   is_active: boolean;
+  has_password: boolean;
 }
 export interface LoginPayload {
   email: string;

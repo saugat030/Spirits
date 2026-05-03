@@ -19,27 +19,27 @@ const Login = () => {
   const { mutate: loginMutate, isPending: loginPending } = useLogin();
   const { mutate: signupMutate, isPending: signupPending } = useSignup();
 
-    const handleLogin = () => {
-      loginMutate(
-        { email, password },
-        {
-          onSuccess: async (data) => {
-            console.log("Login successful:", data.message);
-            setIsLoggedin(true);
-            toast.success("Logged in Successfuly.");
-            await getProfileData();
-            // fetch the role from store
-            const role = useAuthStore.getState().userData?.role;
-            navigate(role === "admin" ? "/admin" : "/");
-          },
-          onError: (error) => {
-            console.error("Login failed:", error.message);
-            toast.error("Login Failed");
-            setValidationError(error.message);
-          },
+  const handleLogin = () => {
+    loginMutate(
+      { email, password },
+      {
+        onSuccess: async (data) => {
+          console.log("Login successful:", data.message);
+          setIsLoggedin(true);
+          toast.success("Logged in Successfuly.");
+          await getProfileData();
+          // fetch the role from store
+          const role = useAuthStore.getState().userData?.role;
+          navigate(role === "admin" ? "/admin" : "/");
         },
-      );
-    };
+        onError: (error) => {
+          console.error("Login failed:", error.message);
+          toast.error("Login Failed");
+          setValidationError(error.message);
+        },
+      },
+    );
+  };
 
   const handleSignup = () => {
     signupMutate(
@@ -98,23 +98,15 @@ const Login = () => {
   return (
     <div className="bg-slate-900 bg-loginBg h-screen bg-cover flex items-center justify-center font-Poppins p-4">
       <div className="absolute inset-0 bg-black/30"></div>
-
       <div className="relative z-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto">
         {/* Logo and Brand */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-              <img
-                src="/static/Logo.png"
-                alt="Logo"
-                className="w-8 h-8 object-contain"
-              />
-            </div>
-            <h1 className="text-2xl font-bold text-white">Spirits</h1>
-          </div>
-          <div className="w-16 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mx-auto"></div>
+        <div className="flex items-center justify-start mb-2">
+          <img
+            src="/static/Logo.png"
+            alt="Logo"
+            className="w-12 h-12 object-contain"
+          />
         </div>
-
         {/* Form Title */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-white mb-2">{state}</h2>
@@ -204,7 +196,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full bg-orange-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">

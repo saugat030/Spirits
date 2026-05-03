@@ -263,3 +263,16 @@ export const changePasswordService = async (
   const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
   await updateUserPassword(userId, hashedPassword);
 };
+
+export const setPasswordService = async (userId: string, newPassword: string) => {
+  const userData = await getUserById(userId);
+  if (!userData) throw new Error("USER_NOT_FOUND");
+
+  // check if the user already has a password set
+  const fullUser = await getUserByEmail(userData.email);
+  if (!fullUser) throw new Error("USER_NOT_FOUND");
+  if (fullUser.password) throw new Error("PASSWORD_ALREADY_SET");
+
+  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+  await updateUserPassword(userId, hashedPassword);
+};

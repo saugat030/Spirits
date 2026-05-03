@@ -1,4 +1,4 @@
-import { and, eq, lt } from "drizzle-orm";
+import { and, eq, lt, isNotNull } from "drizzle-orm";
 import { db } from "../../config/dbConnect.js";
 import { users, refreshTokens, type NewUser } from "../schema/index.js";
 import type { DbClient } from "../../types/types.js";
@@ -51,6 +51,7 @@ export const getUserById = async (id: string, tx: DbClient = db) => {
       address: users.address,
       is_verified: users.is_verified,
       is_active: users.is_active,
+      has_password: isNotNull(users.password),
     })
     .from(users)
     .where(eq(users.id, id));
