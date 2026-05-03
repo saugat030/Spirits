@@ -42,6 +42,13 @@ export interface Category {
   category_image_url: string;
 }
 
+export interface CreateCategoryPayload {
+  category_name: string;
+  category_image_url: string;
+}
+
+export type UpdateCategoryPayload = Partial<CreateCategoryPayload>
+
 export type Filters = {
   type: string | null;
   name: string | null;
