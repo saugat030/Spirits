@@ -7,7 +7,7 @@ export const useGetCategories = () => {
   return useQuery<ApiResponse<Category[]>, AxiosError<{ message?: string }>>({
     queryKey: ["categories"],
     queryFn: async (): Promise<ApiResponse<Category[]>> => {
-      const url = `/category`;
+      const url = `/categories`;
       const response = await API.get(url);
       console.log("Category data:(log from query function)", response.data);
       return response.data;
@@ -39,7 +39,7 @@ export const getCategoryById = async (
   if (!id) {
     throw new Error("Category ID is required");
   }
-  const url = `/category/${id}`;
+  const url = `/categories/${id}`;
   console.log("Fetching category with ID:", id);
   const response = await API.get(url);
   console.log("Category by ID data:", response.data);
