@@ -42,16 +42,17 @@ export const getCategoryById = async (req: Request, res: Response): Promise<void
             message: `Category with the ID: ${id} fetched successfully.`,
             data,
         });
-    } catch (error: any) {
-        if (error.message === "CATEGORY_NOT_FOUND") {
-            res.status(404).json({
-                success: false,
-                message: "No category found with that ID",
-            });
-            return;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            if (error.message === "CATEGORY_NOT_FOUND") {
+                res.status(404).json({
+                    success: false,
+                    message: "No category found with that ID",
+                });
+                return;
+            }
+            console.error("Error fetching category by ID:", error);
         }
-
-        console.error("Error fetching category by ID:", error);
         res.status(500).json({
             success: false,
             message: "Internal server error",
@@ -113,16 +114,17 @@ export const updateCategory = async (req: Request, res: Response): Promise<void>
             message: "Category updated successfully.",
             data: updated,
         });
-    } catch (error: any) {
-        if (error.message === "CATEGORY_NOT_FOUND") {
-            res.status(404).json({
-                success: false,
-                message: `Unable to find such category with the ID: ${id}`,
-            });
-            return;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            if (error.message === "CATEGORY_NOT_FOUND") {
+                res.status(404).json({
+                    success: false,
+                    message: `Unable to find such category with the ID: ${id}`,
+                });
+                return;
+            }
+            console.error("Update Category Error:", error);
         }
-
-        console.error("Update Category Error:", error);
         res.status(500).json({
             success: false,
             message: "Server error while trying to update the category",
@@ -148,16 +150,17 @@ export const deleteCategory = async (req: Request, res: Response): Promise<void>
             message: "Category deleted successfully.",
             data: deleted,
         });
-    } catch (error: any) {
-        if (error.message === "CATEGORY_NOT_FOUND") {
-            res.status(404).json({
-                success: false,
-                message: "Category with such ID not found to delete.",
-            });
-            return;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            if (error.message === "CATEGORY_NOT_FOUND") {
+                res.status(404).json({
+                    success: false,
+                    message: "Category with such ID not found to delete.",
+                });
+                return;
+            }
+            console.error("Delete Category Error:", error);
         }
-
-        console.error("Delete Category Error:", error);
         res.status(500).json({
             success: false,
             message: "Server error while trying to delete the category.",

@@ -6,16 +6,23 @@ on:
       - main
     paths:
       - 'spirits-fe/**'
+      - '.github/workflows/frontend-ci.yml'
   pull_request:
     branches:
       - main
     paths:
       - 'spirits-fe/**'
+      - '.github/workflows/frontend-ci.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate-frontend:
     name: Frontend Lint and Build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     
     defaults:
       run:

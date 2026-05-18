@@ -8,6 +8,7 @@ import {
 } from '../../services/api/productsApi';
 import { ProductVariant } from '../../types/api.types';
 import { Plus, Edit2, Trash2, X, AlertCircle, ArrowLeft, Package, ImageIcon } from 'lucide-react';
+import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 
@@ -92,8 +93,14 @@ const VariantsPage = () => {
         toast.success('Variant created successfully');
       }
       handleCloseModal();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'An error occurred');
+    } catch (err: unknown) {
+      let errorMessage = 'An error occurred';
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.message || errorMessage;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -103,8 +110,14 @@ const VariantsPage = () => {
       try {
         await deleteVariant.mutateAsync({ variantId, productId });
         toast.success('Variant deleted successfully');
-      } catch (error: any) {
-        toast.error(error?.response?.data?.message || 'Failed to delete variant');
+      } catch (err: unknown) {
+        let errorMessage = 'Failed to delete variant';
+        if (axios.isAxiosError(err)) {
+          errorMessage = err.response?.data?.message || errorMessage;
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+        toast.error(errorMessage);
       }
     }
   };

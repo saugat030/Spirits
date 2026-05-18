@@ -17,15 +17,17 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
       data: usersList
     });
 
-  } catch (error: any) {
-    if (error.message === "NO_USERS_FOUND") {
-      res.status(404).json({
-        success: false,
-        message: "Unable to fetch any records."
-      });
-      return;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      if (error.message === "NO_USERS_FOUND") {
+        res.status(404).json({
+          success: false,
+          message: "Unable to fetch any records."
+        });
+        return;
+      }
+      console.error("Fetch Users Error:", error);
     }
-    console.error("Fetch Users Error:", error);
     res.status(500).json({
       success: false,
       message: "Server error while fetching users."
@@ -109,15 +111,17 @@ export const updateUsers = async (req: UpdateUserRequest, res: Response): Promis
       data: updatedUser
     });
 
-  } catch (error: any) {
-    if (error.message === "USER_NOT_FOUND") {
-      res.status(404).json({
-        success: false,
-        message: `Unable to find user with the ID: ${userId}`
-      });
-      return;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      if (error.message === "USER_NOT_FOUND") {
+        res.status(404).json({
+          success: false,
+          message: `Unable to find user with the ID: ${userId}`
+        });
+        return;
+      }
+      console.error("Update User Error:", error);
     }
-    console.error("Update User Error:", error);
     res.status(500).json({
       success: false,
       message: "Server error while trying to update the user."
@@ -210,15 +214,17 @@ export const softDeleteUser = async (req: Request, res: Response): Promise<void>
       message: "User has been deactivated successfully.",
       data: deletedUser
     });
-  } catch (error: any) {
-    if (error.message === "USER_NOT_FOUND") {
-      res.status(404).json({
-        success: false,
-        message: `Unable to find user with the ID: ${userId}`
-      });
-      return;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      if (error.message === "USER_NOT_FOUND") {
+        res.status(404).json({
+          success: false,
+          message: `Unable to find user with the ID: ${userId}`
+        });
+        return;
+      }
+      console.error("Soft Delete User Error:", error);
     }
-    console.error("Soft Delete User Error:", error);
     res.status(500).json({
       success: false,
       message: "Server error while deactivating user."
@@ -243,22 +249,24 @@ export const hardDeleteUser = async (req: Request, res: Response): Promise<void>
       success: true,
       message: "User has been permanently deleted."
     });
-  } catch (error: any) {
-    if (error.message === "USER_NOT_FOUND") {
-      res.status(404).json({
-        success: false,
-        message: `Unable to find user with the ID: ${userId}`
-      });
-      return;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      if (error.message === "USER_NOT_FOUND") {
+        res.status(404).json({
+          success: false,
+          message: `Unable to find user with the ID: ${userId}`
+        });
+        return;
+      }
+      if (error.message === "CANNOT_HARD_DELETE_ACTIVE_USER") {
+        res.status(400).json({
+          success: false,
+          message: "Cannot delete an active user. User must be deactivated first."
+        });
+        return;
+      }
+      console.error("Hard Delete User Error:", error);
     }
-    if (error.message === "CANNOT_HARD_DELETE_ACTIVE_USER") {
-      res.status(400).json({
-        success: false,
-        message: "Cannot delete an active user. User must be deactivated first."
-      });
-      return;
-    }
-    console.error("Hard Delete User Error:", error);
     res.status(500).json({
       success: false,
       message: "Server error while deleting user."

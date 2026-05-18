@@ -40,11 +40,13 @@ export const localSignup = async (req: Request, res: Response): Promise<void> =>
     });
 
     res.status(201).json({ success: true, message: "User successfully registered. Verification OTP sent to email." });
-  } catch (err:any) {
-     console.error("Signup Error:", err);
-    if (err.message === "USER_EXISTS") {
-      res.status(409).json({ success: false, message: "User already exists." });
-      return;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Signup Error:", err);
+      if (err.message === "USER_EXISTS") {
+        res.status(409).json({ success: false, message: "User already exists." });
+        return;
+      }
     }
     res.status(500).json({ success: false, message: "Internal server error" });
   }
@@ -78,11 +80,13 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
       : "Logged in via Google successfully.";
     console.log("Google Login successful" , message);
     res.status(200).json({ success: true, message });
-  } catch (err: any) {
-    console.error("Google Auth Error:", err);
-    if (err.message === "Invalid Google token payload" || err.message.includes("Invalid token signature")) {
-      res.status(401).json({ success: false, message: "Invalid Google token or authentication failed." });
-      return;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Google Auth Error:", err);
+      if (err.message === "Invalid Google token payload" || err.message.includes("Invalid token signature")) {
+        res.status(401).json({ success: false, message: "Invalid Google token or authentication failed." });
+        return;
+      }
     }
     res.status(500).json({ success: false, message: "Internal server error" });
   }
@@ -123,16 +127,18 @@ export const localLogin = async (req: Request, res: Response): Promise<void> => 
       message: `${role} successfully logged in`,
     });
 
-  } catch (err: any) {
-    if (err.message === "INVALID_CREDENTIALS") {
-      res.status(401).json({
-        success: false,
-        message: "Invalid email or password."
-      });
-      console.log("Invalid login credentials");
-      return;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      if (err.message === "INVALID_CREDENTIALS") {
+        res.status(401).json({
+          success: false,
+          message: "Invalid email or password."
+        });
+        console.log("Invalid login credentials");
+        return;
+      }
+      console.log("Login Server Error:", err);
     }
-    console.log("Login Server Error:", err);
     res.status(500).json({
       success: false,
       message: "Internal server error"
@@ -191,12 +197,14 @@ export const userData = async (req: Request, res: Response): Promise<void> => {
       data: user,
     });
 
-  } catch (error: any) {
-    if (error.message === "USER_NOT_FOUND") {
-      res.status(404).json({ success: false, message: "User with that ID not found." });
-      return;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      if (error.message === "USER_NOT_FOUND") {
+        res.status(404).json({ success: false, message: "User with that ID not found." });
+        return;
+      }
+      console.error("GET USER DATA ERROR:", error);
     }
-    console.error("GET USER DATA ERROR:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -230,16 +238,18 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
       accessToken: tokens.accessToken,
     });
 
-  } catch (error: any) {
-    const authErrors = ["INVALID_TOKEN", "TOKEN_EXPIRED", "INVALID_SIGNATURE"];
-    if (authErrors.includes(error.message)) {
-      // if a refresh token fails, clear the cookies so the fe can log out the user immediately
-      res.clearCookie("accessToken");
-      res.clearCookie("refreshToken");
-      res.status(403).json({ success: false, message: "Invalid or expired refresh token. Please log in again." });
-      return;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const authErrors = ["INVALID_TOKEN", "TOKEN_EXPIRED", "INVALID_SIGNATURE"];
+      if (authErrors.includes(error.message)) {
+        // if a refresh token fails, clear the cookies so the fe can log out the user immediately
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
+        res.status(403).json({ success: false, message: "Invalid or expired refresh token. Please log in again." });
+        return;
+      }
+      console.error("Refresh Error:", error);
     }
-    console.error("Refresh Error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -255,16 +265,18 @@ export const sendVerificationOtp = async (req: Request, res: Response): Promise<
     await sendVerificationOtpService(req.user.id);
     res.status(200).json({ success: true, message: "Verification OTP sent to your email." });
 
-  } catch (err: any) {
-    if (err.message === "USER_NOT_FOUND") {
-      res.status(404).json({ success: false, message: "User not found." });
-      return;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      if (err.message === "USER_NOT_FOUND") {
+        res.status(404).json({ success: false, message: "User not found." });
+        return;
+      }
+      if (err.message === "ALREADY_VERIFIED") {
+        res.status(400).json({ success: false, message: "Email is already verified." });
+        return;
+      }
+      console.error("Send Verification OTP Error:", err);
     }
-    if (err.message === "ALREADY_VERIFIED") {
-      res.status(400).json({ success: false, message: "Email is already verified." });
-      return;
-    }
-    console.error("Send Verification OTP Error:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -286,16 +298,18 @@ export const verifyEmail = async (req: Request, res: Response): Promise<void> =>
     console.log("Email verified successfully.");  
     res.status(200).json({ success: true, message: "Email verified successfully." });
 
-  } catch (err: any) {
-    console.log("Verify Email Error:", err);
-    const otpErrors: Record<string, string> = {
-      "NO_OTP_FOUND": "No verification OTP found. Please request a new one.",
-      "OTP_EXPIRED": "OTP has expired. Please request a new one.",
-      "INVALID_OTP": "Invalid OTP. Please try again.",
-    };
-    if (otpErrors[err.message]) {
-      res.status(400).json({ success: false, message: otpErrors[err.message] });
-      return;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log("Verify Email Error:", err);
+      const otpErrors: Record<string, string> = {
+        "NO_OTP_FOUND": "No verification OTP found. Please request a new one.",
+        "OTP_EXPIRED": "OTP has expired. Please request a new one.",
+        "INVALID_OTP": "Invalid OTP. Please try again.",
+      };
+      if (otpErrors[err.message]) {
+        res.status(400).json({ success: false, message: otpErrors[err.message] });
+        return;
+      }
     }
     res.status(500).json({ success: false, message: "Internal server error" });
   }
@@ -318,8 +332,10 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
       message: "If an account with that email exists, a reset OTP has been sent.",
     });
 
-  } catch (err: any) {
-    console.error("Forgot Password Error:", err);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Forgot Password Error:", err);
+    }
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -335,19 +351,21 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     await resetPasswordService(email, otp, newPassword);
     res.status(200).json({ success: true, message: "Password reset successfully." });
 
-  } catch (err: any) {
-    const errorMap: Record<string, { status: number; message: string }> = {
-      "INVALID_CREDENTIALS": { status: 401, message: "Invalid email." },
-      "NO_OTP_FOUND": { status: 400, message: "No reset OTP found. Please request a new one." },
-      "OTP_EXPIRED": { status: 400, message: "OTP has expired. Please request a new one." },
-      "INVALID_OTP": { status: 400, message: "Invalid OTP. Please try again." },
-    };
-    const mapped = errorMap[err.message];
-    if (mapped) {
-      res.status(mapped.status).json({ success: false, message: mapped.message });
-      return;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      const errorMap: Record<string, { status: number; message: string }> = {
+        "INVALID_CREDENTIALS": { status: 401, message: "Invalid email." },
+        "NO_OTP_FOUND": { status: 400, message: "No reset OTP found. Please request a new one." },
+        "OTP_EXPIRED": { status: 400, message: "OTP has expired. Please request a new one." },
+        "INVALID_OTP": { status: 400, message: "Invalid OTP. Please try again." },
+      };
+      const mapped = errorMap[err.message];
+      if (mapped) {
+        res.status(mapped.status).json({ success: false, message: mapped.message });
+        return;
+      }
+      console.error("Reset Password Error:", err);
     }
-    console.error("Reset Password Error:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -369,20 +387,22 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
     await changePasswordService(req.user.id, currentPassword, newPassword);
     res.status(200).json({ success: true, message: "Password changed successfully." });
 
-  } catch (err: any) {
-    if (err.message === "USER_NOT_FOUND") {
-      res.status(404).json({ success: false, message: "User not found." });
-      return;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      if (err.message === "USER_NOT_FOUND") {
+        res.status(404).json({ success: false, message: "User not found." });
+        return;
+      }
+      if (err.message === "NO_LOCAL_PASSWORD") {
+        res.status(400).json({ success: false, message: "This account was created with Google and doesn't have a password. Use the reset password option to create one." });
+        return;
+      }
+      if (err.message === "INVALID_CURRENT_PASSWORD") {
+        res.status(401).json({ success: false, message: "Current password is incorrect." });
+        return;
+      }
+      console.error("Change Password Error:", err);
     }
-    if (err.message === "NO_LOCAL_PASSWORD") {
-      res.status(400).json({ success: false, message: "This account was created with Google and doesn't have a password. Use the reset password option to create one." });
-      return;
-    }
-    if (err.message === "INVALID_CURRENT_PASSWORD") {
-      res.status(401).json({ success: false, message: "Current password is incorrect." });
-      return;
-    }
-    console.error("Change Password Error:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -403,16 +423,18 @@ export const setPassword = async (req: Request, res: Response): Promise<void> =>
     await setPasswordService(req.user.id, newPassword);
     res.status(200).json({ success: true, message: "Password set successfully." });
 
-  } catch (err: any) {
-    if (err.message === "USER_NOT_FOUND") {
-      res.status(404).json({ success: false, message: "User not found." });
-      return;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      if (err.message === "USER_NOT_FOUND") {
+        res.status(404).json({ success: false, message: "User not found." });
+        return;
+      }
+      if (err.message === "PASSWORD_ALREADY_SET") {
+        res.status(400).json({ success: false, message: "You already have a password. Use change password instead." });
+        return;
+      }
+      console.error("Set Password Error:", err);
     }
-    if (err.message === "PASSWORD_ALREADY_SET") {
-      res.status(400).json({ success: false, message: "You already have a password. Use change password instead." });
-      return;
-    }
-    console.error("Set Password Error:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

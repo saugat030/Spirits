@@ -28,7 +28,7 @@ export type ShopByCategsProps = {
 export type MostPopularProps = {
   title: string;
   products: ApiResponse<Product[]> | undefined;
-  error: any;
+  error: unknown;
   isLoading: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;

@@ -178,3 +178,34 @@ export interface ProductSalesDetailsResponse {
   success: boolean;
   data: ProductSalesDetails[];
 }
+
+export interface RevenueTrend {
+  date: string;
+  revenue: number;
+  ordersCount: number;
+}
+
+export interface RevenueTrendsResponse {
+  success: boolean;
+  data: RevenueTrend[];
+}
+
+export interface OrderStatusDistribution {
+  status: string;
+  count: number;
+}
+
+export interface OrderStatusDistributionResponse {
+  success: boolean;
+  data: OrderStatusDistribution[];
+}
+
+export interface CategoryStats {
+  categoryName: string;
+  productCount: number;
+}
+
+export interface CategoryStatsResponse {
+  success: boolean;
+  data: CategoryStats[];
+}
