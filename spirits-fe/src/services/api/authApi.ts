@@ -84,3 +84,21 @@ export const useChangePassword = () => {
     },
   });
 };
+
+export const useGoogleLogin = () => {
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, { idToken: string }>({
+    mutationFn: async (data): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/google`, data);
+      return response.data;
+    },
+  });
+};
+
+export const useSetPassword = () => {
+  return useMutation<AuthResponse, AxiosError<{ message?: string }>, { newPassword: string }>({
+    mutationFn: async (data): Promise<AuthResponse> => {
+      const response = await axiosInstance.post(`/auth/set-password`, data);
+      return response.data;
+    },
+  });
+};

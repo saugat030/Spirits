@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { ApiResponse, Category } from "../../types/api.types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ApiResponse, Category, CreateCategoryPayload, UpdateCategoryPayload } from "../../types/api.types";
 import API from "../axiosInstance";
 import { AxiosError } from "axios";
 
@@ -7,7 +7,7 @@ export const useGetCategories = () => {
   return useQuery<ApiResponse<Category[]>, AxiosError<{ message?: string }>>({
     queryKey: ["categories"],
     queryFn: async (): Promise<ApiResponse<Category[]>> => {
-      const url = `/category`;
+      const url = `/categories`;
       const response = await API.get(url);
       console.log("Category data:(log from query function)", response.data);
       return response.data;
@@ -39,9 +39,48 @@ export const getCategoryById = async (
   if (!id) {
     throw new Error("Category ID is required");
   }
-  const url = `/category/${id}`;
+  const url = `/categories/${id}`;
   console.log("Fetching category with ID:", id);
   const response = await API.get(url);
   console.log("Category by ID data:", response.data);
   return response.data;
+};
+
+export const useCreateCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResponse<Category>, AxiosError<{ message?: string }>, CreateCategoryPayload>({
+    mutationFn: async (payload) => {
+      const response = await API.post("/categories", payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+  });
+};
+
+export const useUpdateCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResponse<Category>, AxiosError<{ message?: string }>, { id: string; payload: UpdateCategoryPayload }>({
+    mutationFn: async ({ id, payload }) => {
+      const response = await API.put(`/categories/${id}`, payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+  });
+};
+
+export const useDeleteCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResponse<Category>, AxiosError<{ message?: string }>, string>({
+    mutationFn: async (id) => {
+      const response = await API.delete(`/categories/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+  });
 };

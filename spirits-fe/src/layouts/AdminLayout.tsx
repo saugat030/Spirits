@@ -1,14 +1,7 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import {
-  LayoutDashboard,
-  Users,
-  Tags,
-  Package,
-  ShoppingCart,
-  Gift,
-  MoreHorizontal,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -17,16 +10,7 @@ import {
 import { useAuthStore } from "../store/useAuthStore";
 import API from "../services/axiosInstance";
 import { toast } from "react-hot-toast";
-
-const NAV_ITEMS = [
-  { name: "Dashboard", path: "/admin", icon: LayoutDashboard, exact: true },
-  { name: "Users", path: "/admin/users", icon: Users },
-  { name: "Categories", path: "/admin/categories", icon: Tags },
-  { name: "Products", path: "/admin/products", icon: Package },
-  { name: "Orders", path: "/admin/orders", icon: ShoppingCart },
-  { name: "Promotions", path: "/admin/promotions", icon: Gift },
-  { name: "Others", path: "/admin/others", icon: MoreHorizontal },
-];
+import { ADMIN_NAV_ITEMS } from "../constants/admin.constants";
 
 export const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -98,7 +82,7 @@ export const AdminLayout = () => {
 
         {/* navigation */}
         <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2 mt-4 custom-scrollbar">
-          {NAV_ITEMS.map((item) => (
+          {ADMIN_NAV_ITEMS.map((item) => (
             <NavLink
               key={item.name}
               to={item.path}

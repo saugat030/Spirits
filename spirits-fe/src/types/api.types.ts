@@ -14,6 +14,7 @@ export interface UserProfile {
   address: string | null;
   is_verified: boolean;
   is_active: boolean;
+  has_password: boolean;
 }
 export interface LoginPayload {
   email: string;
@@ -40,6 +41,13 @@ export interface Category {
   category_name: string;
   category_image_url: string;
 }
+
+export interface CreateCategoryPayload {
+  category_name: string;
+  category_image_url: string;
+}
+
+export type UpdateCategoryPayload = Partial<CreateCategoryPayload>
 
 export type Filters = {
   type: string | null;

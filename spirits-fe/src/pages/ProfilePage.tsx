@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe, FaSave, FaCheck, FaLock, FaChevronDown } from "react-icons/fa";
 import { useAuthStore } from "../store/useAuthStore";
 import { useUpdateProfile } from "../services/api/userApi";
-import { useChangePassword } from "../services/api/authApi";
+import { useChangePassword, useSetPassword } from "../services/api/authApi";
 import { useGetCountries } from "../services/api/countryApi";
 import { toast } from "react-hot-toast";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -30,7 +30,10 @@ const ProfilePage = () => {
 
   const { mutate: updateProfile } = useUpdateProfile();
   const { mutate: changePassword } = useChangePassword();
+  const { mutate: setPasswordMutate } = useSetPassword();
   const { data: countriesData, isLoading: countriesLoading } = useGetCountries();
+
+  const hasPassword = userData?.has_password ?? true;
 
   const currentCountryCode = countriesData?.data?.find((c) => c.name === country)?.phoneCode || "";
   const computedPhoneNumber = currentCountryCode && localPhone ? `${currentCountryCode} ${localPhone}`.trim() : localPhone;
@@ -133,7 +136,39 @@ const ProfilePage = () => {
         setIsChangingPassword(false);
       },
       onError: (error: any) => {
-        const message = error.message || "Failed to change password";
+        const message = error.response?.data?.message || error.message || "Failed to change password";
+        toast.error(message);
+        setIsChangingPassword(false);
+      }
+    });
+  };
+
+  const handleSetPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!newPassword || !confirmNewPassword) {
+      toast.error("Please fill in all password fields");
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    setIsChangingPassword(true);
+
+    setPasswordMutate({ newPassword }, {
+      onSuccess: () => {
+        toast.success("Password set successfully!");
+        setNewPassword("");
+        setConfirmNewPassword("");
+        setIsChangingPassword(false);
+        // refresh profile so has_password updates in the UI
+        getProfileData();
+      },
+      onError: (error: any) => {
+        const message = error.response?.data?.message || error.message || "Failed to set password";
         toast.error(message);
         setIsChangingPassword(false);
       }
@@ -325,17 +360,27 @@ const ProfilePage = () => {
                   <div className="p-2 bg-slate-100 text-slate-700 rounded-lg">
                     <FaLock className="w-5 h-5" />
                   </div>
-                  Security Settings
+                  {hasPassword ? "Security Settings" : "Set Up Password"}
                 </h3>
+
+                {!hasPassword && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+                    <p className="text-blue-700 text-sm">
+                      Your account was created with Google. Set a password to also sign in with your email and password.
+                    </p>
+                  </div>
+                )}
                 
-                <form onSubmit={handlePasswordChange} className="space-y-6">
+                <form onSubmit={hasPassword ? handlePasswordChange : handleSetPassword} className="space-y-6">
                   <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label htmlFor="currentPassword" className="text-sm font-normal text-slate-700">Current Password</label>
-                      <input type="password" id="currentPassword" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-500/20 focus:border-slate-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400"
-                        placeholder="••••••••" />
-                    </div>
+                    {hasPassword && (
+                      <div className="space-y-2">
+                        <label htmlFor="currentPassword" className="text-sm font-normal text-slate-700">Current Password</label>
+                        <input type="password" id="currentPassword" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-500/20 focus:border-slate-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400"
+                          placeholder="••••••••" />
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -355,12 +400,12 @@ const ProfilePage = () => {
                   </div>
 
                   <div className="flex items-center justify-end pt-6 mt-6 border-t border-slate-100">
-                    <button type="submit" disabled={isChangingPassword || !currentPassword || !newPassword || !confirmNewPassword}
+                    <button type="submit" disabled={isChangingPassword || (!hasPassword ? (!newPassword || !confirmNewPassword) : (!currentPassword || !newPassword || !confirmNewPassword))}
                       className="flex items-center gap-2 px-8 py-3.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-normal rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
                       {isChangingPassword ? (
-                        <><ClipLoader color="currentColor" size={18} /> Updating...</>
+                        <><ClipLoader color="currentColor" size={18} /> {hasPassword ? "Updating..." : "Setting..."}</>
                       ) : (
-                        <><FaLock className="w-4 h-4" /> Update Password</>
+                        <><FaLock className="w-4 h-4" /> {hasPassword ? "Update Password" : "Set Password"}</>
                       )}
                     </button>
                   </div>

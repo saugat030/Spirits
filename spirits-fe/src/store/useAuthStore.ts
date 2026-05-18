@@ -28,7 +28,7 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
     set({ isAuthLoading: true });
     try {
       const { data } = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/isAuth`
+        `${import.meta.env.VITE_API_BASE_URL}/auth/is-auth`
       );
       if (data.success) {
         set({ isLoggedin: true });
