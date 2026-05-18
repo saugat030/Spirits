@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../config/dbConnect.js";
 import type { DbClient } from "../../types/types.js";
-import { users, type NewUser } from "../schema/index.js";
+import { users } from "../schema/index.js";
 import type { UserUpdateData } from "../schema/User.js";
 
 export const fetchAllUsers = async (tx: DbClient = db) => {

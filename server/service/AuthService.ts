@@ -22,8 +22,14 @@ import {
   updateGoogleId,
   createGoogleUser,
 } from "../db/repository/auth.repo.js";
-import { REFRESH_TOKEN_SECRET, saltRounds } from "../constants/auth.constants.js";
-import { generateAccessToken, generateRefreshToken } from "../utils/auth.utils.js";
+import {
+  REFRESH_TOKEN_SECRET,
+  saltRounds,
+} from "../constants/auth.constants.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../utils/auth.utils.js";
 import { OAuth2Client } from "google-auth-library";
 import { generateOtp, otpExpiresAt } from "../utils/otp.utils.js";
 import { sendOtpEmail } from "../utils/email.utils.js";
@@ -37,9 +43,12 @@ export const registerUserService = async (userData: NewUser) => {
 
   // everything inside here rolls back if any of the step fails
   return await db.transaction(async (tx) => {
-    const userId = await createUser({ ...userData, password: hashedPassword }, tx);
+    const userId = await createUser(
+      { ...userData, password: hashedPassword },
+      tx,
+    );
     const accessToken = generateAccessToken({ id: userId, role: "user" });
-    const refreshToken = generateRefreshToken({ id: userId, role: "user" })
+    const refreshToken = generateRefreshToken({ id: userId, role: "user" });
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
     await insertRefreshToken(userId, refreshToken, expiresAt.toISOString(), tx);
@@ -77,14 +86,22 @@ export const googleAuthService = async (idToken: string) => {
     if (existingUser) {
       // user exists. If they don't have a google_id yet, the local user is logging in with Google for the first time so link them
       if (!existingUser.google_id) {
-        await updateGoogleId(existingUser.id, googleId, existingUser.is_verified, tx);
+        await updateGoogleId(
+          existingUser.id,
+          googleId,
+          existingUser.is_verified,
+          tx,
+        );
       }
       userId = existingUser.id;
       userRole = existingUser.role;
     } else {
       // user does not exist. Create them instantly.
       isNewUser = true;
-      const newUser = await createGoogleUser({ email, name: name || "Google User", googleId }, tx);
+      const newUser = await createGoogleUser(
+        { email, name: name || "Google User", googleId },
+        tx,
+      );
       userId = newUser.id;
       userRole = newUser.role;
     }
@@ -100,7 +117,10 @@ export const googleAuthService = async (idToken: string) => {
   });
 };
 
-export const loginUserService = async (email: string, passwordUnHashed: string) => {
+export const loginUserService = async (
+  email: string,
+  passwordUnHashed: string,
+) => {
   const user = await getUserByEmail(email);
   // if a user exists but only through google then pw will be null.
   if (!user || !user.password) {
@@ -116,10 +136,15 @@ export const loginUserService = async (email: string, passwordUnHashed: string) 
   // calculate expiration and save the new refresh token
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 7);
-  // clean old expired tokens and then insert new ones we store new token for every login for multi device login. 
+  // clean old expired tokens and then insert new ones we store new token for every login for multi device login.
   await db.transaction(async (tx) => {
     await deleteExpiredTokens(user.id, tx);
-    await insertRefreshToken(user.id, refreshToken, expiresAt.toISOString(), tx);
+    await insertRefreshToken(
+      user.id,
+      refreshToken,
+      expiresAt.toISOString(),
+      tx,
+    );
   });
 
   return { accessToken, refreshToken, role: user.role };
@@ -149,20 +174,29 @@ export const refreshTokensService = async (currentRefreshToken: string) => {
       throw new Error("INVALID_PAYLOAD");
     }
     decoded = verified as RefreshTokenPayload;
-
   } catch (err) {
     // if signature is invalid/tampered, delete it from the db immediately as a security measure
     await deleteRefreshToken(currentRefreshToken);
-    throw new Error("INVALID_SIGNATURE");
+    throw new Error("INVALID_SIGNATURE", { cause: err });
   }
   // generate new tokens
-  const accessToken = generateAccessToken({ id: decoded.id, role: decoded.role });
-  const newRefreshToken = generateRefreshToken({ id: decoded.id, role: decoded.role });
+  const accessToken = generateAccessToken({
+    id: decoded.id,
+    role: decoded.role,
+  });
+  const newRefreshToken = generateRefreshToken({
+    id: decoded.id,
+    role: decoded.role,
+  });
 
   const newExpiresAt = new Date();
   newExpiresAt.setDate(newExpiresAt.getDate() + 7);
   // update the db (rotation + expiration)
-  await updateRefreshToken(currentRefreshToken, newRefreshToken, newExpiresAt.toISOString());
+  await updateRefreshToken(
+    currentRefreshToken,
+    newRefreshToken,
+    newExpiresAt.toISOString(),
+  );
 
   return { accessToken, refreshToken: newRefreshToken };
 };
@@ -175,7 +209,6 @@ export const getUserDataService = async (userId: string, role: string) => {
   // only return the safe data to the frontend
   return user;
 };
-
 
 // generates a verification OTP, stores it, and sends it to the user's email
 // mainly for users who want to verify later
@@ -211,7 +244,7 @@ export const sendResetOtpService = async (email: string) => {
   if (!user) {
     console.log("User not found returning.");
     return;
-  }  // silent fail to prevent email enumeration
+  } // silent fail to prevent email enumeration
 
   const otp = generateOtp();
   const expiry = otpExpiresAt(10);
@@ -219,8 +252,12 @@ export const sendResetOtpService = async (email: string) => {
   await sendOtpEmail(email, otp, "reset");
 };
 
- // verifies OTP then hashes new password then updates DB then clears OTP fields.
-export const resetPasswordService = async (email: string, otp: string, newPassword: string) => {
+// verifies OTP then hashes new password then updates DB then clears OTP fields.
+export const resetPasswordService = async (
+  email: string,
+  otp: string,
+  newPassword: string,
+) => {
   const user = await getUserByEmail(email);
   if (!user) throw new Error("INVALID_CREDENTIALS");
 
@@ -246,7 +283,7 @@ export const resetPasswordService = async (email: string, otp: string, newPasswo
 export const changePasswordService = async (
   userId: string,
   currentPassword: string,
-  newPassword: string
+  newPassword: string,
 ) => {
   // getUserById doesn't include password, so we get user data first then look up via email
   const userData = await getUserById(userId);
@@ -257,14 +294,20 @@ export const changePasswordService = async (
   if (!fullUser) throw new Error("USER_NOT_FOUND");
   if (!fullUser.password) throw new Error("NO_LOCAL_PASSWORD");
 
-  const isPasswordValid = await bcrypt.compare(currentPassword, fullUser.password);
+  const isPasswordValid = await bcrypt.compare(
+    currentPassword,
+    fullUser.password,
+  );
   if (!isPasswordValid) throw new Error("INVALID_CURRENT_PASSWORD");
 
   const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
   await updateUserPassword(userId, hashedPassword);
 };
 
-export const setPasswordService = async (userId: string, newPassword: string) => {
+export const setPasswordService = async (
+  userId: string,
+  newPassword: string,
+) => {
   const userData = await getUserById(userId);
   if (!userData) throw new Error("USER_NOT_FOUND");
 

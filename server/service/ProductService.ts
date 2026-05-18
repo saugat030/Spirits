@@ -13,7 +13,7 @@ import {
     getVariantById,
 } from "../db/repository/product.repo.js";
 import { promotions } from "../db/schema/index.js";
-import type { NewLiquor, NewLiquorVariant } from "../db/schema/index.js";
+import type { NewLiquor } from "../db/schema/index.js";
 import type { Image, ProductFilters, AddProductDTO, UpdateProductDTO, AddVariantDTO, UpdateVariantDTO } from "../types/types.js";
 import { getPresignedImageUrl } from "../utils/s3bucket.js";
 import { generateSKU } from "../utils/sku.js";
@@ -203,7 +203,7 @@ export const addVariantService = async (productId: string, productName: string, 
 
 export const updateVariantService = async (variantId: string, data: UpdateVariantDTO) => {
     return await db.transaction(async (tx) => {
-        let updateData = { ...data } as any;
+        const updateData = { ...data } as any;
 
         if (data.size) {
             const variant = await getVariantById(variantId, tx);

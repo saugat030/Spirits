@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "main": "server.js",
   "type": "module",
-  "scripts": {
+ "scripts": {
     "start": "tsx server.ts",
     "dev": "tsx watch server.ts",
     "server": "nodemon --exec tsx server.ts",
     "seed": "tsx scripts/seed.ts",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .", 
     "build": "tsc"
   },
   "keywords": [],
@@ -20,7 +21,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1006.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
+    "cors": "^2.8.5", 
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.45.1",
     "express": "^4.21.2",
@@ -33,6 +34,7 @@
     "pg": "^8.18.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
@@ -43,7 +45,9 @@
     "@types/nodemailer": "^8.0.0",
     "@types/pg": "^8.16.0",
     "drizzle-kit": "^0.31.9",
+    "eslint": "^10.4.0",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.59.3"
   }
 }
