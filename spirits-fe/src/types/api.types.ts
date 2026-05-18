@@ -100,15 +100,25 @@ export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
 export interface OrderItem {
   id: string;
-  orderId: string;
   variantId: string;
+  appliedPromotionId: string;
   quantity: number;
   originalPrice: number;
   priceAtPurchase: number;
   discountAmount: number;
-  appliedPromotionId?: string;
+  variant: {
+    id: string;
+    size: string;
+    name: string;
+    thumbnail: string;
+  };
+  promotion: {
+    id: string;
+    name: string;
+    discountType: "percentage" | "fixed_amount";
+    discountValue: number;
+  };
 }
-
 export interface Order {
   id: string;
   userId: string;

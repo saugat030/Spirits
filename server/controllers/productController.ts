@@ -11,7 +11,7 @@ import {
     deleteVariantService,
 } from "../service/ProductService.js";
 import { uploadToB2, deleteFromB2 } from "../utils/s3bucket.js";
-import type { Image, ProductFilters, AddVariantDTO, UpdateVariantDTO } from "../types/types.js";
+import type { Image, UpdateVariantDTO } from "../types/types.js";
 
 export const getAllSpirits = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -98,7 +98,7 @@ export const addProduct = async (req: Request, res: Response): Promise<void> => 
     }
 
     let uploadedThumbnail: string | null = null;
-    let uploadedImages: Image[] = [];
+    const uploadedImages: Image[] = [];
 
     try {
         uploadedThumbnail = await uploadToB2(thumbnailFile, "gallery");

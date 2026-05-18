@@ -25,6 +25,7 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction): vo
         next();
     } catch (err) {
         // If it fails (expired or tampered), immediately reject. The frontend must catch this 401 and call the /refresh endpoint
+        console.error("Auth middleware error", err);
         res.status(401).json({ success: false, message: "Access token invalid or expired." });
     }
 };

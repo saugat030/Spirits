@@ -1,4 +1,4 @@
-import { eq, and, ilike, or, isNull, lte, gte, sql } from "drizzle-orm";
+import { eq, and, ilike, or, lte, gte, sql } from "drizzle-orm";
 import { db } from "../../config/dbConnect.js";
 import { liquors, categories, liquorVariants, promotions, type NewLiquor, type NewLiquorVariant } from "../schema/index.js";
 import type { DbClient, ProductFilters } from "../../types/types.js";

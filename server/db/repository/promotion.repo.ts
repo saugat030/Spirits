@@ -1,6 +1,6 @@
-import { eq, desc, and, or, lte, gte, isNull } from "drizzle-orm";
+import { eq, desc, and, or, lte, gte } from "drizzle-orm";
 import { db } from "../../config/dbConnect.js";
-import { promotions, liquorVariants, liquors } from "../schema/index.js";
+import { promotions } from "../schema/index.js";
 import type { DbClient } from "../../types/types.js";
 import type { InferInsertModel } from "drizzle-orm";
 
@@ -11,7 +11,6 @@ export const fetchAllPromotions = async (tx: DbClient = db) => {
 };
 
 export const fetchActivePromotions = async (tx: DbClient = db) => {
-    const now = new Date();
     return await tx
         .select({
             id: promotions.id,
