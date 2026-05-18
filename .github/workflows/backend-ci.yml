@@ -6,16 +6,23 @@ on:
       - main
     paths:
       - 'server/**'
+      - '.github/workflows/backend-ci.yml'
   pull_request:
     branches:
       - main
     paths:
       - 'server/**'
+      - '.github/workflows/backend-ci.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate-backend:
     name: Backend Lint, Type Check, and Build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     
     defaults:
       run:
@@ -38,7 +45,6 @@ jobs:
       - name: Type Check
         run: npm run typecheck 
 
-      # NEW STEP: Run the linter we just created
       - name: Run Linter
         run: npm run lint
 
