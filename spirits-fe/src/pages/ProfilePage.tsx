@@ -5,6 +5,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useUpdateProfile } from "../services/api/userApi";
 import { useChangePassword, useSetPassword } from "../services/api/authApi";
 import { useGetCountries } from "../services/api/countryApi";
+import axios from "axios";
 import { toast } from "react-hot-toast";
 import ClipLoader from "react-spinners/ClipLoader";
 
@@ -104,8 +105,13 @@ const ProfilePage = () => {
         }
         setIsSubmitting(false);
       },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || error.message || "Failed to update profile";
+      onError: (error: unknown) => {
+        let message = "Failed to update profile";
+        if (axios.isAxiosError(error)) {
+          message = error.response?.data?.message || error.message || message;
+        } else if (error instanceof Error) {
+          message = error.message;
+        }
         toast.error(message);
         setIsSubmitting(false);
       },
@@ -135,8 +141,13 @@ const ProfilePage = () => {
         setConfirmNewPassword("");
         setIsChangingPassword(false);
       },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || error.message || "Failed to change password";
+      onError: (error: unknown) => {
+        let message = "Failed to change password";
+        if (axios.isAxiosError(error)) {
+          message = error.response?.data?.message || error.message || message;
+        } else if (error instanceof Error) {
+          message = error.message;
+        }
         toast.error(message);
         setIsChangingPassword(false);
       }
@@ -167,8 +178,13 @@ const ProfilePage = () => {
         // refresh profile so has_password updates in the UI
         getProfileData();
       },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || error.message || "Failed to set password";
+      onError: (error: unknown) => {
+        let message = "Failed to set password";
+        if (axios.isAxiosError(error)) {
+          message = error.response?.data?.message || error.message || message;
+        } else if (error instanceof Error) {
+          message = error.message;
+        }
         toast.error(message);
         setIsChangingPassword(false);
       }

@@ -7,6 +7,7 @@ import {
 } from '../../services/api/categoryApi';
 import { Category } from '../../types/api.types';
 import { Plus, Edit2, Trash2, X, AlertCircle } from 'lucide-react';
+import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 
@@ -61,8 +62,14 @@ const CategoriesPage = () => {
         toast.success('Category created successfully');
       }
       handleCloseModal();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'An error occurred');
+    } catch (err: unknown) {
+      let errorMessage = 'An error occurred';
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.message || errorMessage;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -71,8 +78,14 @@ const CategoriesPage = () => {
       try {
         await deleteCategory.mutateAsync(id);
         toast.success('Category deleted successfully');
-      } catch (error: any) {
-        toast.error(error?.response?.data?.message || 'Failed to delete category');
+      } catch (err: unknown) {
+        let errorMessage = 'Failed to delete category';
+        if (axios.isAxiosError(err)) {
+          errorMessage = err.response?.data?.message || errorMessage;
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+        toast.error(errorMessage);
       }
     }
   };

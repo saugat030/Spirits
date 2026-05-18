@@ -18,7 +18,7 @@ const ProductsPage = () => {
   const [itemsPerPage] = useState<number>(12);
 
   const getTypeParam = () => {
-    if (categories.length > 0) return categories; // useGetProducts handles arrays or comma-separated depending on its implementation
+    if (categories.length > 0) return categories; 
     if (category) return category;
     return null;
   };
@@ -59,10 +59,11 @@ const ProductsPage = () => {
     }
   }, [categories, category]);
 
+  const categoriesKey = categories.join(",");
   // reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [alcName, categories.join(","), minPrice, maxPrice]);
+  }, [alcName, categoriesKey, minPrice, maxPrice]);
 
   return (
     <div className="bg-white min-h-screen">

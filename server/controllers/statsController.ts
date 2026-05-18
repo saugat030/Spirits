@@ -17,8 +17,10 @@ export const getNetSales = async (req: Request, res: Response): Promise<void> =>
       netSales: netSales
     });
 
-  } catch (error: any) {
-    console.error("Get Net Sales Error:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Get Net Sales Error:", error);
+    }
     res.status(500).json({
       success: false,
       message: "Server error while calculating net sales."
@@ -35,8 +37,10 @@ export const totalProducts = async (req: Request, res: Response): Promise<void> 
       totalProducts: totalQuantity,
     });
 
-  } catch (error: any) {
-    console.error("Total Products Error:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Total Products Error:", error);
+    }
     res.status(500).json({
       success: false,
       message: "Server error while fetching total products."
@@ -52,8 +56,10 @@ export const getProductSalesDetails = async (req: Request, res: Response): Promi
       success: true,
       data: productSalesData,
     });
-  } catch (error: any) {
-    console.error("Product Sales Details Error:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Product Sales Details Error:", error);
+    }
     res.status(500).json({
       success: false,
       message: "Server error while fetching product sales details."
@@ -69,8 +75,10 @@ export const getRevenueTrends = async (req: Request, res: Response): Promise<voi
       success: true,
       data: trends,
     });
-  } catch (error: any) {
-    console.error("Revenue Trends Error:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Revenue Trends Error:", error);
+    }
     res.status(500).json({
       success: false,
       message: "Server error while fetching revenue trends."
@@ -86,8 +94,10 @@ export const getOrderStatusDistribution = async (req: Request, res: Response): P
       success: true,
       data: distribution,
     });
-  } catch (error: any) {
-    console.error("Order Status Distribution Error:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Order Status Distribution Error:", error);
+    }
     res.status(500).json({
       success: false,
       message: "Server error while fetching order status distribution."
@@ -102,8 +112,10 @@ export const getProductsPerCategory = async (req: Request, res: Response): Promi
       success: true,
       data: stats,
     });
-  } catch (error: any) {
-    console.error("Products Per Category Error:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Products Per Category Error:", error);
+    }
     res.status(500).json({
       success: false,
       message: "Server error while fetching products per category."

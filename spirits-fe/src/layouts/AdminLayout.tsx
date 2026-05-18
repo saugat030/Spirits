@@ -24,6 +24,7 @@ export const AdminLayout = () => {
       toast.success("Logged out successfully");
       navigate("/login");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to logout");
     }
   };

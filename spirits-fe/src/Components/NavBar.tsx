@@ -79,10 +79,19 @@ const NavBar = () => {
         navigate("/");
         toast.success("Logged out successfully");
       }
-    } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message || err.message || "Logout failed",
-      );
+    } catch (err: unknown) {
+      {
+        let errorMessage = "Logout failed";
+        if (axios.isAxiosError(err)) {
+          const serverMessage = err.response?.data?.message;
+          if (typeof serverMessage === "string") {
+            errorMessage = serverMessage;
+          }
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -127,8 +136,15 @@ const NavBar = () => {
         } flex justify-between md:px-10 px-6 items-center z-40 w-full py-3`}
       >
         {/* Logo */}
-        <div className="font-bold text-2xl flex items-center cursor-pointer transition-transform duration-300 hover:scale-105" onClick={() => navigate("/")}>
-          <img src="/static/Logo.png" alt="Logo" className="h-10 mr-2 object-contain" />
+        <div
+          className="font-bold text-2xl flex items-center cursor-pointer transition-transform duration-300 hover:scale-105"
+          onClick={() => navigate("/")}
+        >
+          <img
+            src="/static/Logo.png"
+            alt="Logo"
+            className="h-10 mr-2 object-contain"
+          />
           <span className="tracking-tight">Spirits</span>
         </div>
 
@@ -158,12 +174,24 @@ const NavBar = () => {
             <Link to="/products">Shop</Link>
           </li>
           <li className="hover:text-orange-500 transition-colors duration-200 cursor-pointer relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-orange-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left py-2">
-            <HashLink smooth to="/#About" scroll={(el) => { el.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
+            <HashLink
+              smooth
+              to="/#About"
+              scroll={(el) => {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
               About
             </HashLink>
           </li>
           <li className="hover:text-orange-500 transition-colors duration-200 cursor-pointer relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-orange-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left py-2">
-            <HashLink smooth to="/#footer" scroll={(el) => { el.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
+            <HashLink
+              smooth
+              to="/#footer"
+              scroll={(el) => {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
               Contact
             </HashLink>
           </li>
@@ -178,7 +206,11 @@ const NavBar = () => {
                 onClick={toggleProfileDropdown}
               >
                 <div className="h-10 w-10 rounded-full border-2 border-transparent group-hover:border-orange-500 transition-all duration-300 overflow-hidden shadow-sm bg-slate-100">
-                  <img src="/static/profile-placeholder.png" alt={userData.name} className="w-full h-full object-cover" />
+                  <img
+                    src="/static/profile-placeholder.png"
+                    alt={userData.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <FaAngleDown
                   className={`text-[11px] transition-transform duration-300 ${
@@ -188,21 +220,47 @@ const NavBar = () => {
               </div>
 
               {/* Profile Dropdown */}
-              <div className={`absolute top-full right-0 pt-3 transition-all duration-300 z-50 ${profileDropDown ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
+              <div
+                className={`absolute top-full right-0 pt-3 transition-all duration-300 z-50 ${profileDropDown ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
+              >
                 <div className="w-60 bg-white text-slate-800 rounded-2xl shadow-xl border border-slate-100 overflow-hidden flex flex-col">
                   <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
-                    <p className="text-sm font-bold truncate text-slate-900">{userData.name}</p>
-                    <p className="text-xs text-slate-500 truncate mt-0.5">{userData.email}</p>
+                    <p className="text-sm font-bold truncate text-slate-900">
+                      {userData.name}
+                    </p>
+                    <p className="text-xs text-slate-500 truncate mt-0.5">
+                      {userData.email}
+                    </p>
                   </div>
                   <div className="py-2 flex flex-col">
                     {userData.role === "admin" ? (
-                      <button onClick={() => handleProfileNavigation("/admin")} className="text-left px-5 py-2.5 hover:bg-orange-50 hover:text-orange-600 transition-colors text-sm font-medium">Admin Dashboard</button>
+                      <button
+                        onClick={() => handleProfileNavigation("/admin")}
+                        className="text-left px-5 py-2.5 hover:bg-orange-50 hover:text-orange-600 transition-colors text-sm font-medium"
+                      >
+                        Admin Dashboard
+                      </button>
                     ) : (
-                      <button onClick={() => handleProfileNavigation("/profile")} className="text-left px-5 py-2.5 hover:bg-orange-50 hover:text-orange-600 transition-colors text-sm font-medium">My Profile</button>
+                      <button
+                        onClick={() => handleProfileNavigation("/profile")}
+                        className="text-left px-5 py-2.5 hover:bg-orange-50 hover:text-orange-600 transition-colors text-sm font-medium"
+                      >
+                        My Profile
+                      </button>
                     )}
-                    <button onClick={() => handleProfileNavigation("/orders")} className="text-left px-5 py-2.5 hover:bg-orange-50 hover:text-orange-600 transition-colors text-sm font-medium">My Orders</button>
+                    <button
+                      onClick={() => handleProfileNavigation("/orders")}
+                      className="text-left px-5 py-2.5 hover:bg-orange-50 hover:text-orange-600 transition-colors text-sm font-medium"
+                    >
+                      My Orders
+                    </button>
                     <div className="h-px bg-slate-100 my-2 w-full" />
-                    <button onClick={handleLogout} className="text-left px-5 py-2.5 hover:bg-red-50 text-red-600 transition-colors text-sm font-medium">Logout</button>
+                    <button
+                      onClick={handleLogout}
+                      className="text-left px-5 py-2.5 hover:bg-red-50 text-red-600 transition-colors text-sm font-medium"
+                    >
+                      Logout
+                    </button>
                   </div>
                 </div>
               </div>
@@ -211,7 +269,9 @@ const NavBar = () => {
             <Link
               to="/login"
               className={`text-sm font-semibold px-6 py-2.5 rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 ${
-                isHomePage ? "bg-white text-black hover:bg-slate-100" : "bg-orange-500 text-white hover:bg-orange-600"
+                isHomePage
+                  ? "bg-white text-black hover:bg-slate-100"
+                  : "bg-orange-500 text-white hover:bg-orange-600"
               }`}
             >
               Log in
@@ -225,7 +285,9 @@ const NavBar = () => {
           >
             <HiShoppingCart className="text-2xl" />
             {Number(cartQuantity) > 0 && (
-              <div className={`absolute top-0 right-0 text-[10px] text-white font-bold bg-orange-500 rounded-full min-w-[20px] h-[20px] flex items-center justify-center border-2 shadow-sm transform translate-x-1/4 -translate-y-1/4 ${isHomePage ? "border-black" : "border-white"}`}>
+              <div
+                className={`absolute top-0 right-0 text-[10px] text-white font-bold bg-orange-500 rounded-full min-w-[20px] h-[20px] flex items-center justify-center border-2 shadow-sm transform translate-x-1/4 -translate-y-1/4 ${isHomePage ? "border-black" : "border-white"}`}
+              >
                 {cartQuantity > 99 ? "99+" : cartQuantity}
               </div>
             )}
@@ -241,7 +303,9 @@ const NavBar = () => {
           >
             <HiShoppingCart className="text-[26px]" />
             {cartQuantity > 0 && (
-              <div className={`absolute top-0 right-0 text-[10px] text-white font-bold bg-orange-500 rounded-full min-w-[18px] h-[18px] flex items-center justify-center border-2 shadow-sm transform translate-x-1/4 -translate-y-1/4 ${isHomePage ? "border-black" : "border-white"}`}>
+              <div
+                className={`absolute top-0 right-0 text-[10px] text-white font-bold bg-orange-500 rounded-full min-w-[18px] h-[18px] flex items-center justify-center border-2 shadow-sm transform translate-x-1/4 -translate-y-1/4 ${isHomePage ? "border-black" : "border-white"}`}
+              >
                 {cartQuantity > 99 ? "99+" : cartQuantity}
               </div>
             )}
@@ -274,7 +338,11 @@ const NavBar = () => {
         {/* Mobile Menu Header */}
         <div className="flex justify-between items-center p-6 border-b border-slate-100">
           <div className="font-bold text-2xl text-slate-900 flex items-center">
-            <img src="/static/Logo.png" alt="Logo" className="h-8 mr-2 object-contain" />
+            <img
+              src="/static/Logo.png"
+              alt="Logo"
+              className="h-8 mr-2 object-contain"
+            />
             <span className="tracking-tight">Spirits</span>
           </div>
           <button
@@ -301,7 +369,9 @@ const NavBar = () => {
                   }`}
                 />
               </button>
-              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isSpiritsDropdownOpen ? "max-h-[400px] opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
+              <div
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${isSpiritsDropdownOpen ? "max-h-[400px] opacity-100 mt-1" : "max-h-0 opacity-0"}`}
+              >
                 <div className="bg-slate-50 rounded-xl py-2 mx-2">
                   {DROPDOWN_CONSTANTS.map((item) => (
                     <Link
@@ -331,7 +401,9 @@ const NavBar = () => {
               <button
                 onClick={() => {
                   closeMobileMenu();
-                  document.getElementById("About")?.scrollIntoView({ behavior: "smooth" });
+                  document
+                    .getElementById("About")
+                    ?.scrollIntoView({ behavior: "smooth" });
                 }}
                 className="w-full text-left p-4 rounded-xl hover:bg-slate-50 transition-colors"
               >
@@ -343,7 +415,9 @@ const NavBar = () => {
               <button
                 onClick={() => {
                   closeMobileMenu();
-                  document.getElementById("footer")?.scrollIntoView({ behavior: "smooth" });
+                  document
+                    .getElementById("footer")
+                    ?.scrollIntoView({ behavior: "smooth" });
                 }}
                 className="w-full text-left p-4 rounded-xl hover:bg-slate-50 transition-colors"
               >
@@ -359,21 +433,61 @@ const NavBar = () => {
             <div className="space-y-5">
               <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                 <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-orange-500 shadow-sm bg-slate-100 flex-shrink-0">
-                  <img src="/static/profile-placeholder.png" alt={userData.name} className="w-full h-full object-cover" />
+                  <img
+                    src="/static/profile-placeholder.png"
+                    alt={userData.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="font-bold text-slate-900 truncate">{userData.name}</div>
-                  <div className="text-xs text-slate-500 truncate">{userData.email}</div>
+                  <div className="font-bold text-slate-900 truncate">
+                    {userData.name}
+                  </div>
+                  <div className="text-xs text-slate-500 truncate">
+                    {userData.email}
+                  </div>
                 </div>
               </div>
               <div className="space-y-1.5 flex flex-col px-1">
                 {userData.role === "admin" ? (
-                  <button className="w-full text-left py-3 px-4 rounded-xl font-semibold text-slate-700 hover:bg-orange-100/50 hover:text-orange-600 transition-colors text-sm" onClick={() => { navigate("/admin"); closeMobileMenu(); }}>Admin Dashboard</button>
+                  <button
+                    className="w-full text-left py-3 px-4 rounded-xl font-semibold text-slate-700 hover:bg-orange-100/50 hover:text-orange-600 transition-colors text-sm"
+                    onClick={() => {
+                      navigate("/admin");
+                      closeMobileMenu();
+                    }}
+                  >
+                    Admin Dashboard
+                  </button>
                 ) : (
-                  <button className="w-full text-left py-3 px-4 rounded-xl font-semibold text-slate-700 hover:bg-orange-100/50 hover:text-orange-600 transition-colors text-sm" onClick={() => { navigate("/profile"); closeMobileMenu(); }}>My Profile</button>
+                  <button
+                    className="w-full text-left py-3 px-4 rounded-xl font-semibold text-slate-700 hover:bg-orange-100/50 hover:text-orange-600 transition-colors text-sm"
+                    onClick={() => {
+                      navigate("/profile");
+                      closeMobileMenu();
+                    }}
+                  >
+                    My Profile
+                  </button>
                 )}
-                <button className="w-full text-left py-3 px-4 rounded-xl font-semibold text-slate-700 hover:bg-orange-100/50 hover:text-orange-600 transition-colors text-sm" onClick={() => { navigate("/orders"); closeMobileMenu(); }}>My Orders</button>
-                <button className="w-full text-left py-3 px-4 rounded-xl font-semibold text-red-600 hover:bg-red-50 transition-colors text-sm mt-2" onClick={() => { logout(); closeMobileMenu(); }}>Logout</button>
+                <button
+                  className="w-full text-left py-3 px-4 rounded-xl font-semibold text-slate-700 hover:bg-orange-100/50 hover:text-orange-600 transition-colors text-sm"
+                  onClick={() => {
+                    navigate("/orders");
+                    closeMobileMenu();
+                  }}
+                >
+                  My Orders
+                </button>
+                <button
+                  className="w-full text-left py-3 px-4 rounded-xl font-semibold text-red-600 hover:bg-red-50 transition-colors text-sm mt-2"
+                  onClick={() => {
+                    logout();
+                    closeMobileMenu();
+                  }}
+                >
+                  Logout
+                </button>
               </div>
             </div>
           ) : (

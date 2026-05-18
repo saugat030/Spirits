@@ -117,10 +117,10 @@ const MostPopular = ({
             </div>
           )}
 
-          {error && !isLoading && (
+          {!!error && !isLoading && (
             <div className="flex justify-center items-center py-20">
               <h1 className="text-red-500 text-xl font-medium bg-red-50 px-6 py-4 rounded-xl border border-red-100">
-                {error?.response?.data?.message || "An error occurred fetching products."}
+                {error instanceof Error ? error.message : "An error occurred fetching products."}
               </h1>
             </div>
           )}

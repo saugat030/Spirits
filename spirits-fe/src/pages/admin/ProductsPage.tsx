@@ -8,6 +8,7 @@ import {
 import { useGetCategories } from '../../services/api/categoryApi';
 import { Product } from '../../types/api.types';
 import { Plus, Edit2, Trash2, X, AlertCircle, Layers, Image as ImageIcon } from 'lucide-react';
+import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -105,8 +106,14 @@ const ProductsPage = () => {
         toast.success('Product created successfully');
       }
       handleCloseModal();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'An error occurred');
+    } catch (err: unknown) {
+      let errorMessage = 'An error occurred';
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.message || errorMessage;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -116,8 +123,14 @@ const ProductsPage = () => {
       try {
         await deleteProduct.mutateAsync(id);
         toast.success('Product deleted successfully');
-      } catch (error: any) {
-        toast.error(error?.response?.data?.message || 'Failed to delete product');
+      } catch (err: unknown) {
+        let errorMessage = 'Failed to delete product';
+        if (axios.isAxiosError(err)) {
+          errorMessage = err.response?.data?.message || errorMessage;
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+        toast.error(errorMessage);
       }
     }
   };

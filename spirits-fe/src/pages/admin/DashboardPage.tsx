@@ -92,7 +92,7 @@ const DashboardPage = () => {
   const netSales = Number(netSalesData?.netSales || 0);
   const totalProducts = Number(totalProductsData?.totalProducts || 0);
 
-  const StatCard = ({ title, value, icon: Icon, colorClass, bgClass }: any) => (
+  const StatCard = ({ title, value, icon: Icon, colorClass, bgClass }: { title: string; value: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: string | number }>; colorClass: string; bgClass: string }) => (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col hover:shadow-md transition-shadow duration-300 relative overflow-hidden group">
       <div className={classNames("absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10 transition-transform duration-500 group-hover:scale-150", bgClass)} />
       <div className="flex justify-between items-start mb-4 relative z-10">

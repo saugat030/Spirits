@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGetAdminOrders, useUpdateOrderStatus } from '../../services/api/ordersApi';
-import { Order, OrderStatus } from '../../types/api.types';
+import { OrderStatus } from '../../types/api.types';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { Search, Filter, Loader2, Eye, Edit2, AlertCircle } from 'lucide-react';
-import OrderDetailsDialog from '../../components/OrderDetailsDialog'; // Assuming this exists or we will create it
+import { Filter, Loader2, Eye, AlertCircle } from 'lucide-react';
 
 const STATUS_COLORS: Record<OrderStatus, { bg: string; text: string }> = {
   pending: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
