@@ -106,9 +106,23 @@ export const getMyOrders = async (req: Request, res: Response): Promise<void> =>
         const userId = req.user!.id;
         const page = Math.max(1, Number(req.query.page) || 1);
         const limit = Number(req.query.limit) || 20;
+        const status = typeof req.query.status === "string" ? req.query.status : undefined;
+        const search = typeof req.query.search === "string" ? req.query.search : undefined;
+        const sortBy = typeof req.query.sortBy === "string" && ["date", "status"].includes(req.query.sortBy) ? req.query.sortBy as "date" | "status" : undefined;
+        const sortOrder = typeof req.query.sortOrder === "string" && ["asc", "desc"].includes(req.query.sortOrder) ? req.query.sortOrder as "asc" | "desc" : undefined;
+        const dateFrom = typeof req.query.dateFrom === "string" ? req.query.dateFrom : undefined;
+        const dateTo = typeof req.query.dateTo === "string" ? req.query.dateTo : undefined;
 
-        const result = await getMyOrdersService(userId, { page, limit });
-        res.status(200).json({ success: true, ...result });
+        const options: Record<string, unknown> = { page, limit };
+        if (status !== undefined) options.status = status;
+        if (search !== undefined) options.search = search;
+        if (sortBy !== undefined) options.sortBy = sortBy;
+        if (sortOrder !== undefined) options.sortOrder = sortOrder;
+        if (dateFrom !== undefined) options.dateFrom = dateFrom;
+        if (dateTo !== undefined) options.dateTo = dateTo;
+
+        const result = await getMyOrdersService(userId, options as any);
+        res.status(200).json({ success: true, data: result });
     } catch (error) {
         console.error("Fetch Orders Error:", error);
         res.status(500).json({ success: false, message: "Could not fetch your orders." });
@@ -197,12 +211,26 @@ export const getAllOrders = async (req: Request, res: Response): Promise<void> =
         const limit = Number(req.query.limit) || 20;
         const status = typeof req.query.status === "string" ? req.query.status : undefined;
         const userId = typeof req.query.userId === "string" ? req.query.userId : undefined;
+        const search = typeof req.query.search === "string" ? req.query.search : undefined;
+        const sortBy = typeof req.query.sortBy === "string" && ["date", "status"].includes(req.query.sortBy) ? req.query.sortBy as "date" | "status" : undefined;
+        const sortOrder = typeof req.query.sortOrder === "string" && ["asc", "desc"].includes(req.query.sortOrder) ? req.query.sortOrder as "asc" | "desc" : undefined;
+        const dateFrom = typeof req.query.dateFrom === "string" ? req.query.dateFrom : undefined;
+        const dateTo = typeof req.query.dateTo === "string" ? req.query.dateTo : undefined;
 
-        const result = await getAllOrdersService({ page, limit, ...(status && { status }), ...(userId && { userId }) });
+        const options: Record<string, unknown> = { page, limit };
+        if (status !== undefined) options.status = status;
+        if (userId !== undefined) options.userId = userId;
+        if (search !== undefined) options.search = search;
+        if (sortBy !== undefined) options.sortBy = sortBy;
+        if (sortOrder !== undefined) options.sortOrder = sortOrder;
+        if (dateFrom !== undefined) options.dateFrom = dateFrom;
+        if (dateTo !== undefined) options.dateTo = dateTo;
+
+        const result = await getAllOrdersService(options as any);
 
         res.status(200).json({
             success: true,
-            ...result,
+            data: result,
         });
     } catch (error) {
         console.error("Fetch All Orders Error:", error);

@@ -102,8 +102,17 @@ export const createOrderService = async (params: CreateOrderParams) => {
 };
 
 export const getMyOrdersService = async (
-  userId: string, 
-  options?: { page?: number; limit?: number }
+  userId: string,
+  options?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+    sortBy?: "date" | "status";
+    sortOrder?: "asc" | "desc";
+    dateFrom?: string;
+    dateTo?: string;
+  }
 ) => {
   return await fetchOrdersByUserId(userId, options);
 };
@@ -139,6 +148,11 @@ export const getAllOrdersService = async (options: {
     limit?: number;
     status?: string;
     userId?: string;
+    search?: string;
+    sortBy?: "date" | "status";
+    sortOrder?: "asc" | "desc";
+    dateFrom?: string;
+    dateTo?: string;
 }) => {
     return await fetchAllOrders(options);
 };

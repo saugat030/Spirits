@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGetAdminOrders, useUpdateOrderStatus } from '../../services/api/ordersApi';
+import OrderDetailsDialog from '../../components/OrderDetailsDialog';
+import Pagination from '../../components/Pagination';
 import { OrderStatus } from '../../types/api.types';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { Filter, Loader2, Eye, AlertCircle } from 'lucide-react';
+import { Filter, Loader2, Eye, AlertCircle, Search } from 'lucide-react';
+import { useDebounce } from '../../hooks/useDebounce';
 
 const STATUS_COLORS: Record<OrderStatus, { bg: string; text: string }> = {
   pending: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
@@ -19,11 +22,29 @@ const OrdersPage = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'date' | 'status'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const debouncedSearch = useDebounce(searchTerm, 500);
 
-  const { data: ordersData, isLoading, isError } = useGetAdminOrders(page, 10, statusFilter);
+  const { data: ordersData, isLoading, isError } = useGetAdminOrders(
+    page,
+    10,
+    statusFilter,
+    debouncedSearch || undefined,
+    sortBy,
+    sortOrder
+  );
   const { mutate: updateStatus, isPending: isUpdating } = useUpdateOrderStatus();
+
+  const orders = ordersData?.data?.orders || [];
+  const pagination = ordersData?.data?.pagination;
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter, debouncedSearch, sortBy, sortOrder]);
 
   const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
     updateStatus(
@@ -31,7 +52,6 @@ const OrdersPage = () => {
       {
         onSuccess: () => {
           toast.success('Order status updated successfully');
-          // Invalidate and refetch orders to update the list and dashboard stats
           queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
           queryClient.invalidateQueries({ queryKey: ["stats"] });
         },
@@ -73,25 +93,59 @@ const OrdersPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Filter size={20} className="text-slate-400" />
-          <span className="text-sm font-medium text-slate-700">Filter by Status:</span>
-          <select 
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(1); // Reset to first page on filter change
-            }}
-            className="border-slate-200 rounded-lg text-sm focus:ring-orange-500 focus:border-orange-500"
-          >
-            <option value="all">All Orders</option>
-            <option value="pending">Pending</option>
-            <option value="processing">Processing</option>
-            <option value="shipped">Shipped</option>
-            <option value="delivered">Delivered</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search by order ID or customer..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:ring-orange-500 focus:border-orange-500"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Filter size={20} className="text-slate-400 shrink-0" />
+            <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Status:</span>
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPage(1);
+              }}
+              className="w-full border-slate-200 rounded-lg text-sm focus:ring-orange-500 focus:border-orange-500"
+            >
+              <option value="all">All Orders</option>
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Sort:</span>
+            <select
+              value={`${sortBy}-${sortOrder}`}
+              onChange={(e) => {
+                const [by, order] = e.target.value.split('-') as ['date' | 'status', 'asc' | 'desc'];
+                setSortBy(by);
+                setSortOrder(order);
+              }}
+              className="w-full border-slate-200 rounded-lg text-sm focus:ring-orange-500 focus:border-orange-500"
+            >
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="status-asc">Status (Pending first)</option>
+              <option value="status-desc">Status (Cancelled first)</option>
+            </select>
+          </div>
+          {pagination && (
+            <div className="flex items-center text-sm text-slate-500">
+              {pagination.total} order{pagination.total !== 1 ? 's' : ''} found
+            </div>
+          )}
         </div>
       </div>
 
@@ -116,14 +170,14 @@ const OrdersPage = () => {
                     <p className="mt-2">Loading orders...</p>
                   </td>
                 </tr>
-              ) : ordersData?.data?.length === 0 ? (
+              ) : orders.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="p-8 text-center text-slate-500">
                     No orders found matching your criteria.
                   </td>
                 </tr>
               ) : (
-                ordersData?.data?.map((order) => (
+                orders.map((order) => (
                   <tr key={order.id} className="hover:bg-slate-50 transition-colors">
                     <td className="p-4">
                       <span className="font-mono text-sm text-slate-700 font-medium">
@@ -172,46 +226,23 @@ const OrdersPage = () => {
         </div>
 
         {/* Pagination */}
-        {ordersData && ordersData.totalPages && ordersData.totalPages > 1 && (
-          <div className="p-4 border-t border-slate-100 flex items-center justify-between">
+        {pagination && pagination.totalPages > 1 && (
+          <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
             <span className="text-sm text-slate-500">
-              Showing page {page} of {ordersData.totalPages}
+              Showing page {pagination.page} of {pagination.totalPages}
             </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-3 py-1 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPage((p) => p + 1)}
-                disabled={page === ordersData.totalPages}
-                className="px-3 py-1 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              currentPage={page}
+              totalPages={pagination.totalPages}
+              isLoading={isLoading}
+              onPageChange={setPage}
+            />
           </div>
         )}
       </div>
 
-      {/* Order Details Modal Placeholder - You can implement or import your actual dialog here */}
       {isDetailsOpen && selectedOrderId && (
-         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl">
-               <div className="flex justify-between items-center mb-4">
-                 <h2 className="text-xl font-bold">Order Details</h2>
-                 <button onClick={() => setIsDetailsOpen(false)} className="text-slate-400 hover:text-slate-600">✕</button>
-               </div>
-               <p className="text-slate-600">Viewing details for order: <span className="font-mono text-sm">{selectedOrderId}</span></p>
-               <p className="text-sm text-slate-500 mt-2 italic">Note: Full OrderDetailsDialog component integration required here if available.</p>
-               {/* 
-                 <OrderDetailsDialog orderId={selectedOrderId} onClose={() => setIsDetailsOpen(false)} />
-               */}
-            </div>
-         </div>
+        <OrderDetailsDialog orderId={selectedOrderId} onClose={() => setIsDetailsOpen(false)} useAdminApi />
       )}
     </div>
   );

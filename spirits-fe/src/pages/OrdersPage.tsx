@@ -1,6 +1,7 @@
-import { Calendar, Eye } from "lucide-react";
+import { Calendar, Eye, Search } from "lucide-react";
 import OrderDetailsDialog from "../components/OrderDetailsDialog";
 import OrdersSummary from "../components/OrdersSummary";
+import Pagination from "../components/Pagination";
 import { useGetMyOrders } from "../services/api/ordersApi";
 import { OrderStatus } from "../types/api.types";
 import {
@@ -10,38 +11,44 @@ import {
   getStatusIcon,
 } from "../utils/userUtils";
 import ClipLoader from "react-spinners/ClipLoader";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDebounce } from "../hooks/useDebounce";
 import EmptyState from "../components/shared/EmptyState";
 import ErrorState from "../components/shared/ErrorState";
 
 const OrdersPage = () => {
-  const { data: ordersResponse, isLoading, error } = useGetMyOrders();
-  const orders = ordersResponse?.data || [];
+  const [page, setPage] = useState(1);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [filterStatus, setFilterStatus] = useState<OrderStatus | "all">("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"date" | "status">("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
+  const { data: ordersResponse, isLoading, error } = useGetMyOrders(
+    page,
+    10,
+    filterStatus,
+    debouncedSearch || undefined,
+    sortBy,
+    sortOrder,
+    dateFrom || undefined,
+    dateTo || undefined
+  );
+
+  const orders = ordersResponse?.data?.orders || [];
+  const pagination = ordersResponse?.data?.pagination;
+  const summary = ordersResponse?.data?.summary;
+
+  useEffect(() => {
+    setPage(1);
+  }, [filterStatus, debouncedSearch, sortBy, sortOrder, dateFrom, dateTo]);
+
   const handleRetry = (): void => {
     window.location.reload();
   };
-  const statusCounts = {
-    total: orders.length,
-    pending: orders.filter((o) => o.status === "pending").length,
-    processing: orders.filter((o) => o.status === "processing").length,
-    shipped: orders.filter((o) => o.status === "shipped").length,
-    delivered: orders.filter((o) => o.status === "delivered").length,
-    cancelled: orders.filter((o) => o.status === "cancelled").length,
-  };
-
-  const filteredOrders = orders.filter((order) => {
-    const orderDate = new Date(order.createdAt);
-    const matchesDateFrom = !dateFrom || orderDate >= new Date(dateFrom);
-    const matchesDateTo = !dateTo || orderDate <= new Date(dateTo);
-    const matchesDateRange = matchesDateFrom && matchesDateTo;
-    const matchesFilter =
-      filterStatus === "all" || order.status === filterStatus;
-    return matchesDateRange && matchesFilter;
-  });
 
   if (isLoading) {
     return (
@@ -72,17 +79,34 @@ const OrdersPage = () => {
           </p>
         </div>
 
-        {orders.length === 0 ? (
+        {ordersResponse?.data && ordersResponse.data.orders.length === 0 && !debouncedSearch && !dateFrom && !dateTo && filterStatus === "all" ? (
           <EmptyState
             title="Glass Empty!"
             description="You haven't placed any orders yet. Start shopping to see your orders here."
           />
         ) : (
           <>
-            <OrdersSummary statusCounts={statusCounts} />
-            {/* date and Status filter */}
+            {summary && <OrdersSummary statusCounts={summary} />}
+
+            {/* Filters */}
             <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-2">
+                    Search
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search by order ID..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-2">
                     From
@@ -107,37 +131,58 @@ const OrdersPage = () => {
                   />
                 </div>
 
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-gray-600 mb-2">
-                    Status
-                  </label>
-                  <select
-                    value={filterStatus}
-                    onChange={(e) =>
-                      setFilterStatus(e.target.value as OrderStatus | "all")
-                    }
-                    className="font-Poppins w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="processing">Processing</option>
-                    <option value="shipped">In Transit</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <label className="block text-xs font-medium text-gray-600 mb-2">
+                      Status
+                    </label>
+                    <select
+                      value={filterStatus}
+                      onChange={(e) =>
+                        setFilterStatus(e.target.value as OrderStatus | "all")
+                      }
+                      className="font-Poppins w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="pending">Pending</option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">In Transit</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs font-medium text-gray-600 mb-2">
+                      Sort
+                    </label>
+                    <select
+                      value={`${sortBy}-${sortOrder}`}
+                      onChange={(e) => {
+                        const [by, order] = e.target.value.split("-") as ["date" | "status", "asc" | "desc"];
+                        setSortBy(by);
+                        setSortOrder(order);
+                      }}
+                      className="font-Poppins w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+                    >
+                      <option value="date-desc">Newest First</option>
+                      <option value="date-asc">Oldest First</option>
+                      <option value="status-asc">Status (Pending first)</option>
+                      <option value="status-desc">Status (Cancelled first)</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Orders List */}
-            {filteredOrders.length === 0 ? (
+            {orders.length === 0 ? (
               <EmptyState
                 title="No Orders Found"
-                description="We couldn't find any orders matching your filters. Try adjusting the date range or status to find your orders."
+                description="We couldn't find any orders matching your criteria. Try adjusting your filters or search term."
               />
             ) : (
               <div className="">
-                {filteredOrders.map((order) => (
+                {orders.map((order) => (
                   <div
                     key={order.id}
                     className="bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden"
@@ -289,10 +334,25 @@ const OrdersPage = () => {
               </div>
             )}
 
-            {/* results count */}
-            <div className="mt-6 text-center text-sm text-gray-600">
-              Showing {filteredOrders.length} of {orders.length} orders
-            </div>
+            {/* pagination */}
+            {pagination && pagination.totalPages > 1 && (
+              <div className="mt-6 flex flex-col items-center gap-3">
+                <div className="text-sm text-gray-600">
+                  Showing page {pagination.page} of {pagination.totalPages} ({pagination.total} total orders)
+                </div>
+                <Pagination
+                  currentPage={page}
+                  totalPages={pagination.totalPages}
+                  isLoading={isLoading}
+                  onPageChange={setPage}
+                />
+              </div>
+            )}
+            {pagination && pagination.totalPages <= 1 && orders.length > 0 && (
+              <div className="mt-6 text-center text-sm text-gray-600">
+                Showing {orders.length} order{orders.length !== 1 ? "s" : ""}
+              </div>
+            )}
           </>
         )}
       </div>
