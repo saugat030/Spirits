@@ -24,6 +24,13 @@ export interface SignupPayload extends LoginPayload {
   username: string;
 }
 
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 export type ApiResponse<T> = {
   success: boolean;
   message: string;
@@ -188,6 +195,21 @@ export interface RevenueTrend {
 export interface RevenueTrendsResponse {
   success: boolean;
   data: RevenueTrend[];
+}
+
+export interface OrderSummary {
+  total: number;
+  pending: number;
+  processing: number;
+  shipped: number;
+  delivered: number;
+  cancelled: number;
+}
+
+export interface OrdersData {
+  orders: Order[];
+  pagination: PaginationMeta;
+  summary: OrderSummary;
 }
 
 export interface OrderStatusDistribution {

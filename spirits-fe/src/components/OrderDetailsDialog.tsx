@@ -1,16 +1,19 @@
 import { XCircle } from "lucide-react";
 import ClipLoader from "react-spinners/ClipLoader";
-import { useGetOrderById } from "../services/api/ordersApi";
+import { useGetOrderById, useGetAdminOrderById } from "../services/api/ordersApi";
 import { OrderWithDetails } from "../types/api.types";
 import { formatDate, getStatusBadgeStyles, getStatusIcon, getStatusLabel } from "../utils/userUtils";
 
 type OrderDetailsDialogProps = {
   orderId: string | null;
   onClose: () => void;
+  useAdminApi?: boolean;
 };
 
-const OrderDetailsDialog = ({ orderId, onClose }: OrderDetailsDialogProps) => {
-  const { data, isLoading, error } = useGetOrderById(orderId);
+const OrderDetailsDialog = ({ orderId, onClose, useAdminApi = false }: OrderDetailsDialogProps) => {
+  const publicQuery = useGetOrderById(orderId);
+  const adminQuery = useGetAdminOrderById(orderId);
+  const { data, isLoading, error } = useAdminApi ? adminQuery : publicQuery;
   const order = data?.data as OrderWithDetails | undefined;
 
   if (!orderId) return null;
