@@ -12,9 +12,11 @@
     "moduleResolution": "bundler",
     "target": "esnext",
     
+    // jest lai chaiyo re
+    "esModuleInterop": true,
     // For Node.js support
     "lib": ["esnext"],
-    "types": ["node"],
+    "types": ["node", "jest"],
 
     // Other Outputs
     "sourceMap": true,
