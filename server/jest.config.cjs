@@ -9,4 +9,8 @@ module.exports = {
   transform: {
     ...tsJestTransformCfg,
   },
+  // so that import can use .js
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1"
+  }
 };
