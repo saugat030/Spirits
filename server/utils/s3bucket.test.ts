@@ -2,11 +2,11 @@ import { uploadToB2, deleteFromB2, getPresignedImageUrl } from "./s3bucket";
 import { PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-// 1. MOCK THE AWS S3 SDK
+// fake aws s3 sdk
 jest.mock("@aws-sdk/client-s3", () => {
   return {
     S3Client: jest.fn().mockImplementation(() => ({
-      send: jest.fn().mockResolvedValue({}), // Fake a successful upload/delete
+      send: jest.fn().mockResolvedValue({}), // fake success upload delete
     })),
     PutObjectCommand: jest.fn(),
     DeleteObjectCommand: jest.fn(),
@@ -14,42 +14,41 @@ jest.mock("@aws-sdk/client-s3", () => {
   };
 });
 
-// 2. MOCK THE AWS PRESIGNER
+// fake aws presigner
 jest.mock("@aws-sdk/s3-request-presigner", () => ({
   getSignedUrl: jest.fn().mockResolvedValue("https://fake-b2-url.com/image.jpg?token=123"),
 }));
 
-// 3. MOCK CRYPTO (To freeze the random UUID)
+// fake crypto to freeze the random UUID
 jest.mock("crypto", () => ({
   randomUUID: jest.fn().mockReturnValue("fixed-uuid-1234"),
 }));
 
 describe("S3 Bucket Utilities", () => {
-  // Set up fake environment variables before the tests run
+  // set up fake environment variables before the tests run
   beforeAll(() => {
     process.env.B2_BUCKET_NAME = "my-test-bucket";
   });
 
-  // Clear mock history after each test so they don't interfere with each other
+  // clear mock history after each test so they don't interfere with each other
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   describe("uploadToB2()", () => {
     it("should generate a proper S3 Key and upload the file", async () => {
-      // Arrange: Create a fake Multer file
+      // arrange: create a fake multer file
       const fakeFile = {
         mimetype: "image/png",
         buffer: Buffer.from("fake-image-data"),
       } as Express.Multer.File;
 
-      // Act: Run the upload function
+      // act: run the upload function
       const resultKey = await uploadToB2(fakeFile, "variants");
 
-      // Assert: Because we mocked crypto, we know EXACTLY what the key should be
+      // assert: because of mocked crypto the key is already known
       expect(resultKey).toBe("products/variants/fixed-uuid-1234.png");
-
-      // Assert: Verify AWS PutObjectCommand received the correct data
+      // Assert: verify aws putobjectcommand received the correct data
       expect(PutObjectCommand).toHaveBeenCalledWith({
         Bucket: "my-test-bucket",
         Key: resultKey,
@@ -74,7 +73,7 @@ describe("S3 Bucket Utilities", () => {
     it("should instantly return if no key is provided", async () => {
       await deleteFromB2("");
       
-      // The command should never be created if the key is empty
+      // the command should never be created if the key is empty
       expect(DeleteObjectCommand).not.toHaveBeenCalled();
     });
 
@@ -98,13 +97,13 @@ describe("S3 Bucket Utilities", () => {
     it("should return a presigned URL for a valid key", async () => {
       const result = await getPresignedImageUrl("products/gallery/image.png");
 
-      // Assert that we created the AWS command correctly
+      // assert that we created the AWS command correctly
       expect(GetObjectCommand).toHaveBeenCalledWith({
         Bucket: "my-test-bucket",
         Key: "products/gallery/image.png",
       });
 
-      // Assert that the presigner was called and returned our fake URL
+      // assert that the presigner was called and returned our fake URL
       expect(getSignedUrl).toHaveBeenCalled();
       expect(result).toBe("https://fake-b2-url.com/image.jpg?token=123");
     });
