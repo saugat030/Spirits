@@ -12,5 +12,9 @@ module.exports = {
   // so that import can use .js
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1"
-  }
+  },
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "/dist/" // dont run test on the build folder
+  ]
 };
