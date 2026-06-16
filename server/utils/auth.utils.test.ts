@@ -25,9 +25,9 @@ describe("Auth Utility Functions", () => {
     it("should call jwt.sign with the correct payload, secret, and expiration", () => {
       const result = generateAccessToken(mockPayload);
 
-      // assert our function returns whatever jwt.sign returned
+      // check our function returns whatever jwt.sign returned
       expect(result).toBe("mocked-token");
-      // assert that our wrapper passed the exact right arguments to the library
+      // check that our wrapper passed the exact right arguments to the library
       expect(signSpy).toHaveBeenCalledTimes(1);
       expect(signSpy).toHaveBeenCalledWith(
         mockPayload,

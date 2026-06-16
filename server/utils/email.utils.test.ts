@@ -1,8 +1,8 @@
 import nodemailer from "nodemailer";
 import { sendOtpEmail } from "./email.utils";
 
-// 1. MOCK NODEMAILER
-// We build the fake transporter entirely inside the block to avoid hoisting errors
+// mock nodemailer
+// build the fake transporter entirely inside the block to avoid hoisting errors
 jest.mock("nodemailer", () => {
   const mockTransporter = {
     sendMail: jest.fn().mockResolvedValue(true),
@@ -16,30 +16,24 @@ describe("Email Utilities", () => {
   let mockSendMail: jest.Mock;
 
   beforeAll(() => {
-    // Set a fake environment variable
-    process.env.EMAIL_USER = "test@spirits.com";
-    
-    // 2. RETRIEVE THE MOCK
-    // Because createTransport always returns our mockTransporter, 
-    // we can grab a direct reference to the sendMail spy right here!
+    process.env.EMAIL_USER = "test@spirits.com"; //fake env
+    // createTransport always returns that fake mockTransporter we can grab a direct reference to the sendMail spy herre
     mockSendMail = nodemailer.createTransport().sendMail as jest.Mock;
   });
 
   beforeEach(() => {
-    // Clear the spy's memory before each test
+    // clear the spy memory before each test
     jest.clearAllMocks();
   });
 
   describe("sendOtpEmail()", () => {
     
     it("should format the email correctly for the 'verify' purpose", async () => {
-      // Act
+      // act
       await sendOtpEmail("newuser@example.com", "123456", "verify");
-
-      // Assert: Verify it tried to send exactly 1 email
+      // assert verify it tried to send exactly 1 email
       expect(mockSendMail).toHaveBeenCalledTimes(1);
-
-      // Assert: Inspect the exact email configuration
+      // assert inspect the exact email configuration
       const emailConfig = mockSendMail.mock.calls[0][0];
 
       expect(emailConfig.to).toBe("newuser@example.com");
@@ -50,14 +44,11 @@ describe("Email Utilities", () => {
     });
 
     it("should format the email correctly for the 'reset' purpose", async () => {
-      // Act
+      // act
       await sendOtpEmail("lostuser@example.com", "987654", "reset");
-
-      // Assert
+      // assert
       expect(mockSendMail).toHaveBeenCalledTimes(1);
-
       const emailConfig = mockSendMail.mock.calls[0][0];
-
       expect(emailConfig.to).toBe("lostuser@example.com");
       expect(emailConfig.subject).toBe("Reset your Spirits password");
       expect(emailConfig.html).toContain("reset your password");
