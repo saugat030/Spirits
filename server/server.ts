@@ -21,7 +21,7 @@ app.use(express.json({ limit: "10mb" }));
 
 const isProduction = process.env.NODE_ENV === "production";
 const allowedOrigins = isProduction
-  ? ["https://spirits-clkh.vercel.app", "https://spirits.vercel.app"]
+  ? ["https://spirits-fe.vercel.app", "https://spirits.saugat030.com.np"]
   : ["http://localhost:5173", "http://localhost:5174"];
 
 app.use(
