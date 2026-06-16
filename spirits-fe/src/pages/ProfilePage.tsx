@@ -14,7 +14,6 @@ const ProfilePage = () => {
   const userData = useAuthStore((state) => state.userData);
   const setProfileData = useAuthStore((state) => state.setProfileData);
   const getProfileData = useAuthStore((state) => state.getProfileData);
-  // helllo
   const [name, setName] = useState("");
   const [localPhone, setLocalPhone] = useState("");
   const [country, setCountry] = useState("");
