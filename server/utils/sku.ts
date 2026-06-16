@@ -10,6 +10,5 @@ export const generateSKU = (productName: string, size: string): string => {
         .slice(0, 6);
 
     const uuidSuffix = crypto.randomUUID().replace(/-/g, "").slice(-6).toUpperCase();
-
     return `SKU-${sanitizedName}-${sanitizedSize}-${uuidSuffix}`;
 };
