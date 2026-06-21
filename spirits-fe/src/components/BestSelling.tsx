@@ -70,7 +70,7 @@ const BestSelling = () => {
               depth: 200,
               modifier: 1,
             }}
-            className="w-full !pb-12"
+            className="w-full pb-12!"
           >
             {productsToShow.map((item: Product, index) => (
               <SwiperSlide key={item.id ?? index} className="rounded-2xl">
