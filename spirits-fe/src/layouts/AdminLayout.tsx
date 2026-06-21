@@ -30,7 +30,7 @@ export const AdminLayout = () => {
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f8f9fc] font-Poppins overflow-hidden p-4 gap-6 relative">
+    <div className="flex h-screen w-full bg-[#f8f9fc] font-poppins overflow-hidden p-4 gap-6 relative">
       {/* floating sidebar */}
       <aside
         className={classNames(

@@ -5,17 +5,17 @@ import App from "./App.tsx";
 // import { ToastContainer } from "react-toastify";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { TooltipProvider } from "./components/ui/tooltip.tsx";
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-      />
-      <App />
+      <Toaster position="top-center" reverseOrder={false} />
+      <TooltipProvider>
+        <App />
+      </TooltipProvider>
     </QueryClientProvider>
   </StrictMode>
 );

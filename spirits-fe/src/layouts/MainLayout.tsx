@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 
 export const MainLayout = () => {
   return (
-    <div className="font-Poppins overflow-hidden flex flex-col min-h-screen">
+    <div className="font-poppins overflow-hidden flex flex-col min-h-screen">
       <NavBar />
       <main className="flex-1">
         <Outlet />

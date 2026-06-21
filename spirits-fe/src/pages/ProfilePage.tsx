@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe, FaSave, FaCheck, FaLock, FaChevronDown } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe, FaSave, FaCheck, FaLock } from "react-icons/fa";
 import { useAuthStore } from "../store/useAuthStore";
 import { useUpdateProfile } from "../services/api/userApi";
 import { useChangePassword, useSetPassword } from "../services/api/authApi";
@@ -8,6 +8,19 @@ import { useGetCountries } from "../services/api/countryApi";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import ClipLoader from "react-spinners/ClipLoader";
+
+// Shadcn Components
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -192,14 +205,14 @@ const ProfilePage = () => {
 
   if (!userData) {
     return (
-      <div className="font-Poppins min-h-screen bg-slate-50 flex justify-center items-center">
+      <div className="font-poppins min-h-screen bg-slate-50 flex justify-center items-center">
         <ClipLoader color="#f59e0b" size={50} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-Poppins py-12">
+    <div className="min-h-screen bg-slate-50 font-poppins py-12">
       {!userData.is_verified && (
         <div className="bg-red-500 text-white px-4 py-3 flex items-center justify-center gap-4 shadow-sm">
           <span className="text-sm font-medium text-center">Your account is not fully verified. Some features may be restricted.</span>
@@ -265,56 +278,55 @@ const ProfilePage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Name Input */}
                     <div className="space-y-2">
-                      <label htmlFor="name" className="text-sm font-normal text-slate-700">Full Name</label>
+                      <Label htmlFor="name" className="text-sm font-normal text-slate-700">Full Name</Label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaUser className="h-4 w-4 text-slate-400" />
                         </div>
-                        <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)}
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400 placeholder:font-normal"
+                        <Input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)}
+                          className="w-full pl-11 pr-4 h-[52px] bg-slate-50 border-slate-200 rounded-xl focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400 placeholder:font-normal shadow-none"
                           placeholder="John Doe" />
                       </div>
                     </div>
 
                     {/* Email Input */}
                     <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-normal text-slate-700">Email Address</label>
+                      <Label htmlFor="email" className="text-sm font-normal text-slate-700">Email Address</Label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaEnvelope className="h-4 w-4 text-slate-400" />
                         </div>
-                        <input type="email" id="email" value={userData.email} disabled
-                          className="w-full pl-11 pr-4 py-3 bg-slate-100/70 border border-slate-200 rounded-xl text-slate-500 font-medium cursor-not-allowed" />
+                        <Input type="email" id="email" value={userData.email} disabled
+                          className="w-full pl-11 pr-4 h-[52px] bg-slate-100/70 border-slate-200 rounded-xl text-slate-500 font-medium cursor-not-allowed shadow-none" />
                       </div>
                     </div>
 
                     {/* Unified Country & Phone Input */}
                     <div className="space-y-2 md:col-span-2">
-                      <label className="text-sm font-normal text-slate-700">Country & Phone Number</label>
-                      <div className="flex flex-col sm:flex-row shadow-sm border border-slate-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-amber-500/20 focus-within:border-amber-500 transition-all duration-200 bg-slate-50">
+                      <Label className="text-sm font-normal text-slate-700">Country & Phone Number</Label>
+                      <div className="flex flex-col sm:flex-row border border-slate-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-amber-500/20 focus-within:border-amber-500 transition-all duration-200 bg-slate-50">
                         
                         {/* Country Select */}
                         <div className="relative w-full sm:w-2/5 bg-slate-100 border-b sm:border-b-0 sm:border-r border-slate-200 hover:bg-slate-200/50 transition-colors">
-                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                             <FaGlobe className="h-4 w-4 text-slate-400" />
                           </div>
-                          <select
-                            id="country"
+                          <Select
                             value={country}
-                            onChange={(e) => setCountry(e.target.value)}
+                            onValueChange={(value) => setCountry(value || "")}
                             disabled={countriesLoading}
-                            className="w-full h-full pl-11 pr-8 py-3.5 bg-transparent text-slate-700 font-medium appearance-none cursor-pointer focus:outline-none truncate"
                           >
-                            <option value="">Select Country</option>
-                            {countriesData?.data?.map((c) => (
-                              <option key={c.name} value={c.name}>
-                                {c.name} ({c.phoneCode})
-                              </option>
-                            ))}
-                          </select>
-                          <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                            <FaChevronDown className="h-3 w-3 text-slate-400" />
-                          </div>
+                            <SelectTrigger className="w-full h-full! pl-11 pr-4 bg-transparent border-0 rounded-none focus:ring-0 focus-visible:ring-0 shadow-none text-slate-700 font-medium">
+                              <SelectValue placeholder="Select Country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {countriesData?.data?.map((c) => (
+                                <SelectItem key={c.name} value={c.name}>
+                                  {c.name} ({c.phoneCode})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
 
                         {/* Phone Input */}
@@ -322,12 +334,12 @@ const ProfilePage = () => {
                           <div className="pl-4 pr-3 flex items-center pointer-events-none text-slate-500 font-semibold bg-slate-50/50 border-r border-slate-100 h-full">
                             {currentCountryCode || <FaPhone className="h-4 w-4 text-slate-400" />}
                           </div>
-                          <input 
+                          <Input 
                             type="tel" 
                             id="phone_number" 
                             value={localPhone} 
                             onChange={(e) => setLocalPhone(e.target.value)}
-                            className="w-full pl-4 pr-4 py-3.5 bg-transparent focus:outline-none text-slate-800 font-medium placeholder:text-slate-400"
+                            className="w-full h-[52px] pl-4 pr-4 border-0 bg-transparent focus-visible:ring-0 rounded-none shadow-none text-slate-800 font-medium placeholder:text-slate-400"
                             placeholder="Phone Number" 
                           />
                         </div>
@@ -337,13 +349,13 @@ const ProfilePage = () => {
 
                   {/* Address Input */}
                   <div className="space-y-2">
-                    <label htmlFor="address" className="text-sm font-normal text-slate-700">Shipping Address</label>
+                    <Label htmlFor="address" className="text-sm font-normal text-slate-700">Shipping Address</Label>
                     <div className="relative">
                       <div className="absolute top-4 left-0 pl-4 pointer-events-none">
                         <FaMapMarkerAlt className="h-4 w-4 text-slate-400" />
                       </div>
-                      <textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} rows={3}
-                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400 placeholder:font-normal resize-none"
+                      <Textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} rows={3}
+                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400 placeholder:font-normal resize-none shadow-none"
                         placeholder="123 Main St, City, State, ZIP" />
                     </div>
                   </div>
@@ -355,14 +367,14 @@ const ProfilePage = () => {
                         You have unsaved changes
                       </span>
                     )}
-                    <button type="submit" disabled={isSubmitting || !hasChanges}
-                      className="flex items-center gap-2 px-8 py-3.5 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-normal rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
+                    <Button type="submit" disabled={isSubmitting || !hasChanges}
+                      className="flex items-center gap-2 px-8 h-[52px] bg-orange-500 hover:bg-orange-600 disabled:bg-slate-200 disabled:text-slate-400 disabled:opacity-100 text-white font-normal rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 text-base">
                       {isSubmitting ? (
                         <><ClipLoader color="currentColor" size={18} /> Saving...</>
                       ) : (
                         <><FaSave className="w-4 h-4" /> Save Profile</>
                       )}
-                    </button>
+                    </Button>
                   </div>
                 </form>
               </div>
@@ -390,39 +402,39 @@ const ProfilePage = () => {
                   <div className="space-y-6">
                     {hasPassword && (
                       <div className="space-y-2">
-                        <label htmlFor="currentPassword" className="text-sm font-normal text-slate-700">Current Password</label>
-                        <input type="password" id="currentPassword" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
-                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-500/20 focus:border-slate-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400"
+                        <Label htmlFor="currentPassword" className="text-sm font-normal text-slate-700">Current Password</Label>
+                        <Input type="password" id="currentPassword" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
+                          className="w-full px-4 h-[52px] bg-slate-50 border-slate-200 rounded-xl focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-slate-500/20 focus-visible:border-slate-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400 shadow-none"
                           placeholder="••••••••" />
                       </div>
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label htmlFor="newPassword" className="text-sm font-normal text-slate-700">New Password</label>
-                        <input type="password" id="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
-                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-500/20 focus:border-slate-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400"
+                        <Label htmlFor="newPassword" className="text-sm font-normal text-slate-700">New Password</Label>
+                        <Input type="password" id="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+                          className="w-full px-4 h-[52px] bg-slate-50 border-slate-200 rounded-xl focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-slate-500/20 focus-visible:border-slate-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400 shadow-none"
                           placeholder="••••••••" />
                       </div>
 
                       <div className="space-y-2">
-                        <label htmlFor="confirmNewPassword" className="text-sm font-normal text-slate-700">Confirm Password</label>
-                        <input type="password" id="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}
-                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-500/20 focus:border-slate-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400"
+                        <Label htmlFor="confirmNewPassword" className="text-sm font-normal text-slate-700">Confirm Password</Label>
+                        <Input type="password" id="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}
+                          className="w-full px-4 h-[52px] bg-slate-50 border-slate-200 rounded-xl focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-slate-500/20 focus-visible:border-slate-500 transition-all duration-200 text-slate-800 font-medium placeholder:text-slate-400 shadow-none"
                           placeholder="••••••••" />
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-end pt-6 mt-6 border-t border-slate-100">
-                    <button type="submit" disabled={isChangingPassword || (!hasPassword ? (!newPassword || !confirmNewPassword) : (!currentPassword || !newPassword || !confirmNewPassword))}
-                      className="flex items-center gap-2 px-8 py-3.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-normal rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
+                    <Button type="submit" disabled={isChangingPassword || (!hasPassword ? (!newPassword || !confirmNewPassword) : (!currentPassword || !newPassword || !confirmNewPassword))}
+                      className="flex items-center gap-2 px-8 h-[52px] bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:opacity-100 text-white font-normal rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 text-base">
                       {isChangingPassword ? (
                         <><ClipLoader color="currentColor" size={18} /> {hasPassword ? "Updating..." : "Setting..."}</>
                       ) : (
                         <><FaLock className="w-4 h-4" /> {hasPassword ? "Update Password" : "Set Password"}</>
                       )}
-                    </button>
+                    </Button>
                   </div>
                 </form>
               </div>
