@@ -32,8 +32,8 @@ import {
 } from "../utils/auth.utils.js";
 import { OAuth2Client } from "google-auth-library";
 import { generateOtp, otpExpiresAt } from "../utils/otp.utils.js";
-import { sendOtpEmail } from "../utils/email.utils.js";
 import type { RefreshTokenPayload } from "../types/types.js";
+import { sendOtpEmail } from "../utils/emailResend.utils.js";
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const registerUserService = async (userData: NewUser) => {
@@ -61,7 +61,7 @@ export const registerUserService = async (userData: NewUser) => {
     sendOtpEmail(userData.email, otp, "verify").catch((err) => {
       console.error("Failed to send verification email on signup:", err);
     });
-
+    console.log("User registered and verification email sent");
     return { accessToken, refreshToken };
   });
 };
