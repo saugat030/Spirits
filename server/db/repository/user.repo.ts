@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, isNotNull } from "drizzle-orm";
 import { db } from "../../config/dbConnect.js";
 import type { DbClient } from "../../types/types.js";
 import { users } from "../schema/index.js";
@@ -14,7 +14,8 @@ export const fetchAllUsers = async (tx: DbClient = db) => {
         country: users.country,
         address: users.address,
         is_verified: users.is_verified,
-        is_active: users.is_active
+        is_active: users.is_active,
+        has_password: isNotNull(users.password),
     }).from(users);
 };
 
