@@ -18,7 +18,7 @@ import classNames from 'classnames';
 const COLORS = ['#f97316', '#3b82f6', '#10b981', '#f43f5e', '#8b5cf6', '#eab308'];
 
 const DashboardPage = () => {
-  const [period, setPeriod] = useState<string>('30d');
+  const [period, setPeriod] = useState<string>('all');
 
   const { data: netSalesData, isLoading: isLoadingSales, isError: isErrorSales } = useGetNetSales(period);
   const { data: totalProductsData, isLoading: isLoadingProducts, isError: isErrorProducts } = useGetTotalProducts(period);
