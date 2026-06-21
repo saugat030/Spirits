@@ -197,7 +197,7 @@ const EditUserDialog = ({ isOpen, onClose, user }: EditUserDialogProps) => {
                   }
                   disabled={countriesLoading}
                 >
-                  <SelectTrigger className="w-full !h-full pl-9 pr-3 bg-transparent border-0 rounded-none focus:ring-0 focus-visible:ring-0 shadow-none text-foreground font-medium">
+                  <SelectTrigger className="w-full h-full! pl-9 pr-3 bg-transparent border-0 rounded-none focus:ring-0 focus-visible:ring-0 shadow-none text-foreground font-medium">
                     <SelectValue placeholder="Select Country" />
                   </SelectTrigger>
                   <SelectContent>

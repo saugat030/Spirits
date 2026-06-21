@@ -316,7 +316,7 @@ const ProfilePage = () => {
                             onValueChange={(value) => setCountry(value || "")}
                             disabled={countriesLoading}
                           >
-                            <SelectTrigger className="w-full !h-full pl-11 pr-4 bg-transparent border-0 rounded-none focus:ring-0 focus-visible:ring-0 shadow-none text-slate-700 font-medium">
+                            <SelectTrigger className="w-full h-full! pl-11 pr-4 bg-transparent border-0 rounded-none focus:ring-0 focus-visible:ring-0 shadow-none text-slate-700 font-medium">
                               <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                             <SelectContent>
