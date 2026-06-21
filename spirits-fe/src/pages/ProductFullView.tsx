@@ -58,7 +58,7 @@ const ProductFullView = () => {
 
     if (isLoading) {
     return (
-      <div className="font-Poppins min-h-screen bg-gray-50">
+      <div className="font-poppins min-h-screen bg-gray-50">
         <div className="flex justify-center items-center h-[calc(100vh-80px)]">
           <ClipLoader color="#0D1B39" size={50} />
         </div>
@@ -68,7 +68,7 @@ const ProductFullView = () => {
 
   if (error) {
     return (
-      <div className="font-Poppins min-h-screen bg-gray-50">
+      <div className="font-poppins min-h-screen bg-gray-50">
         <div className="flex justify-center items-center h-[calc(100vh-80px)]">
           <div className="text-xl font-medium text-red-500 bg-red-50 px-6 py-4 rounded-xl border border-red-100">
             {error.message}
@@ -80,7 +80,7 @@ const ProductFullView = () => {
 
     if (!product) {
     return (
-      <div className="font-Poppins min-h-screen bg-gray-50">
+      <div className="font-poppins min-h-screen bg-gray-50">
         <div className="flex justify-center items-center h-[calc(100vh-80px)]">
           <div className="text-xl font-medium text-gray-500">
             Product not found
@@ -99,7 +99,7 @@ const ProductFullView = () => {
   const mainImage = allImages[0];
 
   return (
-    <div className="font-Poppins min-h-screen bg-white">
+    <div className="font-poppins min-h-screen bg-white">
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <nav className="flex items-center gap-2 text-sm font-medium text-gray-500 mb-8">

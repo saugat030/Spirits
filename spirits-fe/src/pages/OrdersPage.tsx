@@ -141,7 +141,7 @@ const OrdersPage = () => {
                       onChange={(e) =>
                         setFilterStatus(e.target.value as OrderStatus | "all")
                       }
-                      className="font-Poppins w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+                      className="font-poppins w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
                     >
                       <option value="all">All Status</option>
                       <option value="pending">Pending</option>
@@ -162,7 +162,7 @@ const OrdersPage = () => {
                         setSortBy(by);
                         setSortOrder(order);
                       }}
-                      className="font-Poppins w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+                      className="font-poppins w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
                     >
                       <option value="date-desc">Newest First</option>
                       <option value="date-asc">Oldest First</option>
