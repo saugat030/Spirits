@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   useGetProductById,
@@ -7,12 +7,13 @@ import {
   useDeleteVariant
 } from '../../services/api/productsApi';
 import { ProductVariant } from '../../types/api.types';
-import { Plus, Edit2, Trash2, X, ArrowLeft, ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowLeft, ImageIcon } from 'lucide-react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import ErrorState from '../../components/shared/ErrorState';
 import EmptyState from '../../components/shared/EmptyState';
+import VariantFormDialog from '../../components/VariantFormDialog';
 
 const VariantsPage = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -26,75 +27,33 @@ const VariantsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(null);
 
-  // Form State
-  const [size, setSize] = useState('');
-  const [price, setPrice] = useState('');
-  const [inventoryQuantity, setInventoryQuantity] = useState('');
-  const [variantImageFile, setVariantImageFile] = useState<File | null>(null);
-
   const product = productData?.data;
   const variants = product?.variants || [];
 
   const handleOpenModal = (variant?: ProductVariant) => {
-    if (variant) {
-      setEditingVariant(variant);
-      setSize(variant.size);
-      setPrice(variant.price.toString());
-      setInventoryQuantity(variant.inventoryQuantity.toString());
-      setVariantImageFile(null);
-    } else {
-      setEditingVariant(null);
-      setSize('');
-      setPrice('');
-      setInventoryQuantity('');
-      setVariantImageFile(null);
-    }
+    setEditingVariant(variant || null);
     setIsModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setEditingVariant(null);
-    setSize('');
-    setPrice('');
-    setInventoryQuantity('');
-    setVariantImageFile(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVariantFormSubmit = async (formData: FormData) => {
     if (!productId) return;
-
-    if (!size || !price || !inventoryQuantity) {
-      toast.error('Size, price, and inventory quantity are required');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('size', size);
-    formData.append('price', price);
-    formData.append('inventoryQuantity', inventoryQuantity);
-
-    if (variantImageFile) {
-      formData.append('variantImage', variantImageFile);
-    }
 
     try {
       if (editingVariant) {
         await updateVariant.mutateAsync({
           variantId: editingVariant.id,
           productId,
-          data: formData
+          data: formData,
         });
         toast.success('Variant updated successfully');
       } else {
         await addVariant.mutateAsync({
           productId,
-          data: formData
+          data: formData,
         });
         toast.success('Variant created successfully');
       }
-      handleCloseModal();
+      setIsModalOpen(false);
     } catch (err: unknown) {
       let errorMessage = 'An error occurred';
       if (axios.isAxiosError(err)) {
@@ -252,109 +211,13 @@ const VariantsPage = () => {
         </div>
       )}
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center p-6 border-b border-slate-100">
-              <h2 className="text-xl font-bold text-slate-800">
-                {editingVariant ? 'Edit Variant' : 'Add New Variant'}
-              </h2>
-              <button 
-                onClick={handleCloseModal}
-                className="text-slate-400 hover:text-slate-600 transition-colors p-1"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Size *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={size}
-                  onChange={(e) => setSize(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
-                  placeholder="e.g. 750ml"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Price *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    step="0.01"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
-                    placeholder="0.00"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Inventory *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    step="1"
-                    value={inventoryQuantity}
-                    onChange={(e) => setInventoryQuantity(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
-                    placeholder="Quantity"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Variant Image {editingVariant && editingVariant.variantImage ? '(Optional)' : ''}
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setVariantImageFile(e.target.files?.[0] || null)}
-                  className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100"
-                />
-                {editingVariant && !variantImageFile && editingVariant.variantImage && (
-                  <p className="text-xs text-slate-500 mt-2">Current variant image will be kept.</p>
-                )}
-              </div>
-
-              <div className="pt-4 flex gap-3">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={addVariant.isPending || updateVariant.isPending}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 flex justify-center items-center"
-                >
-                  {(addVariant.isPending || updateVariant.isPending) ? (
-                    <ClipLoader color="#ffffff" size={20} />
-                  ) : (
-                    editingVariant ? 'Save Changes' : 'Create Variant'
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <VariantFormDialog
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        editingVariant={editingVariant}
+        onSubmit={handleVariantFormSubmit}
+        isSubmitting={addVariant.isPending || updateVariant.isPending}
+      />
     </div>
   );
 };

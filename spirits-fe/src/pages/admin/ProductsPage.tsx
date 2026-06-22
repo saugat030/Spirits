@@ -113,7 +113,7 @@ const ProductsPage = () => {
         </div>
         <Button
           onClick={() => handleOpenModal()}
-          className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl shadow-sm transition-all h-10 px-4"
+          className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl shadow-sm transition-all h-10! px-4"
         >
           <Plus size={18} className="mr-2" />
           Add Product
