@@ -109,7 +109,7 @@ const VariantsPage = () => {
         
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm flex-shrink-0">
+            <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm shrink-0">
               <img 
                 src={product.thumbnail_url} 
                 alt={product.name}
