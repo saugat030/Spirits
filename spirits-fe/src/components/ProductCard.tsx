@@ -1,12 +1,11 @@
 import { PiStarFill } from "react-icons/pi";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Product } from "../types/api.types";
+import { useImageLoad } from "../hooks/useImageLoad";
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  const { showSpinner, handleLoad, handleError, imageError, imageLoaded } = useImageLoad(product.id);
   const navigate = useNavigate();
 
   const totalStock = product.variants.reduce(
@@ -17,11 +16,6 @@ const ProductCard = ({ product }: { product: Product }) => {
   function handleClick() {
     navigate(`/products/${product.id}`);
   }
-
-  useEffect(() => {
-    setImageLoaded(false);
-    setImageError(false);
-  }, [product.id]);
 
   return (
     <section
@@ -37,7 +31,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             Sold Out
           </div>
         )}
-        {!imageLoaded && !imageError && (
+        {showSpinner && (
           <div className="absolute inset-0 flex justify-center items-center z-0">
             <ClipLoader color="#0D1B39" size={40} />
           </div>
@@ -48,11 +42,8 @@ const ProductCard = ({ product }: { product: Product }) => {
           className={`h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 ${
             !imageLoaded && !imageError ? "opacity-0" : "opacity-100"
           }`}
-          onLoad={() => setImageLoaded(true)}
-          onError={() => {
-            setImageLoaded(true);
-            setImageError(true);
-          }}
+          onLoad={handleLoad}
+          onError={handleError}
         />
       </figure>
       <div className="flex flex-col grow mt-3">
