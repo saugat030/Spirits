@@ -6,10 +6,12 @@ import {
   useDeleteCategory 
 } from '../../services/api/categoryApi';
 import { Category } from '../../types/api.types';
-import { Plus, Edit2, Trash2, X, AlertCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, X } from 'lucide-react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
+import ErrorState from '../../components/shared/ErrorState';
+import EmptyState from '../../components/shared/EmptyState';
 
 const CategoriesPage = () => {
   const { data: categoriesData, isLoading, isError } = useGetCategories();
@@ -99,12 +101,7 @@ const CategoriesPage = () => {
   }
 
   if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-red-500 gap-4">
-        <AlertCircle size={48} />
-        <h2 className="text-xl font-semibold">Failed to load categories</h2>
-      </div>
-    );
+    return <ErrorState title="Failed to load categories" />;
   }
 
   return (
@@ -123,25 +120,21 @@ const CategoriesPage = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="px-6 py-4 text-sm font-semibold text-slate-600">Image</th>
-                <th className="px-6 py-4 text-sm font-semibold text-slate-600">Name</th>
-                <th className="px-6 py-4 text-sm font-semibold text-slate-600 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {categories.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="px-6 py-8 text-center text-slate-500">
-                    No categories found.
-                  </td>
+      {categories.length === 0 ? (
+        <EmptyState title="No categories found" description="Create your first category to organize products." />
+      ) : (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-100">
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-600">Image</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-600">Name</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-600 text-right">Actions</th>
                 </tr>
-              ) : (
-                categories.map((category) => (
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {categories.map((category) => (
                   <tr key={category.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="w-12 h-12 rounded-lg bg-slate-100 overflow-hidden border border-slate-200">
@@ -177,12 +170,12 @@ const CategoriesPage = () => {
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Modal */}
       {isModalOpen && (

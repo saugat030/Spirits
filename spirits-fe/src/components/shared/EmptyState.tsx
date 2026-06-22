@@ -1,6 +1,14 @@
 import Button from "./Button";
 
-const EmptyState = ({ title, description }: { title: string; description: string }) => {
+interface EmptyStateProps {
+  title: string;
+  description: string;
+  linkTo?: string;
+  buttonText?: string;
+  onClick?: () => void;
+}
+
+const EmptyState = ({ title, description, linkTo, buttonText, onClick }: EmptyStateProps) => {
   return (
     <div className="flex flex-col items-center text-center p-12 max-w-lg mx-auto">
       <div className="relative w-28 h-28 mb-8 flex items-center justify-center">
@@ -18,7 +26,9 @@ const EmptyState = ({ title, description }: { title: string; description: string
       <p className="text-gray-600 mb-4 max-w-md leading-relaxed">
         {description}
       </p>
-      <Button linkTo="/products" title="Start Shopping" size="sm" />
+      {(linkTo || onClick) && (
+        <Button linkTo={linkTo} onClick={onClick} title={buttonText || "Start Shopping"} size="sm" />
+      )}
     </div>
   );
 };

@@ -7,11 +7,13 @@ import {
 } from '../../services/api/productsApi';
 import { useGetCategories } from '../../services/api/categoryApi';
 import { Product } from '../../types/api.types';
-import { Plus, Edit2, Trash2, X, AlertCircle, Layers, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, AlertCircle, Layers } from 'lucide-react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import ErrorState from '../../components/shared/ErrorState';
+import EmptyState from '../../components/shared/EmptyState';
 
 const ProductsPage = () => {
   const navigate = useNavigate();
@@ -153,12 +155,7 @@ const ProductsPage = () => {
   }
 
   if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-red-500 gap-4">
-        <AlertCircle size={48} />
-        <h2 className="text-xl font-semibold">Failed to load products</h2>
-      </div>
-    );
+    return <ErrorState title="Failed to load products" />;
   }
 
   return (
@@ -178,11 +175,7 @@ const ProductsPage = () => {
       </div>
 
       {products.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-12 text-center">
-          <ImageIcon className="mx-auto h-12 w-12 text-slate-300 mb-4" />
-          <h3 className="text-lg font-medium text-slate-900">No products yet</h3>
-          <p className="mt-1 text-sm text-slate-500">Get started by creating a new product.</p>
-        </div>
+        <EmptyState title="No products yet" description="Get started by creating a new product." />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (

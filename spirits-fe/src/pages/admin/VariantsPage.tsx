@@ -7,10 +7,12 @@ import {
   useDeleteVariant
 } from '../../services/api/productsApi';
 import { ProductVariant } from '../../types/api.types';
-import { Plus, Edit2, Trash2, X, AlertCircle, ArrowLeft, Package, ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, ArrowLeft, ImageIcon } from 'lucide-react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
+import ErrorState from '../../components/shared/ErrorState';
+import EmptyState from '../../components/shared/EmptyState';
 
 const VariantsPage = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -131,18 +133,7 @@ const VariantsPage = () => {
   }
 
   if (isError || !product) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-red-500 gap-4">
-        <AlertCircle size={48} />
-        <h2 className="text-xl font-semibold">Failed to load product details</h2>
-        <button 
-          onClick={() => navigate('/admin/products')}
-          className="text-orange-500 hover:underline"
-        >
-          Return to Products
-        </button>
-      </div>
-    );
+    return <ErrorState title="Failed to load product details" onRetry={() => navigate('/admin/products')} buttonText="Return to Products" />;
   }
 
   return (
@@ -185,11 +176,7 @@ const VariantsPage = () => {
       </div>
 
       {variants.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-12 text-center">
-          <Package className="mx-auto h-12 w-12 text-slate-300 mb-4" />
-          <h3 className="text-lg font-medium text-slate-900">No variants found</h3>
-          <p className="mt-1 text-sm text-slate-500">Add some variants (e.g., sizes like 750ml, 1L) to this product.</p>
-        </div>
+        <EmptyState title="No variants found" description="Add some variants (e.g., sizes like 750ml, 1L) to this product." />
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           <div className="overflow-x-auto">

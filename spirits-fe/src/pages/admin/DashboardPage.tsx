@@ -7,13 +7,14 @@ import {
   useGetOrderStatusDistribution,
   useGetCategoryStats
 } from '../../services/api/statsApi';
-import { DollarSign, Package, TrendingUp, AlertCircle, Calendar } from 'lucide-react';
+import { DollarSign, Package, TrendingUp, Calendar } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell,
   AreaChart, Area, PieChart, Pie, Legend
 } from 'recharts';
 import { ClipLoader } from 'react-spinners';
 import classNames from 'classnames';
+import ErrorState from '../../components/shared/ErrorState';
 
 const COLORS = ['#f97316', '#3b82f6', '#10b981', '#f43f5e', '#8b5cf6', '#eab308'];
 
@@ -71,13 +72,7 @@ const DashboardPage = () => {
   }
 
   if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full w-full min-h-[400px] text-red-500 gap-4">
-        <AlertCircle size={48} />
-        <h2 className="text-xl font-semibold">Failed to load dashboard statistics</h2>
-        <p className="text-sm text-slate-500">Please try refreshing the page.</p>
-      </div>
-    );
+    return <ErrorState title="Failed to load dashboard statistics" message="Please try refreshing the page." />;
   }
 
   const formatCurrency = (value: number) => {
