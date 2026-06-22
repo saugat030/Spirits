@@ -21,13 +21,13 @@ import {
 import { AlertCircle } from "lucide-react";
 import { ClipLoader } from "react-spinners";
 import toast from "react-hot-toast";
-import { Product } from "@/types/api.types";
+import { Product, Category } from "@/types/api.types";
 
 interface ProductFormDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   editingProduct: Product | null;
-  categories: any[];
+  categories: Category[];
   onSubmit: (formData: FormData) => void;
   isSubmitting: boolean;
 }
