@@ -111,7 +111,7 @@ export const AdminLayout = () => {
                   />
                   <div className="relative z-10 flex items-center w-full">
                     <item.icon
-                      className={classNames("flex-shrink-0 w-5 h-5 transition-transform duration-300 group-hover:scale-110", {
+                      className={classNames("shrink-0 w-5 h-5 transition-transform duration-300 group-hover:scale-110", {
                         "mr-4": isSidebarOpen,
                         "mx-auto": !isSidebarOpen,
                       })}
@@ -142,7 +142,7 @@ export const AdminLayout = () => {
                 "mb-3": !isSidebarOpen
               })}
             >
-              <div className="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center flex-shrink-0 text-slate-400 overflow-hidden">
+              <div className="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center shrink-0 text-slate-400 overflow-hidden">
                 <img src="/static/profile-placeholder.png" alt="Profile" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = ''; e.currentTarget.className = 'hidden'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
                 <UserIcon className="w-5 h-5 hidden" />
               </div>

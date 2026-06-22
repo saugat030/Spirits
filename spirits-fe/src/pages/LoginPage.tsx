@@ -101,11 +101,17 @@ const Login = () => {
       <div className="relative z-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto">
         {/* Logo and Brand */}
         <div className="flex items-center justify-start mb-2">
-          <img
-            src="/static/Logo.png"
-            alt="Logo"
-            className="w-12 h-12 object-contain"
-          />
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="cursor-pointer"
+          >
+            <img
+              src="/static/Logo.png"
+              alt="Logo"
+              className="w-12 h-12 object-contain"
+            />
+          </button>
         </div>
         {/* Form Title */}
         <div className="text-center mb-8">
@@ -135,7 +141,7 @@ const Login = () => {
                 disabled={isLoading}
                 className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-yellow-400/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+              <div className="absolute inset-0 rounded-xl bg-linear-to-r from-yellow-400/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
             </div>
           )}
 
@@ -257,6 +263,15 @@ const Login = () => {
                 <span className="text-yellow-400 hover:text-yellow-300 font-medium">
                   {state === "Login" ? "Sign Up here" : "Login here"}
                 </span>
+              </button>
+            </div>
+            <div>
+              <button
+                type="button"
+                onClick={() => navigate("/")}
+                className="text-gray-300 hover:text-white text-sm transition-colors duration-200"
+              >
+                ← Back to Home
               </button>
             </div>
           </div>
