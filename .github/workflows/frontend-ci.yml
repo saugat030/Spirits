@@ -4,22 +4,33 @@ on:
   push:
     branches-ignore:
       - main
-    paths:
-      - 'spirits-fe/**'
-      - '.github/workflows/frontend-ci.yml'
   pull_request:
     branches:
       - main
-    paths:
-      - 'spirits-fe/**'
-      - '.github/workflows/frontend-ci.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'spirits-fe/**'
+              - '.github/workflows/frontend-ci.yml'
+
   validate-frontend:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.frontend == 'true' }}
     name: Frontend Lint and Build
     runs-on: ubuntu-latest
     timeout-minutes: 10
