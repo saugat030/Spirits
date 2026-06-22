@@ -55,7 +55,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           }}
         />
       </figure>
-      <div className="flex flex-col flex-grow mt-3">
+      <div className="flex flex-col grow mt-3">
         <div className="flex justify-between items-center mb-1.5">
           <div className="flex text-yellow-400 text-sm">
             <PiStarFill />
