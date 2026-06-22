@@ -96,12 +96,12 @@ export default function ProductFormDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl p-0 overflow-hidden rounded-2xl shadow-2xl">
+      <DialogContent className="sm:max-w-3xl p-0 overflow-hidden rounded-2xl shadow-2xl gap-0">
         <DialogHeader className="p-6 pb-4 border-b border-slate-100 bg-white">
-          <DialogTitle className="text-2xl font-bold text-slate-800 tracking-tight">
+          <DialogTitle className="text-2xl font-bold text-slate-800 tracking-tight font-poppins">
             {editingProduct ? "Edit Product" : "Add New Product"}
           </DialogTitle>
-          <DialogDescription className="text-slate-500 mt-1">
+          <DialogDescription className="text-slate-500">
             {editingProduct
               ? "Update the details for this product below."
               : "Fill in the details below to add a new product to your catalog."}
@@ -109,12 +109,12 @@ export default function ProductFormDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col max-h-[80vh]">
-          <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar bg-slate-50/50">
+          <div className="p-6 overflow-y-auto space-y-4 custom-scrollbar">
             {editingProduct && (
               <div className="bg-blue-50/80 border border-blue-100 text-blue-800 p-4 rounded-xl text-sm flex gap-3 items-start shadow-sm">
                 <AlertCircle
                   size={20}
-                  className="flex-shrink-0 mt-0.5 text-blue-500"
+                  className="shrink-0 mt-0.5 text-blue-500"
                 />
                 <p className="leading-relaxed">
                   Uploading new images will completely replace the existing
@@ -124,7 +124,7 @@ export default function ProductFormDialog({
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5">
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="name" className="text-slate-700 font-medium">
                   Product Name *
@@ -152,7 +152,9 @@ export default function ProductFormDialog({
                   onValueChange={(value) => setCategoryId(value || "")}
                 >
                   <SelectTrigger className="h-11 rounded-lg bg-white">
-                    <SelectValue placeholder="Select a category" />
+                    <SelectValue placeholder="Select a category">
+                      {categories.find((c) => c.id === categoryId)?.category_name}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((c) => (

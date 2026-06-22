@@ -24,7 +24,7 @@ const ProductCardAdmin = ({
       onClick={() => onClick(product.id)}
       className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:border-slate-200 transition-all cursor-pointer group flex flex-col"
     >
-      <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
+      <div className="aspect-4/3 bg-slate-100 relative overflow-hidden">
         {showSpinner && (
           <div className="absolute inset-0 flex items-center justify-center z-0">
             <ClipLoader color="#f97316" size={40} />
