@@ -9,7 +9,6 @@ import { UserProfile } from "../../types/api.types";
 import {
   Edit2,
   Trash2,
-  AlertCircle,
   UserCheck,
   UserX,
 } from "lucide-react";
@@ -31,6 +30,8 @@ import {
 } from "@/components/ui/tooltip";
 import { boolBadge, roleBadge, statusBadge } from "@/utils/adminUtils";
 import EditUserDialog from "@/components/EditUserDialog";
+import ErrorState from "../../components/shared/ErrorState";
+import EmptyState from "../../components/shared/EmptyState";
 
 const UsersPage = () => {
   const { data: usersData, isLoading, isError } = useGetUsers();
@@ -108,12 +109,7 @@ const UsersPage = () => {
   }
 
   if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-red-500 gap-4">
-        <AlertCircle size={48} />
-        <h2 className="text-xl font-semibold">Failed to load users</h2>
-      </div>
-    );
+    return <ErrorState title="Failed to load users" />;
   }
 
   return (
@@ -125,29 +121,25 @@ const UsersPage = () => {
         </p>
       </div>
 
-      <div className="overflow-hidden bg-white border shadow-sm rounded-2xl border-slate-100">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="border-b bg-slate-50 border-slate-100">
-              <TableRow>
-                <TableHead className="font-semibold text-slate-600">Name</TableHead>
-                <TableHead className="font-semibold text-slate-600">Email</TableHead>
-                <TableHead className="font-semibold text-slate-600">Role</TableHead>
-                <TableHead className="font-semibold text-slate-600">Verified</TableHead>
-                <TableHead className="font-semibold text-slate-600">Active</TableHead>
-                <TableHead className="font-semibold text-slate-600">Password</TableHead>
-                <TableHead className="font-semibold text-right text-slate-600">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="divide-y divide-slate-100">
-              {users.length === 0 ? (
+      {users.length === 0 ? (
+        <EmptyState title="No users found" description="No users match the current filters." />
+      ) : (
+        <div className="overflow-hidden bg-white border shadow-sm rounded-2xl border-slate-100">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="border-b bg-slate-50 border-slate-100">
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center text-slate-500">
-                    No users found.
-                  </TableCell>
+                  <TableHead className="font-semibold text-slate-600">Name</TableHead>
+                  <TableHead className="font-semibold text-slate-600">Email</TableHead>
+                  <TableHead className="font-semibold text-slate-600">Role</TableHead>
+                  <TableHead className="font-semibold text-slate-600">Verified</TableHead>
+                  <TableHead className="font-semibold text-slate-600">Active</TableHead>
+                  <TableHead className="font-semibold text-slate-600">Password</TableHead>
+                  <TableHead className="font-semibold text-right text-slate-600">Actions</TableHead>
                 </TableRow>
-              ) : (
-                users.map((user) => (
+              </TableHeader>
+              <TableBody className="divide-y divide-slate-100">
+                {users.map((user) => (
                   <TableRow
                     key={user.id}
                     className="border-none transition-colors hover:bg-slate-50"
@@ -220,12 +212,13 @@ const UsersPage = () => {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
-      </div>
+      )}
+
       <EditUserDialog 
         isOpen={isModalOpen} 
         onClose={handleCloseModal} 

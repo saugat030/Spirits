@@ -7,8 +7,10 @@ import { format } from 'date-fns';
 import classNames from 'classnames';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { Filter, Loader2, Eye, AlertCircle, Search } from 'lucide-react';
+import { Filter, Loader2, Eye, Search } from 'lucide-react';
 import { useDebounce } from '../../hooks/useDebounce';
+import ErrorState from '../../components/shared/ErrorState';
+import EmptyState from '../../components/shared/EmptyState';
 
 const STATUS_COLORS: Record<OrderStatus, { bg: string; text: string }> = {
   pending: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
@@ -75,12 +77,7 @@ const OrdersPage = () => {
   };
 
   if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-red-500 gap-4">
-        <AlertCircle size={48} />
-        <h2 className="text-xl font-semibold">Failed to load orders</h2>
-      </div>
-    );
+    return <ErrorState title="Failed to load orders" />;
   }
 
   return (
@@ -150,96 +147,94 @@ const OrdersPage = () => {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-sm">
-                <th className="p-4 font-semibold">Order ID</th>
-                <th className="p-4 font-semibold">Date</th>
-                <th className="p-4 font-semibold">Total Amount</th>
-                <th className="p-4 font-semibold">Status</th>
-                <th className="p-4 font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-500">
-                    <Loader2 className="w-8 h-8 animate-spin mx-auto text-orange-500" />
-                    <p className="mt-2">Loading orders...</p>
-                  </td>
+      {orders.length === 0 && !isLoading ? (
+        <EmptyState title="No orders found" description="No orders match your current filters." />
+      ) : (
+        <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-sm">
+                  <th className="p-4 font-semibold">Order ID</th>
+                  <th className="p-4 font-semibold">Date</th>
+                  <th className="p-4 font-semibold">Total Amount</th>
+                  <th className="p-4 font-semibold">Status</th>
+                  <th className="p-4 font-semibold">Actions</th>
                 </tr>
-              ) : orders.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-500">
-                    No orders found matching your criteria.
-                  </td>
-                </tr>
-              ) : (
-                orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="p-4">
-                      <span className="font-mono text-sm text-slate-700 font-medium">
-                        {order.id.split('-')[0]}...
-                      </span>
-                    </td>
-                    <td className="p-4 text-sm text-slate-600">
-                      {format(new Date(order.createdAt), 'MMM dd, yyyy HH:mm')}
-                    </td>
-                    <td className="p-4 text-sm font-semibold text-slate-800">
-                      {formatCurrency(order.totalAmount)}
-                    </td>
-                    <td className="p-4">
-                      <select
-                        value={order.status}
-                        onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
-                        disabled={isUpdating}
-                        className={classNames(
-                          "text-xs font-semibold px-2.5 py-1 rounded-full border-none cursor-pointer focus:ring-2 focus:ring-offset-1 focus:outline-none appearance-none pr-8",
-                          STATUS_COLORS[order.status].bg,
-                          STATUS_COLORS[order.status].text
-                        )}
-                        style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.25rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em 1.25em' }}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="processing">Processing</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </td>
-                    <td className="p-4">
-                      <button
-                        onClick={() => handleViewDetails(order.id)}
-                        className="text-slate-400 hover:text-orange-500 transition-colors p-1.5 rounded-lg hover:bg-orange-50"
-                        title="View Details"
-                      >
-                        <Eye size={18} />
-                      </button>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-500">
+                      <Loader2 className="w-8 h-8 animate-spin mx-auto text-orange-500" />
+                      <p className="mt-2">Loading orders...</p>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {pagination && pagination.totalPages > 1 && (
-          <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-sm text-slate-500">
-              Showing page {pagination.page} of {pagination.totalPages}
-            </span>
-            <Pagination
-              currentPage={page}
-              totalPages={pagination.totalPages}
-              isLoading={isLoading}
-              onPageChange={setPage}
-            />
+                ) : (
+                  orders.map((order) => (
+                    <tr key={order.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="p-4">
+                        <span className="font-mono text-sm text-slate-700 font-medium">
+                          {order.id.split('-')[0]}...
+                        </span>
+                      </td>
+                      <td className="p-4 text-sm text-slate-600">
+                        {format(new Date(order.createdAt), 'MMM dd, yyyy HH:mm')}
+                      </td>
+                      <td className="p-4 text-sm font-semibold text-slate-800">
+                        {formatCurrency(order.totalAmount)}
+                      </td>
+                      <td className="p-4">
+                        <select
+                          value={order.status}
+                          onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
+                          disabled={isUpdating}
+                          className={classNames(
+                            "text-xs font-semibold px-2.5 py-1 rounded-full border-none cursor-pointer focus:ring-2 focus:ring-offset-1 focus:outline-none appearance-none pr-8",
+                            STATUS_COLORS[order.status].bg,
+                            STATUS_COLORS[order.status].text
+                          )}
+                          style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.25rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em 1.25em' }}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="processing">Processing</option>
+                          <option value="shipped">Shipped</option>
+                          <option value="delivered">Delivered</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                      <td className="p-4">
+                        <button
+                          onClick={() => handleViewDetails(order.id)}
+                          className="text-slate-400 hover:text-orange-500 transition-colors p-1.5 rounded-lg hover:bg-orange-50"
+                          title="View Details"
+                        >
+                          <Eye size={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {/* Pagination */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-sm text-slate-500">
+                Showing page {pagination.page} of {pagination.totalPages}
+              </span>
+              <Pagination
+                currentPage={page}
+                totalPages={pagination.totalPages}
+                isLoading={isLoading}
+                onPageChange={setPage}
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       {isDetailsOpen && selectedOrderId && (
         <OrderDetailsDialog orderId={selectedOrderId} onClose={() => setIsDetailsOpen(false)} useAdminApi />
