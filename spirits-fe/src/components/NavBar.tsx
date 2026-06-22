@@ -432,7 +432,7 @@ const NavBar = () => {
           {userData ? (
             <div className="space-y-5">
               <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-orange-500 shadow-sm bg-slate-100 bg-linear-to-b">
+                <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-orange-500 shadow-sm bg-slate-100 shrink-0">
                   <img
                     src="/static/profile-placeholder.png"
                     alt={userData.name}
