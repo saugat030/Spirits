@@ -78,7 +78,7 @@ const DashboardPage = () => {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'NPR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
@@ -87,7 +87,7 @@ const DashboardPage = () => {
   const netSales = Number(netSalesData?.netSales || 0);
   const totalProducts = Number(totalProductsData?.totalProducts || 0);
 
-  const StatCard = ({ title, value, icon: Icon, colorClass, bgClass }: { title: string; value: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: string | number }>; colorClass: string; bgClass: string }) => (
+  const StatCard = ({ title, value, icon: Icon, bgClass }: { title: string; value: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: string | number }>; bgClass: string }) => (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col hover:shadow-md transition-shadow duration-300 relative overflow-hidden group">
       <div className={classNames("absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10 transition-transform duration-500 group-hover:scale-150", bgClass)} />
       <div className="flex justify-between items-start mb-4 relative z-10">
@@ -95,7 +95,7 @@ const DashboardPage = () => {
           <p className="text-slate-500 text-sm font-medium mb-1">{title}</p>
           <h3 className="text-3xl font-bold text-slate-800">{value}</h3>
         </div>
-        <div className={classNames("p-3 rounded-xl", bgClass, colorClass)}>
+        <div className={classNames("p-3 rounded-xl text-white-500")}>
           <Icon size={24} />
         </div>
       </div>
@@ -133,21 +133,18 @@ const DashboardPage = () => {
           title="Total Net Sales" 
           value={formatCurrency(netSales)} 
           icon={DollarSign}
-          colorClass="text-orange-600"
           bgClass="bg-orange-500"
         />
         <StatCard 
           title="Total Products Sold" 
           value={totalProducts.toLocaleString()} 
           icon={Package}
-          colorClass="text-blue-600"
           bgClass="bg-blue-500"
         />
         <StatCard 
           title="Avg. Revenue per Item" 
-          value={totalProducts > 0 ? formatCurrency(netSales / totalProducts) : "$0"} 
+          value={totalProducts > 0 ? formatCurrency(netSales / totalProducts) : "NPR 0"} 
           icon={TrendingUp}
-          colorClass="text-emerald-600"
           bgClass="bg-emerald-500"
         />
       </div>
@@ -182,7 +179,7 @@ const DashboardPage = () => {
                    axisLine={false} 
                    tickLine={false} 
                    tick={{ fill: '#64748b', fontSize: 12 }}
-                   tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `NPR ${value}`}
                  />
                  <RechartsTooltip 
                    cursor={{ stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '3 3' }}
